@@ -19,7 +19,7 @@
 update public.profiles
 set role = 'super_admin'
 where id = (
-  select id from auth.users where email = 'your@email.com'
+  select id from auth.users where email = 'rickartyfit@gmail.com'
 );
 
 -- Verify: show all super_admins after the update
