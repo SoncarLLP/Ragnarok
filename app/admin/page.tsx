@@ -35,16 +35,31 @@ export default async function AdminPage() {
 
   if (!currentUserRole) {
     return (
-      <main className="min-h-screen bg-neutral-950 text-neutral-100 flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-lg font-semibold mb-2">Access Denied</p>
-          <p className="text-neutral-400 text-sm">
-            Your account does not have admin permissions.
-          </p>
-          {!user && (
-            <Link href="/auth/login" className="mt-4 inline-block text-sm text-amber-400 hover:underline">
-              Sign in
-            </Link>
+      <main className="min-h-screen bg-neutral-950 text-neutral-100 flex items-center justify-center px-4">
+        <div className="text-center max-w-sm">
+          {!user ? (
+            <>
+              <p className="text-lg font-semibold mb-2">Sign in required</p>
+              <p className="text-neutral-400 text-sm mb-5">
+                You need to be signed in to your SONCAR account before accessing the admin panel.
+              </p>
+              <Link
+                href="/auth/login"
+                className="inline-block px-5 py-2.5 rounded-lg bg-white/10 hover:bg-white/20 text-sm transition"
+              >
+                Sign in to your account →
+              </Link>
+              <p className="mt-4 text-xs text-neutral-500">
+                After signing in, return to this page and enter the admin credentials again.
+              </p>
+            </>
+          ) : (
+            <>
+              <p className="text-lg font-semibold mb-2">Access Denied</p>
+              <p className="text-neutral-400 text-sm">
+                Your account ({user.email}) does not have admin permissions.
+              </p>
+            </>
           )}
         </div>
       </main>

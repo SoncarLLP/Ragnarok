@@ -1,4 +1,4 @@
-export type Tier = "Bronze" | "Silver" | "Gold" | "Platinum";
+export type Tier = "Bronze" | "Silver" | "Gold" | "Platinum" | "Diamond";
 
 export const TIERS: { tier: Tier; min: number; color: string }[] = [
   { tier: "Bronze",   min: 0,    color: "text-amber-700" },
@@ -7,12 +7,31 @@ export const TIERS: { tier: Tier; min: number; color: string }[] = [
   { tier: "Platinum", min: 2500, color: "text-cyan-300" },
 ];
 
+/** Diamond is reserved for admin and super_admin accounts. */
+export const DIAMOND_TIER = {
+  tier: "Diamond" as Tier,
+  min: Infinity,
+  color: "text-violet-400",
+};
+
 export function getTier(points: number) {
   return [...TIERS].reverse().find((t) => points >= t.min) ?? TIERS[0];
 }
 
-/** Returns points needed to reach the next tier, or null if already Platinum. */
-export function getNextTier(points: number): { tier: Tier; needed: number } | null {
+/**
+ * Returns the effective display tier, overriding to Diamond for admin/super_admin.
+ */
+export function getEffectiveTier(points: number, role?: string | null) {
+  if (role === "admin" || role === "super_admin") return DIAMOND_TIER;
+  return getTier(points);
+}
+
+/** Returns points needed to reach the next tier, or null if already at max. */
+export function getNextTier(
+  points: number,
+  role?: string | null
+): { tier: Tier; needed: number } | null {
+  if (role === "admin" || role === "super_admin") return null;
   const next = TIERS.find((t) => t.min > points);
   if (!next) return null;
   return { tier: next.tier, needed: next.min - points };

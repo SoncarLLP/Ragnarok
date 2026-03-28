@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { getTier, getNextTier, getTierProgress } from "@/lib/loyalty";
+import { getEffectiveTier, getNextTier, getTierProgress } from "@/lib/loyalty";
 
 function fmtMemberId(id: number | null | undefined) {
   return id != null ? String(id).padStart(11, "0") : null;
@@ -31,8 +31,8 @@ export default async function AccountPage() {
     ]);
 
   const totalPoints = pointsData?.reduce((sum, e) => sum + e.delta, 0) ?? 0;
-  const tier = getTier(totalPoints);
-  const nextTier = getNextTier(totalPoints);
+  const tier = getEffectiveTier(totalPoints, profile?.role);
+  const nextTier = getNextTier(totalPoints, profile?.role);
   const progress = getTierProgress(totalPoints);
   const displayName = profile?.full_name || user.email?.split("@")[0] || "Member";
   const memberId = fmtMemberId(profile?.member_id);

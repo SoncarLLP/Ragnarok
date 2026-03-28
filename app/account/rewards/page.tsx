@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { getTier, getNextTier, getTierProgress, TIERS } from "@/lib/loyalty";
+import { getEffectiveTier, getNextTier, getTierProgress, TIERS, DIAMOND_TIER } from "@/lib/loyalty";
 
 type LoyaltyEvent = {
   id: string;
@@ -22,16 +22,20 @@ export default async function RewardsPage() {
   } = await supabase.auth.getUser();
   if (!user) redirect("/auth/login");
 
-  const { data: events } = await supabase
-    .from("loyalty_events")
-    .select("*")
-    .eq("user_id", user.id)
-    .order("created_at", { ascending: false });
+  const [{ data: events }, { data: profile }] = await Promise.all([
+    supabase
+      .from("loyalty_events")
+      .select("*")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false }),
+    supabase.from("profiles").select("role").eq("id", user.id).single(),
+  ]);
 
   const totalPoints = events?.reduce((sum, e) => sum + e.delta, 0) ?? 0;
-  const tier = getTier(totalPoints);
-  const nextTier = getNextTier(totalPoints);
+  const tier = getEffectiveTier(totalPoints, profile?.role);
+  const nextTier = getNextTier(totalPoints, profile?.role);
   const progress = getTierProgress(totalPoints);
+  const isDiamond = tier.tier === "Diamond";
 
   return (
     <div>
@@ -51,7 +55,11 @@ export default async function RewardsPage() {
           </div>
         </div>
 
-        {nextTier ? (
+        {isDiamond ? (
+          <div className="mt-4 text-sm text-violet-300">
+            Diamond is the exclusive tier for SONCAR team members.
+          </div>
+        ) : nextTier ? (
           <div className="mt-5">
             <div className="flex justify-between text-xs text-neutral-400 mb-2">
               <span>{tier.tier}</span>
@@ -72,12 +80,18 @@ export default async function RewardsPage() {
       </div>
 
       {/* Tier grid */}
-      <div className="mt-6 grid grid-cols-2 sm:grid-cols-4 gap-3">
+      <div className={`mt-6 grid gap-3 ${isDiamond ? "grid-cols-1 sm:grid-cols-5" : "grid-cols-2 sm:grid-cols-4"}`}>
+        {isDiamond && (
+          <div className="rounded-lg border border-violet-400/40 bg-violet-500/10 p-4 text-center">
+            <div className={`font-semibold ${DIAMOND_TIER.color}`}>Diamond</div>
+            <div className="text-xs text-neutral-400 mt-1">Team only</div>
+          </div>
+        )}
         {TIERS.map((t) => (
           <div
             key={t.tier}
             className={`rounded-lg border p-4 text-center transition ${
-              t.tier === tier.tier
+              !isDiamond && t.tier === tier.tier
                 ? "border-amber-400/40 bg-amber-500/10"
                 : "border-white/10 bg-white/5 opacity-40"
             }`}
