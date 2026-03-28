@@ -1,14 +1,16 @@
 "use client";
 
-import { useState, useRef } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useRef, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { createClient } from "@/lib/supabase/client";
 import { CATEGORIES } from "@/lib/community";
 
 const PRESET_CATEGORIES = CATEGORIES as readonly string[];
 
 export default function CreatePostButton({ userId }: { userId: string }) {
-  const router = useRouter();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
   const [open, setOpen] = useState(false);
   const [type, setType] = useState<"text" | "photo" | "recipe">("text");
   const [content, setContent] = useState("");
@@ -92,7 +94,7 @@ export default function CreatePostButton({ userId }: { userId: string }) {
 
       reset();
       setOpen(false);
-      router.refresh();
+      window.location.reload();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to post");
     } finally {
@@ -109,8 +111,8 @@ export default function CreatePostButton({ userId }: { userId: string }) {
         + New Post
       </button>
 
-      {open && (
-        <div className="fixed inset-0 z-50 overflow-y-auto bg-black/70 backdrop-blur-sm">
+      {mounted && open && createPortal(
+        <div className="fixed inset-0 z-[9999] overflow-y-auto bg-black/70 backdrop-blur-sm">
           <div className="flex min-h-full items-start justify-center p-4 pt-8 pb-16">
           <div className="w-full max-w-lg bg-neutral-900 rounded-2xl border border-white/10 shadow-2xl overflow-hidden flex flex-col">
             <div className="flex items-center justify-between px-5 py-4 border-b border-white/10 shrink-0">
@@ -288,7 +290,8 @@ export default function CreatePostButton({ userId }: { userId: string }) {
             </form>
           </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );
