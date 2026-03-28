@@ -39,14 +39,17 @@ export default async function CommunityPage(props: unknown) {
   // Current user's likes + follows
   let likedIds = new Set<string>();
   let followedIds = new Set<string>();
+  let isAdmin = false;
 
   if (user) {
-    const [{ data: likes }, { data: follows }] = await Promise.all([
+    const [{ data: likes }, { data: follows }, { data: myProfile }] = await Promise.all([
       supabase.from("likes").select("post_id").eq("user_id", user.id),
       supabase.from("follows").select("following_id").eq("follower_id", user.id),
+      supabase.from("profiles").select("role").eq("id", user.id).single(),
     ]);
     likedIds = new Set(likes?.map((l) => l.post_id) ?? []);
     followedIds = new Set(follows?.map((f) => f.following_id) ?? []);
+    isAdmin = myProfile?.role === "admin" || myProfile?.role === "super_admin";
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -126,6 +129,7 @@ export default async function CommunityPage(props: unknown) {
                   isLiked={likedIds.has(post.id)}
                   isFollowing={followedIds.has(post.user_id)}
                   currentUserId={user?.id ?? null}
+                  isAdmin={isAdmin}
                 />
               </div>
             ))}

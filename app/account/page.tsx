@@ -3,6 +3,10 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { getTier, getNextTier, getTierProgress } from "@/lib/loyalty";
 
+function fmtMemberId(id: number | null | undefined) {
+  return id != null ? String(id).padStart(11, "0") : null;
+}
+
 export default async function AccountPage() {
   const supabase = await createClient();
   const {
@@ -12,7 +16,11 @@ export default async function AccountPage() {
 
   const [{ data: profile }, { data: pointsData }, { data: recentOrders }] =
     await Promise.all([
-      supabase.from("profiles").select("full_name").eq("id", user.id).single(),
+      supabase
+        .from("profiles")
+        .select("full_name, member_id, role")
+        .eq("id", user.id)
+        .single(),
       supabase.from("loyalty_events").select("delta").eq("user_id", user.id),
       supabase
         .from("orders")
@@ -27,13 +35,22 @@ export default async function AccountPage() {
   const nextTier = getNextTier(totalPoints);
   const progress = getTierProgress(totalPoints);
   const displayName = profile?.full_name || user.email?.split("@")[0] || "Member";
+  const memberId = fmtMemberId(profile?.member_id);
 
   return (
     <div>
-      <h1 className="text-2xl font-semibold">Welcome back, {displayName}</h1>
+      <div className="flex items-start justify-between gap-4 mb-6">
+        <h1 className="text-2xl font-semibold">Welcome back, {displayName}</h1>
+        {memberId && (
+          <div className="text-right shrink-0">
+            <div className="text-xs text-neutral-500 uppercase tracking-wide">Member ID</div>
+            <div className="font-mono text-sm text-neutral-300">{memberId}</div>
+          </div>
+        )}
+      </div>
 
       {/* Stats */}
-      <div className="mt-6 grid sm:grid-cols-2 gap-4">
+      <div className="grid sm:grid-cols-2 gap-4">
         {/* Points */}
         <div className="rounded-xl border border-white/10 bg-white/5 p-5">
           <div className="text-sm text-neutral-400">Loyalty Points</div>

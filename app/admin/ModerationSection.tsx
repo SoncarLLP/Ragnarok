@@ -22,9 +22,7 @@ type Comment = {
   profiles: { full_name: string | null; username: string | null } | { full_name: string | null; username: string | null }[] | null;
 };
 
-function authorName(
-  profiles: Post["profiles"]
-): string {
+function authorName(profiles: Post["profiles"]): string {
   const p = Array.isArray(profiles) ? profiles[0] : profiles;
   return p?.full_name || p?.username || "Unknown";
 }
@@ -32,17 +30,30 @@ function authorName(
 export default function ModerationSection({
   posts: initialPosts,
   comments: initialComments,
+  currentUserRole,
 }: {
   posts: Post[];
   comments: Comment[];
+  currentUserRole: "admin" | "super_admin";
 }) {
   const [posts, setPosts] = useState(initialPosts);
   const [comments, setComments] = useState(initialComments);
+  const [flagging, setFlagging] = useState<string | null>(null);
+  const [flagged, setFlagged] = useState<Set<string>>(new Set());
+
+  async function flagPost(postId: string) {
+    setFlagging(postId);
+    await fetch("/api/admin/community/flag", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ postId, action: "flag" }),
+    });
+    setFlagged((prev) => new Set([...prev, postId]));
+    setFlagging(null);
+  }
 
   return (
     <section>
-      <h2 className="text-lg font-semibold mb-6">Community Moderation</h2>
-
       {!process.env.NEXT_PUBLIC_SUPABASE_URL ? (
         <p className="text-neutral-400 text-sm">Supabase not configured.</p>
       ) : (
@@ -84,7 +95,7 @@ export default function ModerationSection({
                         </div>
                       )}
                     </div>
-                    <div className="flex items-center gap-3 shrink-0">
+                    <div className="flex items-center gap-2 shrink-0">
                       <Link
                         href={`/community/${post.id}`}
                         className="text-xs text-neutral-400 hover:text-white"
@@ -92,10 +103,23 @@ export default function ModerationSection({
                       >
                         View
                       </Link>
+                      {!flagged.has(post.id) ? (
+                        <button
+                          disabled={flagging === post.id}
+                          onClick={() => flagPost(post.id)}
+                          className="text-xs px-2 py-1 rounded bg-white/5 text-neutral-400 hover:text-amber-400 hover:bg-amber-500/10 disabled:opacity-50 transition"
+                        >
+                          {flagging === post.id ? "…" : "Flag"}
+                        </button>
+                      ) : (
+                        <span className="text-xs text-amber-400 px-2 py-1">Flagged</span>
+                      )}
                       <DeleteButton
                         type="post"
                         id={post.id}
-                        onDeleted={() => setPosts((prev) => prev.filter((p) => p.id !== post.id))}
+                        onDeleted={() =>
+                          setPosts((prev) => prev.filter((p) => p.id !== post.id))
+                        }
                       />
                     </div>
                   </div>

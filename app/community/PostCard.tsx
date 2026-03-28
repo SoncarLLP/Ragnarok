@@ -7,6 +7,30 @@ import LikeButton from "./LikeButton";
 import FollowButton from "./FollowButton";
 import type { PostData } from "@/lib/community";
 
+function FlagButton({ postId }: { postId: string }) {
+  const [state, setState] = useState<"idle" | "loading" | "done">("idle");
+  async function flag() {
+    setState("loading");
+    await fetch("/api/admin/community/flag", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ postId, action: "flag" }),
+    });
+    setState("done");
+  }
+  if (state === "done") return <span className="text-xs text-amber-400 px-1">Flagged</span>;
+  return (
+    <button
+      onClick={flag}
+      disabled={state === "loading"}
+      className="text-xs px-2 py-1 rounded bg-white/5 text-neutral-500 hover:text-amber-400 hover:bg-amber-500/10 transition disabled:opacity-50"
+      title="Flag for review"
+    >
+      {state === "loading" ? "…" : "🚩"}
+    </button>
+  );
+}
+
 function Avatar({ url, name }: { url: string | null; name: string }) {
   if (url) {
     return <img src={url} alt={name} className="w-8 h-8 rounded-full object-cover shrink-0" />;
@@ -31,11 +55,13 @@ export default function PostCard({
   isLiked,
   isFollowing,
   currentUserId,
+  isAdmin = false,
 }: {
   post: PostData;
   isLiked: boolean;
   isFollowing: boolean;
   currentUserId: string | null;
+  isAdmin?: boolean;
 }) {
   const [copied, setCopied] = useState(false);
 
@@ -138,9 +164,11 @@ export default function PostCard({
           {post.comment_count}
         </Link>
 
+        {isAdmin && <FlagButton postId={post.id} />}
+
         <button
           onClick={handleShare}
-          className="ml-auto flex items-center gap-1.5 text-xs text-neutral-400 hover:text-white transition"
+          className={`${isAdmin ? "" : "ml-auto"} flex items-center gap-1.5 text-xs text-neutral-400 hover:text-white transition`}
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
