@@ -7,6 +7,47 @@ import LikeButton from "./LikeButton";
 import FollowButton from "./FollowButton";
 import type { PostData } from "@/lib/community";
 
+function DeleteButton({ postId, onDeleted }: { postId: string; onDeleted: () => void }) {
+  const [state, setState] = useState<"idle" | "loading" | "confirm">("idle");
+  async function doDelete() {
+    setState("loading");
+    await fetch("/api/admin/community/delete", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ type: "post", id: postId }),
+    });
+    onDeleted();
+  }
+  if (state === "confirm") {
+    return (
+      <span className="flex items-center gap-1">
+        <button
+          onClick={doDelete}
+          className="text-xs px-2 py-1 rounded bg-rose-500/20 text-rose-400 hover:bg-rose-500/40 transition"
+        >
+          Confirm
+        </button>
+        <button
+          onClick={() => setState("idle")}
+          className="text-xs px-2 py-1 rounded bg-white/5 text-neutral-500 hover:text-white transition"
+        >
+          Cancel
+        </button>
+      </span>
+    );
+  }
+  return (
+    <button
+      onClick={() => setState("confirm")}
+      disabled={state === "loading"}
+      className="text-xs px-2 py-1 rounded bg-white/5 text-neutral-500 hover:text-rose-400 hover:bg-rose-500/10 transition disabled:opacity-50"
+      title="Delete post"
+    >
+      {state === "loading" ? "…" : "🗑️"}
+    </button>
+  );
+}
+
 function FlagButton({ postId }: { postId: string }) {
   const [state, setState] = useState<"idle" | "loading" | "done">("idle");
   async function flag() {
@@ -64,6 +105,8 @@ export default function PostCard({
   isAdmin?: boolean;
 }) {
   const [copied, setCopied] = useState(false);
+  const [deleted, setDeleted] = useState(false);
+  if (deleted) return null;
 
   function handleShare() {
     navigator.clipboard.writeText(`${window.location.origin}/community/${post.id}`);
@@ -165,6 +208,7 @@ export default function PostCard({
         </Link>
 
         {isAdmin && <FlagButton postId={post.id} />}
+        {isAdmin && <DeleteButton postId={post.id} onDeleted={() => setDeleted(true)} />}
 
         <button
           onClick={handleShare}

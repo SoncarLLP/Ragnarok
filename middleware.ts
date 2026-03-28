@@ -10,7 +10,7 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // ── Admin routes: basic auth only ─────────────────────────
-  if (pathname.startsWith("/admin") || pathname.startsWith("/api/admin")) {
+  if (pathname.startsWith("/admin") || (pathname.startsWith("/api/admin") && !pathname.startsWith("/api/admin/community"))) {
     if (ADMIN_CREDENTIALS.length === 0) {
       return NextResponse.json({ error: "Admin credentials not configured" }, { status: 500 });
     }
