@@ -3,16 +3,34 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-const links = [
-  { href: "/account",                label: "Dashboard" },
-  { href: "/account/profile",        label: "Profile" },
-  { href: "/account/orders",         label: "Orders" },
-  { href: "/account/rewards",        label: "Rewards" },
-  { href: "/account/notifications",  label: "Notifications" },
+const baseLinks = [
+  { href: "/account",               label: "Dashboard" },
+  { href: "/account/profile",       label: "Profile" },
+  { href: "/account/orders",        label: "Orders" },
+  { href: "/account/rewards",       label: "Rewards" },
+  { href: "/account/notifications", label: "Notifications" },
 ];
 
-export default function AccountNav({ unreadWarnings = 0 }: { unreadWarnings?: number }) {
+export default function AccountNav({
+  unreadWarnings = 0,
+  role,
+}: {
+  unreadWarnings?: number;
+  role?: string | null;
+}) {
   const path = usePathname();
+  const isAdmin = role === "admin" || role === "super_admin";
+
+  const links = isAdmin
+    ? [
+        ...baseLinks,
+        {
+          href: "/admin",
+          label: role === "super_admin" ? "Admin Panel 👑" : "Admin Panel 🛡️",
+        },
+      ]
+    : baseLinks;
+
   return (
     <>
       {/* Desktop sidebar */}

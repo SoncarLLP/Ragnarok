@@ -13,7 +13,7 @@ export default async function AccountLayout({ children }: { children: React.Reac
   if (!user) redirect("/auth/login");
 
   const [{ data: profile }, { count: unreadWarnings }] = await Promise.all([
-    supabase.from("profiles").select("full_name").eq("id", user.id).single(),
+    supabase.from("profiles").select("full_name, role").eq("id", user.id).single(),
     supabase
       .from("member_warnings")
       .select("id", { count: "exact", head: true })
@@ -52,13 +52,13 @@ export default async function AccountLayout({ children }: { children: React.Reac
       <div className="mx-auto max-w-7xl px-4 py-8">
         {/* Mobile nav rendered above content */}
         <div className="md:hidden mb-2">
-          <AccountNav unreadWarnings={unreadWarnings ?? 0} />
+          <AccountNav unreadWarnings={unreadWarnings ?? 0} role={profile?.role} />
         </div>
 
         <div className="flex gap-8">
           {/* Desktop sidebar */}
           <div className="hidden md:block">
-            <AccountNav unreadWarnings={unreadWarnings ?? 0} />
+            <AccountNav unreadWarnings={unreadWarnings ?? 0} role={profile?.role} />
           </div>
 
           {/* Page content */}

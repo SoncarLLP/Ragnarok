@@ -5,6 +5,7 @@ import { normalisePost, POST_SELECT } from "@/lib/community";
 import type { PostData } from "@/lib/community";
 import PostCard from "@/app/community/PostCard";
 import FollowButton from "@/app/community/FollowButton";
+import RoleBadge from "@/components/RoleBadge";
 
 export default async function PublicProfilePage(props: unknown) {
   const rawParams =
@@ -26,7 +27,7 @@ export default async function PublicProfilePage(props: unknown) {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("id, full_name, username, bio, avatar_url")
+    .select("id, full_name, username, bio, avatar_url, role")
     .eq("username", username)
     .single();
 
@@ -107,7 +108,10 @@ export default async function PublicProfilePage(props: unknown) {
 
           <div className="flex-1 min-w-0">
             <div className="flex flex-wrap items-center gap-3">
-              <h1 className="text-2xl font-semibold">{displayName}</h1>
+              <h1 className="text-2xl font-semibold flex items-center gap-2">
+                {displayName}
+                <RoleBadge role={profile.role} />
+              </h1>
               {isOwnProfile ? (
                 <Link
                   href="/account/profile"

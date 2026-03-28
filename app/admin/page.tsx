@@ -77,12 +77,12 @@ export default async function AdminPage() {
   ] = await Promise.all([
     admin
       .from("posts")
-      .select("id, type, content, image_url, categories, created_at, profiles(full_name, username)")
+      .select("id, type, content, image_url, categories, created_at, profiles!posts_user_id_fkey(full_name, username)")
       .order("created_at", { ascending: false })
       .limit(30),
     admin
       .from("comments")
-      .select("id, content, created_at, profiles(full_name, username), post_id")
+      .select("id, content, created_at, profiles!comments_user_id_fkey(full_name, username), post_id")
       .order("created_at", { ascending: false })
       .limit(30),
     admin
@@ -125,7 +125,7 @@ export default async function AdminPage() {
   if (flagPostIds.length > 0) {
     const { data: fps } = await admin
       .from("posts")
-      .select("id, type, content, image_url, profiles(full_name, username)")
+      .select("id, type, content, image_url, profiles!posts_user_id_fkey(full_name, username)")
       .in("id", flagPostIds);
     for (const fp of fps ?? []) {
       flagPostMap[fp.id] = fp;
