@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image"; // ← add this
+import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
 import { getProduct, type Product } from "@/lib/products";
 
@@ -71,8 +71,14 @@ export default function CartPage() {
               Same-day ship • next-day delivery available at checkout.
             </div>
 
-            <div className="mt-6">
-              <Link href="/#shop" className="px-4 py-2 rounded bg-white/5 hover:bg-white/10">
+            <div className="mt-6 space-y-3">
+              <div className="w-full py-3 rounded-lg bg-white/5 border border-white/10 text-center text-sm text-neutral-400">
+                Payments coming soon — thank you for your interest!
+              </div>
+              <Link
+                href="/#shop"
+                className="block text-center px-4 py-2 rounded bg-white/5 hover:bg-white/10 text-sm"
+              >
                 Continue shopping
               </Link>
             </div>

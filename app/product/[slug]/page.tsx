@@ -2,7 +2,6 @@ import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import { getProduct, type Product } from "@/lib/products";
-import { getProductBlurb } from "@/lib/cms"; // ← Redis-backed blurb
 
 // Known slugs – used to safely narrow the dynamic route param
 const SLUGS = ["freyjas-bloom", "duemmens-nectar", "loki-hell-fire"] as const;
@@ -11,9 +10,7 @@ function isSlug(s: unknown): s is Slug {
   return typeof s === "string" && (SLUGS as readonly string[]).includes(s);
 }
 
-// Server Component (async) so we can await Redis reads
-export default async function ProductPage(props: unknown) {
-  // Safely extract params.slug without triggering Next's PageProps type clash
+export default function ProductPage(props: unknown) {
   const params =
     props && typeof props === "object" && "params" in props
       ? (props as { params?: unknown }).params
@@ -26,12 +23,10 @@ export default async function ProductPage(props: unknown) {
 
   if (!isSlug(slug)) return notFound();
 
-  // Look up the static product, then override fields from Redis as needed
   const p = getProduct(slug as Product["slug"]);
   if (!p) return notFound();
 
-  // Pull the editable blurb from Redis; fall back to code default
-  const blurb = await getProductBlurb(p.slug, p.blurb);
+  const blurb = p.blurb;
 
   return (
     <main className="bg-neutral-950 text-neutral-100 min-h-screen">

@@ -25,6 +25,8 @@ export default function Footer() {
             <li><a href="#" className="hover:text-white">Shipping & Returns</a></li>
             <li><a href="#" className="hover:text-white">Cookies</a></li>
             <li><a href="#" className="hover:text-white">Contact</a></li>
+            <li><a href="/account" className="hover:text-white">My Account</a></li>
+            <li><a href="/auth/login" className="hover:text-white">Sign In</a></li>
           </ul>
         </div>
 

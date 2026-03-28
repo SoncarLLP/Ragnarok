@@ -2,8 +2,6 @@ import Link from "next/link";
 import Image from "next/image";
 import { products } from "@/lib/products";
 
-const STRIPE_CHECKOUT = process.env.NEXT_PUBLIC_SONCAR_STRIPE_CHECKOUT_URL || "";
-
 export default function HomePage() {
   return (
     <main className="bg-neutral-950 text-neutral-100 min-h-screen">
@@ -29,9 +27,12 @@ export default function HomePage() {
             <span className="font-semibold tracking-wide">SONCAR</span>
             <span className="ml-2 text-xs px-2 py-1 rounded bg-white/10">soncar.co.uk</span>
           </div>
-          <nav className="hidden md:flex items-center gap-6 text-sm text-neutral-300">
-            <Link href="#shop" className="hover:text-white">Shop</Link>
-            <Link href="/policies" className="hover:text-white">Policies</Link>
+          <nav className="flex items-center gap-4 text-sm text-neutral-300">
+            <Link href="#shop" className="hidden md:block hover:text-white">Shop</Link>
+            <Link href="/policies" className="hidden md:block hover:text-white">Policies</Link>
+            <Link href="/account" className="px-3 py-1.5 rounded bg-white/10 hover:bg-white/20 text-white text-xs">
+              My Account
+            </Link>
           </nav>
         </div>
       </header>
@@ -105,24 +106,12 @@ export default function HomePage() {
 
                 <div className="mt-4 flex items-center justify-between">
                   <span className="font-semibold">£{p.price.toFixed(2)}</span>
-
-                  {STRIPE_CHECKOUT ? (
-                    // External checkout link (Payment Link)
-                    <a
-                      href={STRIPE_CHECKOUT}
-                      className="px-3 py-2 rounded bg-white/10 hover:bg-white/20 text-sm"
-                    >
-                      Buy
-                    </a>
-                  ) : (
-                    // Internal add-to-cart via query string
-                    <Link
-                      href={`/cart?add=${p.slug}`}
-                      className="px-3 py-2 rounded bg-white/10 hover:bg-white/20 text-sm"
-                    >
-                      Add to cart
-                    </Link>
-                  )}
+                  <Link
+                    href={`/cart?add=${p.slug}`}
+                    className="px-3 py-2 rounded bg-white/10 hover:bg-white/20 text-sm"
+                  >
+                    Add to cart
+                  </Link>
                 </div>
               </div>
             </article>

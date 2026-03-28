@@ -5,10 +5,6 @@ export type Product = {
   price: number;
   image: string;        // /public path, e.g. /images/products/xxx.jpg
   blurb: string;
-  // Simple-mode checkout: one link per SKU (Payment Link in Stripe)
-  checkoutUrl?: string;
-  // Pro-mode: Stripe Price ID for Checkout Sessions (later)
-  stripePriceId?: string;
 };
 
 export const products: Product[] = [
