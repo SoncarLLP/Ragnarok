@@ -10,11 +10,14 @@ function isSlug(s: unknown): s is Slug {
   return typeof s === "string" && (SLUGS as readonly string[]).includes(s);
 }
 
-export default function ProductPage(props: unknown) {
-  const params =
+export default async function ProductPage(props: unknown) {
+  const rawParams =
     props && typeof props === "object" && "params" in props
       ? (props as { params?: unknown }).params
       : undefined;
+
+  // Next.js 15: params is a Promise
+  const params = rawParams instanceof Promise ? await rawParams : rawParams;
 
   const slug =
     params && typeof params === "object" && "slug" in params
