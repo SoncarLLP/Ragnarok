@@ -77,7 +77,7 @@ export function normalisePost(p: {
 
 export const POST_SELECT = `
   id, user_id, type, content, image_url, ingredients, method, categories, created_at,
-  profiles(full_name, username, avatar_url),
+  profiles!posts_user_id_fkey(full_name, username, avatar_url),
   likes(count),
   comments(count)
 ` as const;

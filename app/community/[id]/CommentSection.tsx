@@ -46,7 +46,7 @@ export default function CommentSection({
     const { data: row, error: err } = await supabase
       .from("comments")
       .insert({ post_id: postId, user_id: user.id, content: content.trim() })
-      .select("id, post_id, user_id, content, created_at, profiles(full_name, username, avatar_url)")
+      .select("id, post_id, user_id, content, created_at, profiles!comments_user_id_fkey(full_name, username, avatar_url)")
       .single();
 
     if (err || !row) {

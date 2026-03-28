@@ -38,7 +38,7 @@ export default async function PostPage(props: unknown) {
 
   const { data: rawComments } = await supabase
     .from("comments")
-    .select("id, post_id, user_id, content, created_at, profiles(full_name, username, avatar_url)")
+    .select("id, post_id, user_id, content, created_at, profiles!comments_user_id_fkey(full_name, username, avatar_url)")
     .eq("post_id", id)
     .order("created_at", { ascending: true });
 
