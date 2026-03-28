@@ -90,7 +90,7 @@ export default function CreatePostButton({ userId }: { userId: string }) {
         categories: selectedCats,
       });
 
-      if (insertErr) throw new Error(insertErr.message);
+      if (insertErr) throw new Error(`${insertErr.message} [${insertErr.code ?? "?"}]`);
 
       reset();
       setOpen(false);
@@ -278,7 +278,11 @@ export default function CreatePostButton({ userId }: { userId: string }) {
                 </div>
               </div>
 
-              {error && <p className="text-rose-400 text-sm">{error}</p>}
+              {error && (
+                <div className="rounded-lg bg-rose-500/20 border border-rose-500/40 px-3 py-2 text-sm text-rose-300">
+                  {error}
+                </div>
+              )}
 
               <button
                 type="submit"

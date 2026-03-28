@@ -34,7 +34,7 @@ export default async function CommunityPage(props: unknown) {
     query = query.contains("categories", [category as Category]);
   }
 
-  const { data: rawPosts } = await query;
+  const { data: rawPosts, error: postsError } = await query;
 
   // Current user's likes + follows
   let likedIds = new Set<string>();
@@ -105,6 +105,12 @@ export default async function CommunityPage(props: unknown) {
         </div>
 
         <CategoryFilter activeCategory={category} />
+
+        {postsError && (
+          <div className="mt-6 rounded-lg border border-rose-500/30 bg-rose-500/10 px-4 py-3 text-sm text-rose-300">
+            Query error: {postsError.message} (code: {postsError.code})
+          </div>
+        )}
 
         {sorted.length === 0 ? (
           <div className="mt-16 text-center text-neutral-400">
