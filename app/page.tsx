@@ -29,6 +29,7 @@ export default function HomePage() {
           </div>
           <nav className="flex items-center gap-4 text-sm text-neutral-300">
             <Link href="#shop" className="hidden md:block hover:text-white">Shop</Link>
+            <Link href="/community" className="hidden md:block hover:text-white">Community</Link>
             <Link href="/policies" className="hidden md:block hover:text-white">Policies</Link>
             <Link href="/account" className="px-3 py-1.5 rounded bg-white/10 hover:bg-white/20 text-white text-xs">
               My Account
