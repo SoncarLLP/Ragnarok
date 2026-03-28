@@ -1,15 +1,17 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 
-const ADMIN_USER = process.env.ADMIN_USERNAME || "";
-const ADMIN_PASS = process.env.ADMIN_PASSWORD || "";
+const ADMIN_CREDENTIALS = [
+  { user: process.env.ADMIN_USERNAME || "", pass: process.env.ADMIN_PASSWORD || "" },
+  { user: process.env.ADMIN_USERNAME_2 || "", pass: process.env.ADMIN_PASSWORD_2 || "" },
+].filter((c) => c.user && c.pass);
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // ── Admin routes: basic auth only ─────────────────────────
   if (pathname.startsWith("/admin") || pathname.startsWith("/api/admin")) {
-    if (!ADMIN_USER || !ADMIN_PASS) {
+    if (ADMIN_CREDENTIALS.length === 0) {
       return NextResponse.json({ error: "Admin credentials not configured" }, { status: 500 });
     }
     const auth = request.headers.get("authorization") || "";
@@ -21,7 +23,8 @@ export async function middleware(request: NextRequest) {
     }
     const [, b64] = auth.split(" ");
     const [user, pass] = Buffer.from(b64, "base64").toString().split(":");
-    if (user !== ADMIN_USER || pass !== ADMIN_PASS) {
+    const valid = ADMIN_CREDENTIALS.some((c) => c.user === user && c.pass === pass);
+    if (!valid) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
     return NextResponse.next();
