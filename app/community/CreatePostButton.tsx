@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { CATEGORIES } from "@/lib/community";
 
+const PRESET_CATEGORIES = CATEGORIES as readonly string[];
+
 export default function CreatePostButton({ userId }: { userId: string }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -15,6 +17,7 @@ export default function CreatePostButton({ userId }: { userId: string }) {
   const [selectedCats, setSelectedCats] = useState<string[]>([]);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [customTag, setCustomTag] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
   const fileRef = useRef<HTMLInputElement>(null);
@@ -25,6 +28,7 @@ export default function CreatePostButton({ userId }: { userId: string }) {
     setIngredients("");
     setMethod("");
     setSelectedCats([]);
+    setCustomTag("");
     setImageFile(null);
     setImagePreview(null);
     setError("");
@@ -43,9 +47,15 @@ export default function CreatePostButton({ userId }: { userId: string }) {
     setImagePreview(URL.createObjectURL(file));
   }
 
+  function addCustomTag() {
+    const tag = customTag.trim();
+    if (!tag || selectedCats.includes(tag)) { setCustomTag(""); return; }
+    setSelectedCats((prev) => [...prev, tag]);
+    setCustomTag("");
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (selectedCats.length === 0) { setError("Select at least one category."); return; }
     if (type === "photo" && !imageFile) { setError("Please select a photo."); return; }
 
     setSubmitting(true);
@@ -100,8 +110,9 @@ export default function CreatePostButton({ userId }: { userId: string }) {
       </button>
 
       {open && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
-          <div className="w-full max-w-lg bg-neutral-900 rounded-2xl border border-white/10 shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-black/70 backdrop-blur-sm">
+          <div className="flex min-h-full items-start justify-center p-4 pt-8 pb-16">
+          <div className="w-full max-w-lg bg-neutral-900 rounded-2xl border border-white/10 shadow-2xl overflow-hidden flex flex-col">
             <div className="flex items-center justify-between px-5 py-4 border-b border-white/10 shrink-0">
               <h2 className="font-semibold">Create Post</h2>
               <button
@@ -112,7 +123,7 @@ export default function CreatePostButton({ userId }: { userId: string }) {
               </button>
             </div>
 
-            <form onSubmit={handleSubmit} className="px-5 py-4 space-y-4 overflow-y-auto">
+            <form onSubmit={handleSubmit} className="px-5 py-4 space-y-4">
               {/* Type */}
               <div className="flex gap-2">
                 {(["text", "photo", "recipe"] as const).map((t) => (
@@ -213,10 +224,10 @@ export default function CreatePostButton({ userId }: { userId: string }) {
               {/* Categories */}
               <div>
                 <label className="block text-sm text-neutral-300 mb-2">
-                  Categories <span className="text-neutral-500">(select at least one)</span>
+                  Categories <span className="text-neutral-500">(optional)</span>
                 </label>
-                <div className="flex flex-wrap gap-2">
-                  {CATEGORIES.map((cat) => (
+                <div className="flex flex-wrap gap-2 mb-2">
+                  {PRESET_CATEGORIES.map((cat) => (
                     <button
                       key={cat}
                       type="button"
@@ -230,6 +241,38 @@ export default function CreatePostButton({ userId }: { userId: string }) {
                       {cat}
                     </button>
                   ))}
+                  {/* Custom tags (non-preset) */}
+                  {selectedCats
+                    .filter((c) => !PRESET_CATEGORIES.includes(c))
+                    .map((cat) => (
+                      <button
+                        key={cat}
+                        type="button"
+                        onClick={() => toggleCat(cat)}
+                        className="px-3 py-1 rounded-full text-xs border bg-emerald-500/20 text-emerald-300 border-emerald-400/40"
+                      >
+                        {cat} ×
+                      </button>
+                    ))}
+                </div>
+                {/* Custom tag input */}
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={customTag}
+                    onChange={(e) => setCustomTag(e.target.value)}
+                    onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addCustomTag(); } }}
+                    placeholder="Add a custom tag…"
+                    maxLength={40}
+                    className="flex-1 rounded-md bg-neutral-800 border border-white/10 px-3 py-1.5 text-xs outline-none focus:border-white/30"
+                  />
+                  <button
+                    type="button"
+                    onClick={addCustomTag}
+                    className="px-3 py-1.5 rounded-md bg-white/10 hover:bg-white/20 text-xs transition"
+                  >
+                    Add
+                  </button>
                 </div>
               </div>
 
@@ -243,6 +286,7 @@ export default function CreatePostButton({ userId }: { userId: string }) {
                 {submitting ? "Posting…" : "Post"}
               </button>
             </form>
+          </div>
           </div>
         </div>
       )}
