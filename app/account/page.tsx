@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { getTierColor, getNextTier, getTierProgress, tierFromPoints } from "@/lib/loyalty";
-import RoleBadge from "@/components/RoleBadge";
+import MemberBadge from "@/components/MemberBadge";
 import TierBadge from "@/components/TierBadge";
 
 function fmtMemberId(id: number | null | undefined) {
@@ -45,7 +45,7 @@ export default async function AccountPage() {
       <div className="flex items-start justify-between gap-4 mb-6">
         <h1 className="text-2xl font-semibold flex items-center gap-2 flex-wrap">
           Welcome back, {displayName}
-          <RoleBadge role={profile?.role} />
+          <MemberBadge role={profile?.role} tier={tierName} />
         </h1>
         {memberId && (
           <div className="text-right shrink-0">

@@ -8,8 +8,7 @@ import ShareButton from "../ShareButton";
 import FollowButton from "../FollowButton";
 import MentionText from "../MentionText";
 import CommentSection from "./CommentSection";
-import RoleBadge from "@/components/RoleBadge";
-import TierBadge from "@/components/TierBadge";
+import MemberBadge from "@/components/MemberBadge";
 import type { CommentData } from "@/lib/community";
 
 export default async function PostPage(props: unknown) {
@@ -165,8 +164,7 @@ export default async function PostPage(props: unknown) {
               <div>
                 <div className="font-medium flex items-center gap-1.5 flex-wrap">
                   {authorName}
-                  <RoleBadge role={post.author.role} />
-                  <TierBadge tier={post.author.tier} />
+                  <MemberBadge role={post.author.role} tier={post.author.tier} />
                 </div>
                 <div className="text-xs text-neutral-500">
                   {new Date(post.created_at).toLocaleDateString("en-GB", {

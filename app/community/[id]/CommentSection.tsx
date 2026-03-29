@@ -3,8 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
-import RoleBadge from "@/components/RoleBadge";
-import TierBadge from "@/components/TierBadge";
+import MemberBadge from "@/components/MemberBadge";
 import ReactionButton from "../ReactionButton";
 import MentionTextarea from "../MentionTextarea";
 import MentionText from "../MentionText";
@@ -157,8 +156,7 @@ export default function CommentSection({
                       className="text-sm font-medium hover:underline flex items-center gap-1 flex-wrap"
                     >
                       {name}
-                      <RoleBadge role={c.profiles?.role} />
-                      <TierBadge tier={c.profiles?.tier} />
+                      <MemberBadge role={c.profiles?.role} tier={c.profiles?.tier} />
                     </Link>
                     <span className="text-xs text-neutral-500">{timeAgo(c.created_at)}</span>
                   </div>

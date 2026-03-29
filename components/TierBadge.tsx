@@ -1,5 +1,3 @@
-"use client";
-
 /**
  * TierBadge — shows a visual flair for each of the 13 membership tiers.
  * Style escalates in visual weight as tiers increase.
@@ -7,7 +5,7 @@
 export default function TierBadge({ tier }: { tier?: string | null }) {
   if (!tier) return null;
 
-  // Diamond — animated glowing badge with crown
+  // Diamond — animated glowing badge with diamond symbol
   if (tier === "Diamond") {
     return (
       <span
@@ -18,7 +16,7 @@ export default function TierBadge({ tier }: { tier?: string | null }) {
           animate-pulse"
         style={{ animationDuration: "2.5s" }}
       >
-        👑 {tier}
+        💎 {tier}
       </span>
     );
   }

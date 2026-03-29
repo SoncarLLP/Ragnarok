@@ -5,8 +5,7 @@ import { normalisePost, POST_SELECT } from "@/lib/community";
 import type { PostData } from "@/lib/community";
 import PostCard from "@/app/community/PostCard";
 import FollowButton from "@/app/community/FollowButton";
-import RoleBadge from "@/components/RoleBadge";
-import TierBadge from "@/components/TierBadge";
+import MemberBadge from "@/components/MemberBadge";
 
 export default async function PublicProfilePage(props: unknown) {
   const rawParams =
@@ -114,8 +113,7 @@ export default async function PublicProfilePage(props: unknown) {
             <div className="flex flex-wrap items-center gap-3">
               <h1 className="text-2xl font-semibold flex items-center gap-2 flex-wrap">
                 {displayName}
-                <RoleBadge role={profile.role} />
-                <TierBadge tier={profile.tier} />
+                <MemberBadge role={profile.role} tier={profile.tier} />
               </h1>
               {isOwnProfile ? (
                 <Link

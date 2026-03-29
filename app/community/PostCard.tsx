@@ -7,8 +7,7 @@ import ReactionButton from "./ReactionButton";
 import ShareButton from "./ShareButton";
 import FollowButton from "./FollowButton";
 import MentionText from "./MentionText";
-import RoleBadge from "@/components/RoleBadge";
-import TierBadge from "@/components/TierBadge";
+import MemberBadge from "@/components/MemberBadge";
 import FlagButton from "./FlagButton";
 import type { PostData } from "@/lib/community";
 
@@ -104,8 +103,7 @@ export default function PostCard({
           <div className="min-w-0">
             <div className="text-sm font-medium flex items-center gap-1 flex-wrap">
                 {authorName}
-                <RoleBadge role={post.author.role} />
-                <TierBadge tier={post.author.tier} />
+                <MemberBadge role={post.author.role} tier={post.author.tier} />
               </div>
             <div className="text-xs text-neutral-500">{timeAgo(post.created_at)}</div>
           </div>

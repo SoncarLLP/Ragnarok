@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import AccountNav from "./AccountNav";
 import LogoutButton from "./LogoutButton";
 import NavSidebar from "@/components/NavSidebar";
+import MemberBadge from "@/components/MemberBadge";
 
 export default async function AccountLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient();
@@ -15,7 +16,7 @@ export default async function AccountLayout({ children }: { children: React.Reac
 
   const [{ data: profile }, { count: unreadWarnings }, { count: unreadNotifications }] =
     await Promise.all([
-      supabase.from("profiles").select("full_name, role").eq("id", user.id).single(),
+      supabase.from("profiles").select("full_name, role, tier").eq("id", user.id).single(),
       supabase
         .from("member_warnings")
         .select("id", { count: "exact", head: true })
@@ -51,7 +52,10 @@ export default async function AccountLayout({ children }: { children: React.Reac
                 {totalUnread} notification{totalUnread !== 1 ? "s" : ""}
               </Link>
             )}
-            <span className="text-sm text-neutral-400 hidden sm:block">{displayName}</span>
+            <span className="text-sm text-neutral-400 hidden sm:flex items-center gap-1.5">
+              {displayName}
+              <MemberBadge role={profile?.role} tier={profile?.tier} />
+            </span>
             <LogoutButton />
             <NavSidebar role={profile?.role} />
           </div>
