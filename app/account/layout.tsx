@@ -14,20 +14,29 @@ export default async function AccountLayout({ children }: { children: React.Reac
 
   if (!user) redirect("/auth/login");
 
-  const [{ data: profile }, { count: unreadWarnings }, { count: unreadNotifications }] =
-    await Promise.all([
-      supabase.from("profiles").select("full_name, role, tier").eq("id", user.id).single(),
-      supabase
-        .from("member_warnings")
-        .select("id", { count: "exact", head: true })
-        .eq("user_id", user.id)
-        .is("read_at", null),
-      supabase
-        .from("notifications")
-        .select("id", { count: "exact", head: true })
-        .eq("user_id", user.id)
-        .is("read_at", null),
-    ]);
+  const [
+    { data: profile },
+    { count: unreadWarnings },
+    { count: unreadNotifications },
+    { count: pendingFollowRequests },
+  ] = await Promise.all([
+    supabase.from("profiles").select("full_name, role, tier").eq("id", user.id).single(),
+    supabase
+      .from("member_warnings")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", user.id)
+      .is("read_at", null),
+    supabase
+      .from("notifications")
+      .select("id", { count: "exact", head: true })
+      .eq("user_id", user.id)
+      .is("read_at", null),
+    supabase
+      .from("follow_requests")
+      .select("id", { count: "exact", head: true })
+      .eq("target_id", user.id)
+      .eq("status", "pending"),
+  ]);
 
   const totalUnread = (unreadWarnings ?? 0) + (unreadNotifications ?? 0);
 
@@ -43,7 +52,7 @@ export default async function AccountLayout({ children }: { children: React.Reac
             SONCAR
           </Link>
           <div className="flex items-center gap-4">
-            {(totalUnread) > 0 && (
+            {totalUnread > 0 && (
               <Link
                 href="/account/notifications"
                 className="flex items-center gap-1.5 text-sm text-amber-300 hover:text-amber-200"
@@ -66,13 +75,21 @@ export default async function AccountLayout({ children }: { children: React.Reac
       <div className="mx-auto max-w-7xl px-4 py-8">
         {/* Mobile nav rendered above content */}
         <div className="md:hidden mb-2">
-          <AccountNav unreadWarnings={totalUnread} role={profile?.role} />
+          <AccountNav
+            unreadWarnings={totalUnread}
+            pendingFollowRequests={pendingFollowRequests ?? 0}
+            role={profile?.role}
+          />
         </div>
 
         <div className="flex gap-8">
           {/* Desktop sidebar */}
           <div className="hidden md:block">
-            <AccountNav unreadWarnings={totalUnread} role={profile?.role} />
+            <AccountNav
+              unreadWarnings={totalUnread}
+              pendingFollowRequests={pendingFollowRequests ?? 0}
+              role={profile?.role}
+            />
           </div>
 
           {/* Page content */}

@@ -37,28 +37,32 @@ export default async function CommunityPage(props: unknown) {
 
   const { data: rawPosts, error: postsError } = await query;
 
-  // Current user's reactions + follows
+  // Current user's reactions, follows, blocks
   let userReactionsMap = new Map<string, string>(); // post_id → emoji
   let followedIds = new Set<string>();
+  let blockedByMeIds = new Set<string>();
   let isAdmin = false;
   let userRole: string | null = null;
 
   if (user) {
-    const [{ data: reactions }, { data: follows }, { data: myProfile }] = await Promise.all([
-      supabase
-        .from("reactions")
-        .select("post_id, emoji")
-        .eq("user_id", user.id)
-        .not("post_id", "is", null),
-      supabase.from("follows").select("following_id").eq("follower_id", user.id),
-      supabase.from("profiles").select("role").eq("id", user.id).single(),
-    ]);
+    const [{ data: reactions }, { data: follows }, { data: myProfile }, { data: myBlocks }] =
+      await Promise.all([
+        supabase
+          .from("reactions")
+          .select("post_id, emoji")
+          .eq("user_id", user.id)
+          .not("post_id", "is", null),
+        supabase.from("follows").select("following_id").eq("follower_id", user.id),
+        supabase.from("profiles").select("role").eq("id", user.id).single(),
+        supabase.from("blocks").select("blocked_id").eq("blocker_id", user.id),
+      ]);
     userReactionsMap = new Map(
       (reactions ?? [])
         .filter((r) => r.post_id)
         .map((r) => [r.post_id as string, r.emoji])
     );
     followedIds = new Set(follows?.map((f) => f.following_id) ?? []);
+    blockedByMeIds = new Set(myBlocks?.map((b) => b.blocked_id) ?? []);
     userRole = myProfile?.role ?? null;
     isAdmin = userRole === "admin" || userRole === "super_admin";
   }
@@ -66,10 +70,24 @@ export default async function CommunityPage(props: unknown) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const posts: PostData[] = (rawPosts ?? []).map((p: any) => normalisePost(p));
 
+  // Filter based on privacy: admins bypass all filters
+  const visible = isAdmin
+    ? posts
+    : posts.filter((p) => {
+        // Hide posts from users I've blocked
+        if (blockedByMeIds.has(p.user_id)) return false;
+        const mode = p.author.account_mode;
+        // Hide private account posts entirely
+        if (mode === "private") return false;
+        // Hide followers_only posts unless I'm following them
+        if (mode === "followers_only" && !followedIds.has(p.user_id)) return false;
+        return true;
+      });
+
   // Followed users' posts first, then the rest
   const sorted = [
-    ...posts.filter((p) => followedIds.has(p.user_id)),
-    ...posts.filter((p) => !followedIds.has(p.user_id)),
+    ...visible.filter((p) => followedIds.has(p.user_id)),
+    ...visible.filter((p) => !followedIds.has(p.user_id)),
   ];
 
   return (

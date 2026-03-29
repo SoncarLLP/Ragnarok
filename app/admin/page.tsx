@@ -4,6 +4,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { products } from "@/lib/products";
 import AdminTabs from "./AdminTabs";
 import type { FlagRecord, MemberRecord, WarningRecord } from "./AdminTabs";
+import type { BlockAuthRecord, MemberOption } from "./BlockAuthTab";
 
 export default async function AdminPage() {
   if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
@@ -74,6 +75,7 @@ export default async function AdminPage() {
     { data: rawWarnings },
     { data: profileRows },
     authUsersResult,
+    { data: rawBlockAuths },
   ] = await Promise.all([
     admin
       .from("posts")
@@ -100,6 +102,12 @@ export default async function AdminPage() {
       .from("profiles")
       .select("id, member_id, full_name, username, role, status, created_at"),
     admin.auth.admin.listUsers({ perPage: 1000 }),
+    currentUserRole === "super_admin"
+      ? admin
+          .from("admin_block_authorisations")
+          .select("id, super_admin_id, member_id, blocked_admin_id, reason, created_at, revoked_at")
+          .order("created_at", { ascending: false })
+      : Promise.resolve({ data: [] }),
   ]);
 
   // ── Build members list ───────────────────────────────────────
@@ -183,6 +191,54 @@ export default async function AdminPage() {
     };
   });
 
+  // ── Build block auth data (super_admin only) ─────────────────
+  let blockAuths: BlockAuthRecord[] = [];
+  let allMemberOptions: MemberOption[] = [];
+  let adminOptions: MemberOption[] = [];
+
+  if (currentUserRole === "super_admin" && rawBlockAuths && rawBlockAuths.length > 0) {
+    const authProfileIds = [
+      ...new Set([
+        ...rawBlockAuths.map((a) => a.super_admin_id),
+        ...rawBlockAuths.map((a) => a.member_id),
+        ...rawBlockAuths.map((a) => a.blocked_admin_id),
+      ]),
+    ];
+    const { data: authProfiles } = await admin
+      .from("profiles")
+      .select("id, full_name, username")
+      .in("id", authProfileIds);
+    const apMap: Record<string, { full_name: string | null; username: string | null }> = {};
+    for (const ap of authProfiles ?? []) apMap[ap.id] = ap;
+
+    blockAuths = rawBlockAuths.map((a) => {
+      const m = apMap[a.member_id];
+      const ba = apMap[a.blocked_admin_id];
+      const sa = apMap[a.super_admin_id];
+      return {
+        id: a.id,
+        member_name: m?.full_name || m?.username || "Unknown",
+        member_username: m?.username ?? null,
+        blocked_admin_name: ba?.full_name || ba?.username || "Unknown",
+        blocked_admin_username: ba?.username ?? null,
+        super_admin_name: sa?.full_name || sa?.username || "Super Admin",
+        reason: a.reason ?? null,
+        created_at: a.created_at,
+        revoked_at: a.revoked_at ?? null,
+      };
+    });
+  }
+
+  if (currentUserRole === "super_admin") {
+    allMemberOptions = (profileRows ?? []).map((p) => ({
+      id: p.id,
+      full_name: p.full_name ?? null,
+      username: p.username ?? null,
+      role: p.role ?? "member",
+    }));
+    adminOptions = allMemberOptions.filter((m) => m.role === "admin");
+  }
+
   return (
     <main className="min-h-screen bg-neutral-950 text-neutral-100">
       <div className="mx-auto max-w-5xl px-4 py-10 space-y-12">
@@ -242,6 +298,9 @@ export default async function AdminPage() {
             posts={rawPosts ?? []}
             comments={rawComments ?? []}
             flags={flags}
+            blockAuths={blockAuths}
+            allMemberOptions={allMemberOptions}
+            adminOptions={adminOptions}
             members={members}
             warnings={warnings}
           />

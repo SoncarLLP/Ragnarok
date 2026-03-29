@@ -6,6 +6,8 @@ import FlaggedTab from "./FlaggedTab";
 import MembersTab from "./MembersTab";
 import BannedTab from "./BannedTab";
 import WarningsLog from "./WarningsLog";
+import BlockAuthTab from "./BlockAuthTab";
+import type { BlockAuthRecord, MemberOption } from "./BlockAuthTab";
 
 type Post = {
   id: string; type: string; content: string | null; image_url: string | null;
@@ -38,20 +40,28 @@ type Props = {
   flags: FlagRecord[];
   members: MemberRecord[];
   warnings: WarningRecord[];
+  blockAuths?: BlockAuthRecord[];
+  allMemberOptions?: MemberOption[];
+  adminOptions?: MemberOption[];
 };
 
-const TABS = [
+const BASE_TABS = [
   { key: "moderation", label: "Moderation" },
   { key: "flagged",    label: "Flagged" },
   { key: "members",    label: "Members" },
   { key: "banned",     label: "Banned" },
   { key: "warnings",   label: "Warnings" },
 ];
+const SUPER_ADMIN_TABS = [
+  ...BASE_TABS,
+  { key: "block_auth", label: "Block Auth" },
+];
 
-export default function AdminTabs({ currentUserRole, posts, comments, flags, members, warnings }: Props) {
+export default function AdminTabs({ currentUserRole, posts, comments, flags, members, warnings, blockAuths = [], allMemberOptions = [], adminOptions = [] }: Props) {
   const [active, setActive] = useState("moderation");
 
   const banned = members.filter((m) => m.status === "banned");
+  const TABS = currentUserRole === "super_admin" ? SUPER_ADMIN_TABS : BASE_TABS;
 
   return (
     <div>
@@ -100,6 +110,13 @@ export default function AdminTabs({ currentUserRole, posts, comments, flags, mem
       )}
       {active === "warnings" && (
         <WarningsLog warnings={warnings} />
+      )}
+      {active === "block_auth" && currentUserRole === "super_admin" && (
+        <BlockAuthTab
+          auths={blockAuths}
+          members={allMemberOptions}
+          admins={adminOptions}
+        />
       )}
     </div>
   );

@@ -9,13 +9,16 @@ const baseLinks = [
   { href: "/account/orders",        label: "Orders" },
   { href: "/account/rewards",       label: "Rewards" },
   { href: "/account/notifications", label: "Notifications" },
+  { href: "/account/privacy",       label: "Privacy & Safety" },
 ];
 
 export default function AccountNav({
-  unreadWarnings = 0, // now counts warnings + mention notifications combined
+  unreadWarnings = 0,
+  pendingFollowRequests = 0,
   role,
 }: {
   unreadWarnings?: number;
+  pendingFollowRequests?: number;
   role?: string | null;
 }) {
   const path = usePathname();
@@ -24,17 +27,21 @@ export default function AccountNav({
   const links = isAdmin
     ? [
         ...baseLinks,
+        { href: "/account/follow-requests", label: "Follow Requests" },
         {
           href: "/admin",
           label: role === "super_admin" ? "Admin Panel 👑" : "Admin Panel 🛡️",
         },
       ]
-    : baseLinks;
+    : [
+        ...baseLinks,
+        { href: "/account/follow-requests", label: "Follow Requests" },
+      ];
 
   return (
     <>
       {/* Desktop sidebar */}
-      <nav className="hidden md:flex flex-col gap-1 w-44 shrink-0 pt-1">
+      <nav className="hidden md:flex flex-col gap-1 w-48 shrink-0 pt-1">
         {links.map((link) => (
           <Link
             key={link.href}
@@ -49,6 +56,11 @@ export default function AccountNav({
             {link.href === "/account/notifications" && unreadWarnings > 0 && (
               <span className="ml-2 min-w-[1.25rem] h-5 px-1 rounded-full bg-amber-400 text-neutral-950 text-xs font-semibold flex items-center justify-center">
                 {unreadWarnings}
+              </span>
+            )}
+            {link.href === "/account/follow-requests" && pendingFollowRequests > 0 && (
+              <span className="ml-2 min-w-[1.25rem] h-5 px-1 rounded-full bg-violet-400 text-neutral-950 text-xs font-semibold flex items-center justify-center">
+                {pendingFollowRequests}
               </span>
             )}
           </Link>
@@ -70,6 +82,9 @@ export default function AccountNav({
             {link.label}
             {link.href === "/account/notifications" && unreadWarnings > 0 && (
               <span className="w-2 h-2 rounded-full bg-amber-400 shrink-0" />
+            )}
+            {link.href === "/account/follow-requests" && pendingFollowRequests > 0 && (
+              <span className="w-2 h-2 rounded-full bg-violet-400 shrink-0" />
             )}
           </Link>
         ))}

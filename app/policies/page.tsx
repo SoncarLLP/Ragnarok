@@ -1,7 +1,7 @@
 import Link from "next/link";
 import NavWrapper from "@/components/NavWrapper";
 
-const LAST_UPDATED = "28 March 2026";
+const LAST_UPDATED = "29 March 2026";
 
 function Section({
   id,
@@ -172,8 +172,20 @@ export default function PoliciesPage() {
               </li>
               <li>
                 <strong>Account and activity data:</strong> login history, loyalty points
-                balance and transaction history, community posts, comments, likes, and follow
-                relationships.
+                balance and transaction history, community posts, comments, reactions, follow
+                relationships, block relationships, follow requests, and notification history.
+              </li>
+              <li>
+                <strong>Extended profile data (optional, all private by default):</strong> gender
+                identity, pronouns, location (city/country), date of birth (used solely to
+                calculate your age — your date of birth is never displayed publicly), nationality,
+                and personal website URL. These fields are entirely optional. You control who can
+                see each field via your Privacy &amp; Safety settings.
+              </li>
+              <li>
+                <strong>Privacy and safety settings:</strong> your chosen account mode (public,
+                followers-only, or private), interaction preferences (who can comment, react,
+                follow, or share your content), and profile visibility settings.
               </li>
               <li>
                 <strong>Technical data:</strong> IP address, browser type and version, device
@@ -975,8 +987,11 @@ export default function PoliciesPage() {
               { href: "#comm-appeals",   label: "Appeals process" },
               { href: "#comm-removal",   label: "Content removal" },
               { href: "#comm-ip",        label: "Intellectual property" },
-              { href: "#comm-mentions",  label: "Member mentions (@mentions)" },
-              { href: "#comm-sharing",   label: "Social sharing" },
+              { href: "#comm-mentions",    label: "Member mentions (@mentions)" },
+              { href: "#comm-sharing",     label: "Social sharing" },
+              { href: "#comm-privacy",     label: "Account privacy modes" },
+              { href: "#comm-blocks",      label: "Blocking members" },
+              { href: "#comm-follow-req",  label: "Follow requests" },
             ]} />
 
             <H3 id="comm-purpose">5.1 Purpose of the Community</H3>
@@ -1197,6 +1212,94 @@ export default function PoliciesPage() {
               remain responsible for ensuring the content complies with these guidelines and the
               terms of service of the platform you share to.
             </P>
+
+            <H3 id="comm-privacy">5.12 Account Privacy Modes</H3>
+            <P>
+              Every SONCAR member can choose one of three account modes from their{" "}
+              <strong>Privacy &amp; Safety</strong> settings (accessible at{" "}
+              <strong>/account/privacy</strong>):
+            </P>
+            <UL>
+              <li>
+                <strong>Public (default):</strong> your profile is fully visible and searchable
+                by everyone, including non-members.
+              </li>
+              <li>
+                <strong>Followers-only:</strong> your profile is searchable by other members,
+                but your posts, reactions, interactions, and personal details are only visible
+                to approved followers. New follow requests must be manually approved by you.
+                Existing followers retain their access when you switch to this mode.
+              </li>
+              <li>
+                <strong>Private:</strong> your profile is completely hidden from all other
+                members and non-members. You will not appear in any search results. Your profile
+                is only visible to SONCAR admins and super admins for moderation purposes.
+              </li>
+            </UL>
+            <P>
+              In addition to account mode, you can independently control who can comment on your
+              posts, react to your posts, share your posts, send you follow requests, and see
+              your follower and following lists. You can also control the visibility of each
+              section of your profile on an individual basis.
+            </P>
+
+            <H3 id="comm-blocks">5.13 Blocking Members</H3>
+            <P>
+              You can block any other member from your{" "}
+              <strong>Privacy &amp; Safety</strong> settings. When you block a member:
+            </P>
+            <UL>
+              <li>They cannot view your profile.</li>
+              <li>They cannot follow you or send follow requests.</li>
+              <li>They cannot @mention you in posts or comments.</li>
+              <li>They cannot react to, comment on, or otherwise interact with your posts.</li>
+              <li>
+                Any existing follow relationship between you is removed when the block is
+                created.
+              </li>
+            </UL>
+            <P>
+              Members cannot see who has blocked them. Blocks are private and confidential.
+            </P>
+            <P>
+              <strong>Protections for moderation:</strong> SONCAR admins and super admins are
+              immune to blocks by default, as they require the ability to view all content for
+              moderation purposes. A super admin may, in exceptional circumstances, grant a
+              specific member authorisation to block a specific admin if they deem it reasonable.
+              Such authorisations are logged and can be revoked at any time by any super admin.
+              Super admins themselves can never be blocked.
+            </P>
+
+            <H3 id="comm-follow-req">5.14 Follow Requests</H3>
+            <P>
+              When a member&apos;s account is in <strong>Followers-only</strong> mode, other
+              members will see a <strong>Request to Follow</strong> button on their profile
+              instead of the standard Follow button. When a follow request is sent:
+            </P>
+            <UL>
+              <li>
+                The member in followers-only mode receives an in-app notification of the
+                request.
+              </li>
+              <li>
+                They can approve or decline the request from the{" "}
+                <strong>Follow Requests</strong> section in their account.
+              </li>
+              <li>
+                Approved followers gain immediate access to followers-only content.
+              </li>
+              <li>
+                Declined requests are removed silently — the requester receives no notification
+                of a decline.
+              </li>
+              <li>
+                Members in followers-only mode can remove any follower at any time.
+              </li>
+              <li>
+                Members whose follow requests setting is set to <strong>Nobody</strong> do not
+                accept any new follow requests, regardless of account mode.
+              </li>
+            </UL>
           </Section>
 
           {/* ──────────────────────────────────────────────────────
