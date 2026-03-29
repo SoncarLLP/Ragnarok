@@ -1,4 +1,5 @@
 import Link from "next/link";
+import NavWrapper from "@/components/NavWrapper";
 
 const LAST_UPDATED = "28 March 2026";
 
@@ -87,7 +88,10 @@ export default function PoliciesPage() {
           <Link href="/" className="font-semibold tracking-wide">
             SONCAR
           </Link>
-          <span className="text-sm text-neutral-400">Policies &amp; Legal</span>
+          <div className="flex items-center gap-3">
+            <span className="text-sm text-neutral-400">Policies &amp; Legal</span>
+            <NavWrapper />
+          </div>
         </div>
       </header>
 
@@ -1165,7 +1169,7 @@ export default function PoliciesPage() {
                 </thead>
                 <tbody className="divide-y divide-white/5 text-neutral-300">
                   {[
-                    ["Account sign-up (one-time welcome bonus)", "100 points"],
+                    ["Account sign-up (one-time welcome bonus)", "50 points"],
                     ["Purchase (per £1 spent, calculated on the net order value)", "5 points per £1"],
                     ["Community post created", "5 points"],
                     ["Comment posted", "1 point"],

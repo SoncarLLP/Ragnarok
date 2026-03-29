@@ -6,6 +6,7 @@ import type { PostData } from "@/lib/community";
 import PostCard from "@/app/community/PostCard";
 import FollowButton from "@/app/community/FollowButton";
 import RoleBadge from "@/components/RoleBadge";
+import TierBadge from "@/components/TierBadge";
 
 export default async function PublicProfilePage(props: unknown) {
   const rawParams =
@@ -27,7 +28,7 @@ export default async function PublicProfilePage(props: unknown) {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("id, full_name, username, bio, avatar_url, role")
+    .select("id, full_name, username, bio, avatar_url, role, tier, member_id")
     .eq("username", username)
     .single();
 
@@ -108,9 +109,10 @@ export default async function PublicProfilePage(props: unknown) {
 
           <div className="flex-1 min-w-0">
             <div className="flex flex-wrap items-center gap-3">
-              <h1 className="text-2xl font-semibold flex items-center gap-2">
+              <h1 className="text-2xl font-semibold flex items-center gap-2 flex-wrap">
                 {displayName}
                 <RoleBadge role={profile.role} />
+                <TierBadge tier={profile.tier} />
               </h1>
               {isOwnProfile ? (
                 <Link
@@ -133,6 +135,12 @@ export default async function PublicProfilePage(props: unknown) {
             )}
             {profile.bio && (
               <p className="mt-2 text-neutral-300 text-sm leading-relaxed">{profile.bio}</p>
+            )}
+
+            {profile.member_id != null && (
+              <div className="mt-2 text-xs text-neutral-500 font-mono">
+                #{String(profile.member_id).padStart(11, "0")}
+              </div>
             )}
 
             <div className="mt-3 flex gap-6 text-sm">

@@ -47,7 +47,7 @@ export default function SignupPage() {
           <p className="mt-4 text-neutral-400 text-sm leading-relaxed">
             We sent a confirmation link to{" "}
             <span className="text-white">{email}</span>. Click it to
-            activate your account and claim your 100 welcome points.
+            activate your account and claim your 50 welcome points.
           </p>
           <Link href="/" className="mt-8 inline-block text-xs text-neutral-500 hover:text-white">
             ← Back to shop
@@ -66,7 +66,7 @@ export default function SignupPage() {
 
         <h1 className="text-2xl font-semibold text-center">Create account</h1>
         <p className="mt-2 text-neutral-400 text-sm text-center">
-          Join SONCAR and earn 100 welcome points
+          Join SONCAR and earn 50 welcome points
         </p>
 
         <form onSubmit={handleSubmit} className="mt-8 space-y-4">

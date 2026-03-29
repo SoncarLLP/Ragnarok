@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { getEffectiveTier, getNextTier, getTierProgress, TIERS, DIAMOND_TIER } from "@/lib/loyalty";
+import { getTierColor, getNextTier, getTierProgress, tierFromPoints, ALL_TIERS } from "@/lib/loyalty";
+import TierBadge from "@/components/TierBadge";
 
 type LoyaltyEvent = {
   id: string;
@@ -10,9 +11,11 @@ type LoyaltyEvent = {
 };
 
 const REASON_LABELS: Record<string, string> = {
-  signup_bonus: "Welcome bonus",
-  purchase:     "Purchase reward",
-  redemption:   "Points redeemed",
+  signup_bonus:   "Welcome bonus",
+  purchase:       "Purchase reward",
+  post_created:   "Community post",
+  comment_posted: "Comment posted",
+  redemption:     "Points redeemed",
 };
 
 export default async function RewardsPage() {
@@ -22,20 +25,28 @@ export default async function RewardsPage() {
   } = await supabase.auth.getUser();
   if (!user) redirect("/auth/login");
 
-  const [{ data: events }, { data: profile }] = await Promise.all([
+  const [{ data: profile }, { data: events }] = await Promise.all([
+    supabase
+      .from("profiles")
+      .select("cumulative_points, tier, role")
+      .eq("id", user.id)
+      .single(),
     supabase
       .from("loyalty_events")
       .select("*")
       .eq("user_id", user.id)
       .order("created_at", { ascending: false }),
-    supabase.from("profiles").select("role").eq("id", user.id).single(),
   ]);
 
-  const totalPoints = events?.reduce((sum, e) => sum + e.delta, 0) ?? 0;
-  const tier = getEffectiveTier(totalPoints, profile?.role);
-  const nextTier = getNextTier(totalPoints, profile?.role);
-  const progress = getTierProgress(totalPoints);
-  const isDiamond = tier.tier === "Diamond";
+  // Use DB-stored values if the tier-trigger migration has been run;
+  // otherwise fall back to summing events so the page always works.
+  const points = profile?.cumulative_points
+    ?? (events?.reduce((s, e) => s + e.delta, 0) ?? 0);
+  const tierName  = profile?.tier ?? tierFromPoints(points);
+  const tierColor = getTierColor(tierName);
+  const nextTier  = getNextTier(tierName, points);
+  const progress  = getTierProgress(tierName, points);
+  const isDiamond = tierName === "Diamond";
 
   return (
     <div>
@@ -47,22 +58,25 @@ export default async function RewardsPage() {
         <div className="flex items-start justify-between gap-6">
           <div>
             <div className="text-xs text-neutral-500 uppercase tracking-wide mb-1">Tier</div>
-            <div className={`text-3xl font-semibold ${tier.color}`}>{tier.tier}</div>
+            <div className={`text-3xl font-semibold ${tierColor}`}>{tierName}</div>
+            <div className="mt-2">
+              <TierBadge tier={tierName} />
+            </div>
           </div>
           <div className="text-right">
             <div className="text-xs text-neutral-500 uppercase tracking-wide mb-1">Points</div>
-            <div className="text-3xl font-semibold">{totalPoints.toLocaleString()}</div>
+            <div className="text-3xl font-semibold">{points.toLocaleString()}</div>
           </div>
         </div>
 
         {isDiamond ? (
           <div className="mt-4 text-sm text-violet-300">
-            Diamond is the exclusive tier for SONCAR team members.
+            You&apos;ve reached Diamond — the highest tier on SONCAR. 👑
           </div>
         ) : nextTier ? (
           <div className="mt-5">
             <div className="flex justify-between text-xs text-neutral-400 mb-2">
-              <span>{tier.tier}</span>
+              <span>{tierName}</span>
               <span>{nextTier.needed.toLocaleString()} pts to {nextTier.tier}</span>
             </div>
             <div className="w-full bg-white/10 rounded-full h-2">
@@ -72,36 +86,34 @@ export default async function RewardsPage() {
               />
             </div>
           </div>
-        ) : (
-          <div className="mt-4 text-sm text-emerald-400">
-            You&apos;ve reached the highest tier. Thank you for being a SONCAR member!
-          </div>
-        )}
+        ) : null}
       </div>
 
-      {/* Tier grid */}
-      <div className={`mt-6 grid gap-3 ${isDiamond ? "grid-cols-1 sm:grid-cols-5" : "grid-cols-2 sm:grid-cols-4"}`}>
-        {isDiamond && (
-          <div className="rounded-lg border border-violet-400/40 bg-violet-500/10 p-4 text-center">
-            <div className={`font-semibold ${DIAMOND_TIER.color}`}>Diamond</div>
-            <div className="text-xs text-neutral-400 mt-1">Team only</div>
-          </div>
-        )}
-        {TIERS.map((t) => (
-          <div
-            key={t.tier}
-            className={`rounded-lg border p-4 text-center transition ${
-              !isDiamond && t.tier === tier.tier
-                ? "border-amber-400/40 bg-amber-500/10"
-                : "border-white/10 bg-white/5 opacity-40"
-            }`}
-          >
-            <div className={`font-semibold ${t.color}`}>{t.tier}</div>
-            <div className="text-xs text-neutral-400 mt-1">
-              {t.min === 0 ? "0" : t.min.toLocaleString()}+ pts
+      {/* Full 13-tier grid */}
+      <div className="mt-6 grid grid-cols-3 sm:grid-cols-4 gap-2">
+        {ALL_TIERS.map((t) => {
+          const isActive = t.tier === tierName;
+          const isUnlocked = points >= t.min;
+          return (
+            <div
+              key={t.tier}
+              className={`rounded-lg border p-3 text-center transition ${
+                isActive
+                  ? t.tier === "Diamond"
+                    ? "border-violet-400/40 bg-violet-500/10"
+                    : "border-amber-400/40 bg-amber-500/10"
+                  : isUnlocked
+                  ? "border-white/15 bg-white/5"
+                  : "border-white/5 bg-white/5 opacity-35"
+              }`}
+            >
+              <div className={`font-semibold text-xs ${t.color}`}>{t.tier}</div>
+              <div className="text-xs text-neutral-500 mt-0.5">
+                {t.min === 0 ? "0" : t.min.toLocaleString()}+ pts
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {/* How to earn */}
@@ -110,11 +122,19 @@ export default async function RewardsPage() {
         <ul className="space-y-2 text-sm text-neutral-300">
           <li className="flex justify-between">
             <span>Welcome bonus (on sign-up)</span>
-            <span className="text-amber-400 font-medium">100 pts</span>
+            <span className="text-amber-400 font-medium">50 pts</span>
           </li>
           <li className="flex justify-between">
             <span>Every purchase</span>
-            <span className="text-amber-400 font-medium">10 pts / £1</span>
+            <span className="text-amber-400 font-medium">5 pts / £1</span>
+          </li>
+          <li className="flex justify-between">
+            <span>Community post</span>
+            <span className="text-amber-400 font-medium">5 pts</span>
+          </li>
+          <li className="flex justify-between">
+            <span>Comment posted</span>
+            <span className="text-amber-400 font-medium">1 pt</span>
           </li>
         </ul>
       </div>

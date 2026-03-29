@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import RoleBadge from "@/components/RoleBadge";
+import TierBadge from "@/components/TierBadge";
 import type { CommentData } from "@/lib/community";
 
 function timeAgo(date: string) {
@@ -47,7 +48,7 @@ export default function CommentSection({
     const { data: row, error: err } = await supabase
       .from("comments")
       .insert({ post_id: postId, user_id: user.id, content: content.trim() })
-      .select("id, post_id, user_id, content, created_at, profiles!comments_user_id_fkey(full_name, username, avatar_url, role)")
+      .select("id, post_id, user_id, content, created_at, profiles!comments_user_id_fkey(full_name, username, avatar_url, role, tier)")
       .single();
 
     if (err || !row) {
@@ -131,9 +132,10 @@ export default function CommentSection({
                 </Link>
                 <div className="flex-1 bg-white/5 rounded-lg px-3 py-2.5">
                   <div className="flex items-center gap-2 mb-1 flex-wrap">
-                    <Link href={href} className="text-sm font-medium hover:underline flex items-center gap-1">
+                    <Link href={href} className="text-sm font-medium hover:underline flex items-center gap-1 flex-wrap">
                       {name}
                       <RoleBadge role={c.profiles?.role} />
+                      <TierBadge tier={c.profiles?.tier} />
                     </Link>
                     <span className="text-xs text-neutral-500">{timeAgo(c.created_at)}</span>
                   </div>

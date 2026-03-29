@@ -68,7 +68,7 @@ begin
   values (new.id, new.raw_user_meta_data->>'full_name');
 
   insert into public.loyalty_events (user_id, delta, reason)
-  values (new.id, 100, 'signup_bonus');
+  values (new.id, 50, 'signup_bonus');
 
   return new;
 end;

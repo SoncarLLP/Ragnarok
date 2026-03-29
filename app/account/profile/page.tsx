@@ -11,7 +11,7 @@ export default async function ProfilePage() {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("full_name, phone, username, bio, avatar_url")
+    .select("full_name, phone, username, bio, avatar_url, member_id")
     .eq("id", user.id)
     .single();
 
@@ -30,6 +30,15 @@ export default async function ProfilePage() {
             Email address cannot be changed here
           </div>
         </div>
+
+        {profile?.member_id != null && (
+          <div className="rounded-lg border border-white/10 bg-white/5 p-4">
+            <div className="text-xs text-neutral-500 uppercase tracking-wide mb-1">Member ID</div>
+            <div className="font-mono text-sm text-neutral-300">
+              {String(profile.member_id).padStart(11, "0")}
+            </div>
+          </div>
+        )}
 
         {profile?.username && (
           <div className="rounded-lg border border-amber-400/20 bg-amber-500/10 p-4">

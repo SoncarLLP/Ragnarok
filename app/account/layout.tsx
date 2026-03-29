@@ -3,6 +3,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import AccountNav from "./AccountNav";
 import LogoutButton from "./LogoutButton";
+import NavSidebar from "@/components/NavSidebar";
 
 export default async function AccountLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient();
@@ -44,6 +45,7 @@ export default async function AccountLayout({ children }: { children: React.Reac
             )}
             <span className="text-sm text-neutral-400 hidden sm:block">{displayName}</span>
             <LogoutButton />
+            <NavSidebar role={profile?.role} />
           </div>
         </div>
       </header>

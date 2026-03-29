@@ -6,6 +6,7 @@ import { useState } from "react";
 import LikeButton from "./LikeButton";
 import FollowButton from "./FollowButton";
 import RoleBadge from "@/components/RoleBadge";
+import TierBadge from "@/components/TierBadge";
 import type { PostData } from "@/lib/community";
 
 function DeleteButton({ postId, onDeleted }: { postId: string; onDeleted: () => void }) {
@@ -127,9 +128,10 @@ export default function PostCard({
         <Link href={authorHref} className="flex items-center gap-2 min-w-0">
           <Avatar url={post.author.avatar_url} name={authorName} />
           <div className="min-w-0">
-            <div className="text-sm font-medium truncate flex items-center gap-1">
+            <div className="text-sm font-medium flex items-center gap-1 flex-wrap">
                 {authorName}
                 <RoleBadge role={post.author.role} />
+                <TierBadge tier={post.author.tier} />
               </div>
             <div className="text-xs text-neutral-500">{timeAgo(post.created_at)}</div>
           </div>

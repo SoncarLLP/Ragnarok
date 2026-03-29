@@ -15,6 +15,7 @@ export type PostAuthor = {
   username: string | null;
   avatar_url: string | null;
   role?: string | null;
+  tier?: string | null;
 };
 
 export type PostData = {
@@ -78,7 +79,7 @@ export function normalisePost(p: {
 
 export const POST_SELECT = `
   id, user_id, type, content, image_url, ingredients, method, categories, created_at,
-  profiles!posts_user_id_fkey(full_name, username, avatar_url, role),
+  profiles!posts_user_id_fkey(full_name, username, avatar_url, role, tier),
   likes(count),
   comments(count)
 ` as const;

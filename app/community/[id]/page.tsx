@@ -7,6 +7,7 @@ import LikeButton from "../LikeButton";
 import FollowButton from "../FollowButton";
 import CommentSection from "./CommentSection";
 import RoleBadge from "@/components/RoleBadge";
+import TierBadge from "@/components/TierBadge";
 import type { CommentData } from "@/lib/community";
 
 export default async function PostPage(props: unknown) {
@@ -39,7 +40,7 @@ export default async function PostPage(props: unknown) {
 
   const { data: rawComments } = await supabase
     .from("comments")
-    .select("id, post_id, user_id, content, created_at, profiles!comments_user_id_fkey(full_name, username, avatar_url, role)")
+    .select("id, post_id, user_id, content, created_at, profiles!comments_user_id_fkey(full_name, username, avatar_url, role, tier)")
     .eq("post_id", id)
     .order("created_at", { ascending: true });
 
@@ -106,9 +107,10 @@ export default async function PostPage(props: unknown) {
                 </div>
               )}
               <div>
-                <div className="font-medium flex items-center gap-1.5">
+                <div className="font-medium flex items-center gap-1.5 flex-wrap">
                   {authorName}
                   <RoleBadge role={post.author.role} />
+                  <TierBadge tier={post.author.tier} />
                 </div>
                 <div className="text-xs text-neutral-500">
                   {new Date(post.created_at).toLocaleDateString("en-GB", {

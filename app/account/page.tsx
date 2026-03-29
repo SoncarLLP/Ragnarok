@@ -1,8 +1,9 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { getEffectiveTier, getNextTier, getTierProgress } from "@/lib/loyalty";
+import { getTierColor, getNextTier, getTierProgress, tierFromPoints } from "@/lib/loyalty";
 import RoleBadge from "@/components/RoleBadge";
+import TierBadge from "@/components/TierBadge";
 
 function fmtMemberId(id: number | null | undefined) {
   return id != null ? String(id).padStart(11, "0") : null;
@@ -15,14 +16,13 @@ export default async function AccountPage() {
   } = await supabase.auth.getUser();
   if (!user) redirect("/auth/login");
 
-  const [{ data: profile }, { data: pointsData }, { data: recentOrders }] =
+  const [{ data: profile }, { data: recentOrders }] =
     await Promise.all([
       supabase
         .from("profiles")
-        .select("full_name, member_id, role")
+        .select("full_name, member_id, role, cumulative_points, tier")
         .eq("id", user.id)
         .single(),
-      supabase.from("loyalty_events").select("delta").eq("user_id", user.id),
       supabase
         .from("orders")
         .select("id, total_pence, status, created_at")
@@ -31,17 +31,19 @@ export default async function AccountPage() {
         .limit(3),
     ]);
 
-  const totalPoints = pointsData?.reduce((sum, e) => sum + e.delta, 0) ?? 0;
-  const tier = getEffectiveTier(totalPoints, profile?.role);
-  const nextTier = getNextTier(totalPoints, profile?.role);
-  const progress = getTierProgress(totalPoints);
+  // Use DB-stored tier if available; fall back to JS calculation for unmigrated DBs
+  const points    = profile?.cumulative_points ?? 0;
+  const tierName  = profile?.tier ?? tierFromPoints(points);
+  const tierColor = getTierColor(tierName);
+  const nextTier  = getNextTier(tierName, points);
+  const progress  = getTierProgress(tierName, points);
   const displayName = profile?.full_name || user.email?.split("@")[0] || "Member";
   const memberId = fmtMemberId(profile?.member_id);
 
   return (
     <div>
       <div className="flex items-start justify-between gap-4 mb-6">
-        <h1 className="text-2xl font-semibold flex items-center gap-2">
+        <h1 className="text-2xl font-semibold flex items-center gap-2 flex-wrap">
           Welcome back, {displayName}
           <RoleBadge role={profile?.role} />
         </h1>
@@ -58,12 +60,12 @@ export default async function AccountPage() {
         {/* Points */}
         <div className="rounded-xl border border-white/10 bg-white/5 p-5">
           <div className="text-sm text-neutral-400">Loyalty Points</div>
-          <div className="mt-1 text-3xl font-semibold">{totalPoints.toLocaleString()}</div>
+          <div className="mt-1 text-3xl font-semibold">{points.toLocaleString()}</div>
           {nextTier ? (
             <div className="mt-3">
               <div className="flex justify-between text-xs text-neutral-500 mb-1.5">
-                <span>{tier.tier}</span>
-                <span>{nextTier.needed} pts to {nextTier.tier}</span>
+                <span>{tierName}</span>
+                <span>{nextTier.needed.toLocaleString()} pts to {nextTier.tier}</span>
               </div>
               <div className="w-full bg-white/10 rounded-full h-1.5">
                 <div
@@ -80,7 +82,10 @@ export default async function AccountPage() {
         {/* Tier */}
         <div className="rounded-xl border border-white/10 bg-white/5 p-5">
           <div className="text-sm text-neutral-400">Current Tier</div>
-          <div className={`mt-1 text-3xl font-semibold ${tier.color}`}>{tier.tier}</div>
+          <div className={`mt-1 text-3xl font-semibold ${tierColor}`}>{tierName}</div>
+          <div className="mt-2">
+            <TierBadge tier={tierName} />
+          </div>
           <Link
             href="/account/rewards"
             className="mt-3 inline-block text-xs text-neutral-500 hover:text-white"
