@@ -67,17 +67,20 @@ export default async function PublicProfilePage(props: unknown) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const posts: PostData[] = (rawPosts ?? []).map((p: any) => normalisePost(p));
 
-  let likedIds = new Set<string>();
+  let userReactionsMap = new Map<string, string>(); // post_id → emoji
   if (currentUser && posts.length > 0) {
-    const { data: likes } = await supabase
-      .from("likes")
-      .select("post_id")
+    const { data: reactions } = await supabase
+      .from("reactions")
+      .select("post_id, emoji")
       .eq("user_id", currentUser.id)
+      .not("post_id", "is", null)
       .in(
         "post_id",
         posts.map((p) => p.id)
       );
-    likedIds = new Set(likes?.map((l) => l.post_id) ?? []);
+    userReactionsMap = new Map(
+      (reactions ?? []).filter((r) => r.post_id).map((r) => [r.post_id as string, r.emoji])
+    );
   }
 
   const displayName = profile.full_name || profile.username || "Member";
@@ -169,7 +172,7 @@ export default async function PublicProfilePage(props: unknown) {
               <div key={post.id} className="break-inside-avoid mb-4">
                 <PostCard
                   post={post}
-                  isLiked={likedIds.has(post.id)}
+                  userReaction={userReactionsMap.get(post.id) ?? null}
                   isFollowing={false}
                   currentUserId={currentUser?.id ?? null}
                 />

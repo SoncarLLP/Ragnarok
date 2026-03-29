@@ -3,7 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { createClient } from "@/lib/supabase/server";
 import { normalisePost, POST_SELECT } from "@/lib/community";
-import LikeButton from "../LikeButton";
+import ReactionButton from "../ReactionButton";
 import FollowButton from "../FollowButton";
 import CommentSection from "./CommentSection";
 import RoleBadge from "@/components/RoleBadge";
@@ -38,30 +38,25 @@ export default async function PostPage(props: unknown) {
 
   const post = normalisePost(raw);
 
+  // Fetch comments with their reactions embedded
   const { data: rawComments } = await supabase
     .from("comments")
-    .select("id, post_id, user_id, content, created_at, profiles!comments_user_id_fkey(full_name, username, avatar_url, role, tier)")
+    .select(
+      "id, post_id, user_id, content, created_at, profiles!comments_user_id_fkey(full_name, username, avatar_url, role, tier), reactions!comment_id(emoji)"
+    )
     .eq("post_id", id)
     .order("created_at", { ascending: true });
 
-  const comments: CommentData[] = (rawComments ?? []).map((c) => ({
-    id: c.id,
-    post_id: c.post_id,
-    user_id: c.user_id,
-    content: c.content,
-    created_at: c.created_at,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    profiles: Array.isArray(c.profiles) ? (c.profiles as any)[0] : c.profiles,
-  }));
-
-  let isLiked = false;
+  let userPostReaction: string | null = null;
+  let userCommentReactionsMap = new Map<string, string>(); // comment_id → emoji
   let isFollowing = false;
 
   if (user) {
-    const [{ data: likeRow }, { data: followRow }] = await Promise.all([
+    const commentIds = (rawComments ?? []).map((c) => c.id);
+    const queries: Promise<unknown>[] = [
       supabase
-        .from("likes")
-        .select("post_id")
+        .from("reactions")
+        .select("emoji")
         .eq("post_id", id)
         .eq("user_id", user.id)
         .maybeSingle(),
@@ -71,10 +66,61 @@ export default async function PostPage(props: unknown) {
         .eq("follower_id", user.id)
         .eq("following_id", post.user_id)
         .maybeSingle(),
-    ]);
-    isLiked = !!likeRow;
+    ];
+    if (commentIds.length > 0) {
+      queries.push(
+        supabase
+          .from("reactions")
+          .select("comment_id, emoji")
+          .eq("user_id", user.id)
+          .not("comment_id", "is", null)
+          .in("comment_id", commentIds)
+      );
+    }
+
+    const [postReactionRes, followRes, commentReactionRes] = await Promise.all(queries);
+    const { data: prRow } = postReactionRes as { data: { emoji: string } | null };
+    const { data: followRow } = followRes as { data: { follower_id: string } | null };
+    userPostReaction = prRow?.emoji ?? null;
     isFollowing = !!followRow;
+
+    if (commentReactionRes) {
+      const { data: crRows } = commentReactionRes as {
+        data: { comment_id: string; emoji: string }[] | null;
+      };
+      userCommentReactionsMap = new Map(
+        (crRows ?? []).map((r) => [r.comment_id, r.emoji])
+      );
+    }
   }
+
+  // Build comment reaction summaries
+  function computeTopReactions(reactions: { emoji: string }[] | null, n = 3): string[] {
+    if (!reactions || reactions.length === 0) return [];
+    const counts: Record<string, number> = {};
+    for (const r of reactions) counts[r.emoji] = (counts[r.emoji] ?? 0) + 1;
+    return Object.entries(counts)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, n)
+      .map(([emoji]) => emoji);
+  }
+
+  const comments: CommentData[] = (rawComments ?? []).map((c) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const reactionRows = (c as any).reactions as { emoji: string }[] | null ?? [];
+    return {
+      id: c.id,
+      post_id: c.post_id,
+      user_id: c.user_id,
+      content: c.content,
+      created_at: c.created_at,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      profiles: Array.isArray(c.profiles) ? (c.profiles as any)[0] : c.profiles,
+      reaction_count: reactionRows.length,
+      top_reactions: computeTopReactions(reactionRows),
+      user_reaction: userCommentReactionsMap.get(c.id) ?? null,
+    };
+  });
 
   const authorHref = post.author.username
     ? `/account/profile/${post.author.username}`
@@ -188,12 +234,13 @@ export default async function PostPage(props: unknown) {
             )}
           </div>
 
-          {/* Likes */}
+          {/* Reactions */}
           <div className="px-6 py-4 border-t border-white/10">
-            <LikeButton
+            <ReactionButton
               postId={post.id}
-              initialCount={post.like_count}
-              initialLiked={isLiked}
+              initialCount={post.reaction_count}
+              initialReaction={userPostReaction}
+              topReactions={post.top_reactions}
               currentUserId={user?.id ?? null}
             />
           </div>

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
-import LikeButton from "./LikeButton";
+import ReactionButton from "./ReactionButton";
 import FollowButton from "./FollowButton";
 import RoleBadge from "@/components/RoleBadge";
 import TierBadge from "@/components/TierBadge";
@@ -95,13 +95,13 @@ function timeAgo(date: string) {
 
 export default function PostCard({
   post,
-  isLiked,
+  userReaction,
   isFollowing,
   currentUserId,
   isAdmin = false,
 }: {
   post: PostData;
-  isLiked: boolean;
+  userReaction: string | null;
   isFollowing: boolean;
   currentUserId: string | null;
   isAdmin?: boolean;
@@ -191,10 +191,11 @@ export default function PostCard({
 
       {/* Footer */}
       <div className="px-4 py-3 mt-3 border-t border-white/5 flex items-center gap-4">
-        <LikeButton
+        <ReactionButton
           postId={post.id}
-          initialCount={post.like_count}
-          initialLiked={isLiked}
+          initialCount={post.reaction_count}
+          initialReaction={userReaction}
+          topReactions={post.top_reactions}
           currentUserId={currentUserId}
         />
 

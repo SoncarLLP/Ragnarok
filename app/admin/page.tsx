@@ -121,7 +121,7 @@ export default async function AdminPage() {
 
   // ── Build flagged posts list ─────────────────────────────────
   const flagPostIds = rawFlags?.map((f) => f.post_id) ?? [];
-  let flagPostMap: Record<string, { type: string; content: string | null; image_url: string | null; profiles: unknown }> = {};
+  const flagPostMap: Record<string, { type: string; content: string | null; image_url: string | null; profiles: unknown }> = {};
   if (flagPostIds.length > 0) {
     const { data: fps } = await admin
       .from("posts")
@@ -158,7 +158,7 @@ export default async function AdminPage() {
       ...(rawWarnings?.map((w) => w.sent_by).filter(Boolean) ?? []),
     ]),
   ];
-  let wpMap: Record<string, { full_name: string | null; username: string | null; member_id: number | null }> = {};
+  const wpMap: Record<string, { full_name: string | null; username: string | null; member_id: number | null }> = {};
   if (warningProfileIds.length > 0) {
     const { data: wProfiles } = await admin
       .from("profiles")

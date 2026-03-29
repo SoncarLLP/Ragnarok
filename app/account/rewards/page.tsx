@@ -11,11 +11,11 @@ type LoyaltyEvent = {
 };
 
 const REASON_LABELS: Record<string, string> = {
-  signup_bonus:   "Welcome bonus",
-  purchase:       "Purchase reward",
-  post_created:   "Community post",
-  comment_posted: "Comment posted",
-  redemption:     "Points redeemed",
+  signup_bonus:                "Welcome bonus",
+  purchase:                    "Purchase reward",
+  redemption:                  "Points redeemed",
+  reaction_milestone_post:     "Post reaction milestone",
+  reaction_milestone_comment:  "Comment reaction milestone",
 };
 
 export default async function RewardsPage() {
@@ -129,11 +129,11 @@ export default async function RewardsPage() {
             <span className="text-amber-400 font-medium">5 pts / £1</span>
           </li>
           <li className="flex justify-between">
-            <span>Community post</span>
-            <span className="text-amber-400 font-medium">5 pts</span>
+            <span>Post receives 250 reactions (per milestone)</span>
+            <span className="text-amber-400 font-medium">2 pts</span>
           </li>
           <li className="flex justify-between">
-            <span>Comment posted</span>
+            <span>Comment receives 100 reactions (per milestone)</span>
             <span className="text-amber-400 font-medium">1 pt</span>
           </li>
         </ul>

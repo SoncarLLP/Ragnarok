@@ -1171,8 +1171,8 @@ export default function PoliciesPage() {
                   {[
                     ["Account sign-up (one-time welcome bonus)", "50 points"],
                     ["Purchase (per £1 spent, calculated on the net order value)", "5 points per £1"],
-                    ["Community post created", "5 points"],
-                    ["Comment posted", "1 point"],
+                    ["Post receives 250 reactions (awarded per 250-reaction milestone)", "2 points"],
+                    ["Comment receives 100 reactions (awarded per 100-reaction milestone)", "1 point"],
                   ].map(([activity, points]) => (
                     <tr key={activity}>
                       <td className="py-2 pr-4">{activity}</td>

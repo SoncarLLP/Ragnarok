@@ -37,18 +37,26 @@ export default async function CommunityPage(props: unknown) {
 
   const { data: rawPosts, error: postsError } = await query;
 
-  // Current user's likes + follows
-  let likedIds = new Set<string>();
+  // Current user's reactions + follows
+  let userReactionsMap = new Map<string, string>(); // post_id → emoji
   let followedIds = new Set<string>();
   let isAdmin = false;
 
   if (user) {
-    const [{ data: likes }, { data: follows }, { data: myProfile }] = await Promise.all([
-      supabase.from("likes").select("post_id").eq("user_id", user.id),
+    const [{ data: reactions }, { data: follows }, { data: myProfile }] = await Promise.all([
+      supabase
+        .from("reactions")
+        .select("post_id, emoji")
+        .eq("user_id", user.id)
+        .not("post_id", "is", null),
       supabase.from("follows").select("following_id").eq("follower_id", user.id),
       supabase.from("profiles").select("role").eq("id", user.id).single(),
     ]);
-    likedIds = new Set(likes?.map((l) => l.post_id) ?? []);
+    userReactionsMap = new Map(
+      (reactions ?? [])
+        .filter((r) => r.post_id)
+        .map((r) => [r.post_id as string, r.emoji])
+    );
     followedIds = new Set(follows?.map((f) => f.following_id) ?? []);
     isAdmin = myProfile?.role === "admin" || myProfile?.role === "super_admin";
   }
@@ -134,7 +142,7 @@ export default async function CommunityPage(props: unknown) {
               <div key={post.id} className="break-inside-avoid mb-4">
                 <PostCard
                   post={post}
-                  isLiked={likedIds.has(post.id)}
+                  userReaction={userReactionsMap.get(post.id) ?? null}
                   isFollowing={followedIds.has(post.user_id)}
                   currentUserId={user?.id ?? null}
                   isAdmin={isAdmin}
