@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { getTierColor, getNextTier, getTierProgress, tierFromPoints, ALL_TIERS } from "@/lib/loyalty";
+import { formatTierName, getTierColor, getNextTier, getTierProgress, tierFromPoints, ALL_TIERS } from "@/lib/loyalty";
 import TierBadge from "@/components/TierBadge";
 
 type LoyaltyEvent = {
@@ -42,7 +42,7 @@ export default async function RewardsPage() {
   // otherwise fall back to summing events so the page always works.
   const points = profile?.cumulative_points
     ?? (events?.reduce((s, e) => s + e.delta, 0) ?? 0);
-  const tierName  = profile?.tier ?? tierFromPoints(points);
+  const tierName  = formatTierName(profile?.tier ?? tierFromPoints(points));
   const tierColor = getTierColor(tierName);
   const nextTier  = getNextTier(tierName, points);
   const progress  = getTierProgress(tierName, points);
@@ -77,7 +77,7 @@ export default async function RewardsPage() {
           <div className="mt-5">
             <div className="flex justify-between text-xs text-neutral-400 mb-2">
               <span>{tierName}</span>
-              <span>{nextTier.needed.toLocaleString()} pts to {nextTier.tier}</span>
+              <span>{nextTier.needed.toLocaleString()} pts to {formatTierName(nextTier.tier)}</span>
             </div>
             <div className="w-full bg-white/10 rounded-full h-2">
               <div

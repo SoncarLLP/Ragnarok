@@ -1,3 +1,19 @@
+/**
+ * Normalises a tier value from the database to a human-readable display name.
+ * Handles both snake_case DB values ("bronze_1") and already-formatted strings
+ * ("Bronze 1", "Diamond") so callers don't need to know the storage format.
+ */
+export function formatTierName(tier: string | null | undefined): string {
+  if (!tier) return "";
+  // Already properly formatted (starts with uppercase, no underscores)
+  if (/^[A-Z]/.test(tier) && !tier.includes("_")) return tier;
+  // Convert snake_case → Title Case with space: "bronze_1" → "Bronze 1"
+  return tier
+    .split("_")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+}
+
 export const TIERS: { tier: string; min: number; color: string }[] = [
   { tier: "Bronze 1",   min: 0,    color: "text-amber-700" },
   { tier: "Bronze 2",   min: 250,  color: "text-amber-700" },

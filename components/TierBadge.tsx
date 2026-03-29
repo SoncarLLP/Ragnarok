@@ -1,74 +1,87 @@
+import { formatTierName } from "@/lib/loyalty";
+
 /**
- * TierBadge — shows a visual flair for each of the 13 membership tiers.
- * Style escalates in visual weight as tiers increase.
+ * TierBadge — progressively more impressive visual flair for each of the 13
+ * membership tiers. Style and animation intensity escalates with tier level.
+ *
+ * Accepts raw DB values ("bronze_1") or formatted strings ("Bronze 1") —
+ * formatTierName normalises before any comparison.
  */
 export default function TierBadge({ tier }: { tier?: string | null }) {
   if (!tier) return null;
+  const name = formatTierName(tier);
+  if (!name) return null;
 
-  // Diamond — animated glowing badge with diamond symbol
-  if (tier === "Diamond") {
+  // ── Diamond ────────────────────────────────────────────────────────────────
+  // Prismatic rainbow text, cycling multi-colour glow, prominent size
+  if (name === "Diamond") {
     return (
       <span
         title="Diamond"
-        className="inline-flex items-center gap-1 text-[10px] font-semibold px-1.5 py-0.5 rounded-full
-          bg-violet-500/20 text-violet-300 border border-violet-400/40
-          shadow-[0_0_8px_rgba(167,139,250,0.4)]
-          animate-pulse"
-        style={{ animationDuration: "2.5s" }}
+        aria-label="Diamond tier"
+        className="tier-badge-diamond inline-flex items-center gap-1.5 text-[11px] font-bold px-2.5 py-1 rounded-full border border-violet-400/55 shrink-0"
+        style={{ background: "rgba(109,40,217,0.12)" }}
       >
-        💎 {tier}
+        💎{" "}
+        <span className="tier-text-rainbow">{name}</span>
       </span>
     );
   }
 
-  // Platinum 1–3 — full banner, ice blue
-  if (tier.startsWith("Platinum")) {
+  // ── Platinum 1–3 ───────────────────────────────────────────────────────────
+  // Ice-blue banner with sweeping shimmer, larger than Gold
+  if (name.startsWith("Platinum")) {
     return (
       <span
-        title={tier}
-        className="inline-flex items-center gap-1 text-[10px] font-semibold px-1.5 py-0.5 rounded-full
-          bg-cyan-500/15 text-cyan-300 border border-cyan-400/30"
+        title={name}
+        aria-label={`${name} tier`}
+        className="tier-badge-platinum inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full border border-cyan-400/40 text-cyan-200 shrink-0"
       >
-        ◆ {tier}
+        ◆ {name}
       </span>
     );
   }
 
-  // Gold 1–3 — rich gold badge
-  if (tier.startsWith("Gold")) {
+  // ── Gold 1–3 ───────────────────────────────────────────────────────────────
+  // Warm gold text, pulsing outer glow animation
+  if (name.startsWith("Gold")) {
     return (
       <span
-        title={tier}
-        className="inline-flex items-center gap-1 text-[10px] font-semibold px-1.5 py-0.5 rounded-full
-          bg-amber-400/15 text-amber-300 border border-amber-400/30"
+        title={name}
+        aria-label={`${name} tier`}
+        className="tier-badge-gold inline-flex items-center gap-1 text-[10px] font-semibold px-1.5 py-0.5 rounded-full border border-amber-400/45 text-amber-300 shrink-0"
+        style={{ background: "rgba(251,191,36,0.1)" }}
       >
-        ★ {tier}
+        ★ {name}
       </span>
     );
   }
 
-  // Silver 1–3 — cool silver badge
-  if (tier.startsWith("Silver")) {
+  // ── Silver 1–3 ─────────────────────────────────────────────────────────────
+  // Cool silver/slate text, subtle sweeping shimmer on the badge background
+  if (name.startsWith("Silver")) {
     return (
       <span
-        title={tier}
-        className="inline-flex items-center gap-1 text-[10px] font-semibold px-1.5 py-0.5 rounded-full
-          bg-neutral-400/10 text-neutral-300 border border-neutral-400/25"
+        title={name}
+        aria-label={`${name} tier`}
+        className="tier-badge-silver inline-flex items-center gap-1 text-[10px] font-semibold px-1.5 py-0.5 rounded-full border border-slate-400/25 text-slate-300 shrink-0"
       >
-        ● {tier}
+        ● {name}
       </span>
     );
   }
 
-  // Bronze 1–3 — warm copper tone, smaller/subtler
-  if (tier.startsWith("Bronze")) {
+  // ── Bronze 1–3 ─────────────────────────────────────────────────────────────
+  // Understated warm copper, no animation, slightly smaller and squarer
+  if (name.startsWith("Bronze")) {
     return (
       <span
-        title={tier}
-        className="inline-flex items-center gap-1 text-[10px] font-medium px-1 py-0.5 rounded
-          text-amber-700/90 bg-amber-900/20 border border-amber-800/30"
+        title={name}
+        aria-label={`${name} tier`}
+        className="inline-flex items-center gap-1 text-[10px] font-medium px-1 py-0.5 rounded border border-amber-800/35 text-amber-700/90 shrink-0"
+        style={{ background: "rgba(120,53,15,0.18)" }}
       >
-        · {tier}
+        · {name}
       </span>
     );
   }

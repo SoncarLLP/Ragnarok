@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { getTierColor, getNextTier, getTierProgress, tierFromPoints } from "@/lib/loyalty";
+import { formatTierName, getTierColor, getNextTier, getTierProgress, tierFromPoints } from "@/lib/loyalty";
 import MemberBadge from "@/components/MemberBadge";
 import TierBadge from "@/components/TierBadge";
 
@@ -33,7 +33,7 @@ export default async function AccountPage() {
 
   // Use DB-stored tier if available; fall back to JS calculation for unmigrated DBs
   const points    = profile?.cumulative_points ?? 0;
-  const tierName  = profile?.tier ?? tierFromPoints(points);
+  const tierName  = formatTierName(profile?.tier ?? tierFromPoints(points));
   const tierColor = getTierColor(tierName);
   const nextTier  = getNextTier(tierName, points);
   const progress  = getTierProgress(tierName, points);
@@ -65,7 +65,7 @@ export default async function AccountPage() {
             <div className="mt-3">
               <div className="flex justify-between text-xs text-neutral-500 mb-1.5">
                 <span>{tierName}</span>
-                <span>{nextTier.needed.toLocaleString()} pts to {nextTier.tier}</span>
+                <span>{nextTier.needed.toLocaleString()} pts to {formatTierName(nextTier.tier)}</span>
               </div>
               <div className="w-full bg-white/10 rounded-full h-1.5">
                 <div

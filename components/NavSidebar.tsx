@@ -2,16 +2,25 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import MemberBadge from "./MemberBadge";
 
-export default function NavSidebar({ role }: { role?: string | null }) {
+export default function NavSidebar({
+  role,
+  tier,
+  displayName,
+}: {
+  role?: string | null;
+  tier?: string | null;
+  displayName?: string | null;
+}) {
   const [open, setOpen] = useState(false);
   const isAdmin = role === "admin" || role === "super_admin";
+  const isSignedIn = !!(displayName || role || tier);
 
   // Lock body scroll and prevent horizontal overflow when open
   useEffect(() => {
     const html = document.documentElement;
     if (open) {
-      // Prevent the off-screen panel from causing horizontal scroll
       html.style.overflowX = "hidden";
       document.body.style.overflow = "hidden";
     } else {
@@ -63,13 +72,7 @@ export default function NavSidebar({ role }: { role?: string | null }) {
         />
       )}
 
-      {/* ── Sidebar panel ──
-          - position: fixed, top: 0, height: 100vh — never affects document flow
-          - z-[101] — always above backdrop and all page content
-          - visibility: hidden when closed so it is completely inert (no touch bleed, no scroll width contribution)
-          - 85vw on mobile, 300px on sm+
-          - overflow-y: auto inside nav so content scrolls on short screens
-      ── */}
+      {/* ── Sidebar panel ── */}
       <div
         style={{ visibility: open ? "visible" : "hidden" }}
         className={`
@@ -103,7 +106,24 @@ export default function NavSidebar({ role }: { role?: string | null }) {
           </button>
         </div>
 
-        {/* Nav links — overflow-y: auto so short screens can scroll */}
+        {/* Signed-in member strip */}
+        {isSignedIn && (
+          <div className="px-5 py-3 border-b border-white/10 flex items-center gap-2 shrink-0 bg-white/[0.03]">
+            <div className="w-7 h-7 rounded-full bg-neutral-700 flex items-center justify-center text-xs font-semibold text-neutral-300 shrink-0">
+              {displayName ? displayName.charAt(0).toUpperCase() : "?"}
+            </div>
+            <div className="flex flex-col gap-0.5 min-w-0">
+              {displayName && (
+                <span className="text-sm font-medium text-neutral-200 truncate leading-tight">
+                  {displayName}
+                </span>
+              )}
+              <MemberBadge role={role} tier={tier} />
+            </div>
+          </div>
+        )}
+
+        {/* Nav links */}
         <nav className="flex-1 overflow-y-auto px-4 py-4 space-y-1">
           <SidebarLink href="/#shop" onClick={close} emoji="🛒" label="Shop" />
           <SidebarLink href="/community" onClick={close} emoji="💬" label="Community" />
