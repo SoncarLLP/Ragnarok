@@ -12,7 +12,7 @@ const baseLinks = [
 ];
 
 export default function AccountNav({
-  unreadWarnings = 0,
+  unreadWarnings = 0, // now counts warnings + mention notifications combined
   role,
 }: {
   unreadWarnings?: number;

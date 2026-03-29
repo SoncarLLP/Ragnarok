@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { createClient } from "@/lib/supabase/client";
 import { CATEGORIES } from "@/lib/community";
+import MentionTextarea from "./MentionTextarea";
 
 const PRESET_CATEGORIES = CATEGORIES as readonly string[];
 
@@ -80,17 +81,30 @@ export default function CreatePostButton({ userId }: { userId: string }) {
         image_url = publicUrl;
       }
 
-      const { error: insertErr } = await supabase.from("posts").insert({
-        user_id: userId,
-        type,
-        content: content.trim() || null,
-        image_url,
-        ingredients: type === "recipe" ? ingredients.trim() || null : null,
-        method: type === "recipe" ? method.trim() || null : null,
-        categories: selectedCats,
-      });
+      const { data: inserted, error: insertErr } = await supabase
+        .from("posts")
+        .insert({
+          user_id: userId,
+          type,
+          content: content.trim() || null,
+          image_url,
+          ingredients: type === "recipe" ? ingredients.trim() || null : null,
+          method: type === "recipe" ? method.trim() || null : null,
+          categories: selectedCats,
+        })
+        .select("id")
+        .single();
 
       if (insertErr) throw new Error(`${insertErr.message} [${insertErr.code ?? "?"}]`);
+
+      // Process @mentions in the content field (fire-and-forget)
+      if (inserted?.id && content.trim().includes("@")) {
+        fetch("/api/community/mentions", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text: content.trim(), post_id: inserted.id }),
+        }).catch(() => {});
+      }
 
       reset();
       setOpen(false);
@@ -144,18 +158,21 @@ export default function CreatePostButton({ userId }: { userId: string }) {
                 ))}
               </div>
 
-              {/* Content */}
+              {/* Content — MentionTextarea enables @mention picker */}
               <div>
                 <label className="block text-sm text-neutral-300 mb-1">
                   {type === "recipe" ? "Recipe title / intro" : "What's on your mind?"}
                 </label>
-                <textarea
+                <MentionTextarea
                   value={content}
-                  onChange={(e) => setContent(e.target.value)}
+                  onChange={setContent}
                   required={type !== "photo"}
                   rows={type === "recipe" ? 3 : 4}
                   className="w-full rounded-md bg-neutral-800 border border-white/10 px-3 py-2 text-sm outline-none focus:border-white/30 resize-none"
                 />
+                <p className="mt-1 text-xs text-neutral-600">
+                  Type @ to mention a member
+                </p>
               </div>
 
               {/* Photo upload */}

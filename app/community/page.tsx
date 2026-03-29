@@ -41,6 +41,7 @@ export default async function CommunityPage(props: unknown) {
   let userReactionsMap = new Map<string, string>(); // post_id → emoji
   let followedIds = new Set<string>();
   let isAdmin = false;
+  let userRole: string | null = null;
 
   if (user) {
     const [{ data: reactions }, { data: follows }, { data: myProfile }] = await Promise.all([
@@ -58,7 +59,8 @@ export default async function CommunityPage(props: unknown) {
         .map((r) => [r.post_id as string, r.emoji])
     );
     followedIds = new Set(follows?.map((f) => f.following_id) ?? []);
-    isAdmin = myProfile?.role === "admin" || myProfile?.role === "super_admin";
+    userRole = myProfile?.role ?? null;
+    isAdmin = userRole === "admin" || userRole === "super_admin";
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -146,6 +148,7 @@ export default async function CommunityPage(props: unknown) {
                   isFollowing={followedIds.has(post.user_id)}
                   currentUserId={user?.id ?? null}
                   isAdmin={isAdmin}
+                  userRole={userRole}
                 />
               </div>
             ))}

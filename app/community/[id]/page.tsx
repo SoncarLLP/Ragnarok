@@ -4,7 +4,9 @@ import Image from "next/image";
 import { createClient } from "@/lib/supabase/server";
 import { normalisePost, POST_SELECT } from "@/lib/community";
 import ReactionButton from "../ReactionButton";
+import ShareButton from "../ShareButton";
 import FollowButton from "../FollowButton";
+import MentionText from "../MentionText";
 import CommentSection from "./CommentSection";
 import RoleBadge from "@/components/RoleBadge";
 import TierBadge from "@/components/TierBadge";
@@ -50,6 +52,7 @@ export default async function PostPage(props: unknown) {
   let userPostReaction: string | null = null;
   let userCommentReactionsMap = new Map<string, string>(); // comment_id → emoji
   let isFollowing = false;
+  let userRole: string | null = null;
 
   if (user) {
     const commentIds = (rawComments ?? []).map((c) => c.id);
@@ -66,6 +69,11 @@ export default async function PostPage(props: unknown) {
         .eq("follower_id", user.id)
         .eq("following_id", post.user_id)
         .maybeSingle(),
+      supabase
+        .from("profiles")
+        .select("role")
+        .eq("id", user.id)
+        .single(),
     ];
     if (commentIds.length > 0) {
       queries.push(
@@ -78,11 +86,13 @@ export default async function PostPage(props: unknown) {
       );
     }
 
-    const [postReactionRes, followRes, commentReactionRes] = await Promise.all(queries);
+    const [postReactionRes, followRes, profileRes, commentReactionRes] = await Promise.all(queries);
     const { data: prRow } = postReactionRes as { data: { emoji: string } | null };
     const { data: followRow } = followRes as { data: { follower_id: string } | null };
+    const { data: profileRow } = profileRes as { data: { role: string } | null };
     userPostReaction = prRow?.emoji ?? null;
     isFollowing = !!followRow;
+    userRole = profileRow?.role ?? null;
 
     if (commentReactionRes) {
       const { data: crRows } = commentReactionRes as {
@@ -204,7 +214,7 @@ export default async function PostPage(props: unknown) {
 
             {post.content && (
               <p className="text-neutral-200 leading-relaxed whitespace-pre-wrap">
-                {post.content}
+                <MentionText text={post.content} />
               </p>
             )}
 
@@ -216,7 +226,7 @@ export default async function PostPage(props: unknown) {
                       Ingredients
                     </h2>
                     <p className="text-neutral-300 text-sm whitespace-pre-wrap leading-relaxed">
-                      {post.ingredients}
+                      <MentionText text={post.ingredients} />
                     </p>
                   </div>
                 )}
@@ -226,7 +236,7 @@ export default async function PostPage(props: unknown) {
                       Method
                     </h2>
                     <p className="text-neutral-300 text-sm whitespace-pre-wrap leading-relaxed">
-                      {post.method}
+                      <MentionText text={post.method} />
                     </p>
                   </div>
                 )}
@@ -234,14 +244,19 @@ export default async function PostPage(props: unknown) {
             )}
           </div>
 
-          {/* Reactions */}
-          <div className="px-6 py-4 border-t border-white/10">
+          {/* Reactions + Share */}
+          <div className="px-6 py-4 border-t border-white/10 flex items-center gap-4">
             <ReactionButton
               postId={post.id}
               initialCount={post.reaction_count}
               initialReaction={userPostReaction}
               topReactions={post.top_reactions}
               currentUserId={user?.id ?? null}
+            />
+            <ShareButton
+              postId={post.id}
+              postContent={post.content}
+              userRole={userRole}
             />
           </div>
         </article>

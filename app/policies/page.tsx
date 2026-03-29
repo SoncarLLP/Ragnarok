@@ -975,6 +975,8 @@ export default function PoliciesPage() {
               { href: "#comm-appeals",   label: "Appeals process" },
               { href: "#comm-removal",   label: "Content removal" },
               { href: "#comm-ip",        label: "Intellectual property" },
+              { href: "#comm-mentions",  label: "Member mentions (@mentions)" },
+              { href: "#comm-sharing",   label: "Social sharing" },
             ]} />
 
             <H3 id="comm-purpose">5.1 Purpose of the Community</H3>
@@ -1132,6 +1134,68 @@ export default function PoliciesPage() {
               By posting content, you confirm that you own or have the necessary rights and
               permissions to grant this licence, and that your content does not infringe any
               third-party intellectual property rights.
+            </P>
+
+            <H3 id="comm-mentions">5.10 Member Mentions (@mentions)</H3>
+            <P>
+              You can mention other members in posts and comments by typing{" "}
+              <strong>@</strong> followed by their username. When you mention a member:
+            </P>
+            <UL>
+              <li>
+                They will receive an <strong>in-app notification</strong> in their Notifications
+                section, visible after their next login.
+              </li>
+              <li>
+                They may also receive an <strong>email notification</strong> containing an excerpt
+                of the content and a link to the post or comment.
+              </li>
+              <li>
+                Mentioned usernames appear highlighted in amber and link directly to the
+                mentioned member&apos;s public profile.
+              </li>
+            </UL>
+            <P>
+              Mentions must be used <strong>respectfully and in good faith</strong>. The
+              following uses of the mention feature are prohibited and may result in moderation
+              action including warnings, suspension, or permanent ban:
+            </P>
+            <UL>
+              <li>Using mentions to harass, intimidate, or repeatedly target a member.</li>
+              <li>Spam-mentioning the same member across multiple posts or comments.</li>
+              <li>Mentioning members in content that violates these Community Guidelines.</li>
+            </UL>
+            <P>
+              If you receive unwanted mentions, please report the content to{" "}
+              <strong>hello@soncar.co.uk</strong> and our moderation team will review it.
+            </P>
+
+            <H3 id="comm-sharing">5.11 Social Sharing</H3>
+            <P>
+              Community posts may be shared externally to social media platforms via the Share
+              button on each post. Social sharing functionality is currently{" "}
+              <strong>restricted by role</strong>:
+            </P>
+            <UL>
+              <li>
+                <strong>Regular members and guests:</strong> the Share button is visible, but
+                clicking it displays a &ldquo;sharing coming soon&rdquo; message. External
+                sharing is not yet available to standard members.
+              </li>
+              <li>
+                <strong>Admins:</strong> may copy the direct link to a post to their clipboard.
+              </li>
+              <li>
+                <strong>Super admins:</strong> have access to all sharing options, including
+                Facebook, X (Twitter), Instagram (copy link), WhatsApp, LinkedIn, and copy link
+                to clipboard.
+              </li>
+            </UL>
+            <P>
+              SONCAR Limited reserves the right to modify, restrict, or expand social sharing
+              functionality at any time. When sharing SONCAR community content externally, you
+              remain responsible for ensuring the content complies with these guidelines and the
+              terms of service of the platform you share to.
             </P>
           </Section>
 

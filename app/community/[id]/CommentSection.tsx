@@ -6,6 +6,8 @@ import { createClient } from "@/lib/supabase/client";
 import RoleBadge from "@/components/RoleBadge";
 import TierBadge from "@/components/TierBadge";
 import ReactionButton from "../ReactionButton";
+import MentionTextarea from "../MentionTextarea";
+import MentionText from "../MentionText";
 import type { CommentData } from "@/lib/community";
 
 function timeAgo(date: string) {
@@ -71,6 +73,16 @@ export default function CommentSection({
           user_reaction: null,
         },
       ]);
+
+      // Process @mentions (fire-and-forget)
+      if (content.trim().includes("@")) {
+        fetch("/api/community/mentions", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text: content.trim(), comment_id: row.id }),
+        }).catch(() => {});
+      }
+
       setContent("");
     }
     setSubmitting(false);
@@ -82,10 +94,10 @@ export default function CommentSection({
 
       {currentUserId ? (
         <form onSubmit={handleSubmit} className="mb-6">
-          <textarea
+          <MentionTextarea
             value={content}
-            onChange={(e) => setContent(e.target.value)}
-            placeholder="Write a comment…"
+            onChange={setContent}
+            placeholder="Write a comment… use @ to mention a member"
             rows={3}
             className="w-full rounded-lg bg-white/5 border border-white/10 px-3 py-2.5 text-sm outline-none focus:border-white/30 resize-none"
           />
@@ -125,6 +137,7 @@ export default function CommentSection({
               <div key={c.id} className="flex gap-3">
                 <Link href={href} className="shrink-0">
                   {c.profiles?.avatar_url ? (
+                    // eslint-disable-next-line @next/next/no-img-element
                     <img
                       src={c.profiles.avatar_url}
                       alt={name}
@@ -148,7 +161,9 @@ export default function CommentSection({
                     </Link>
                     <span className="text-xs text-neutral-500">{timeAgo(c.created_at)}</span>
                   </div>
-                  <p className="text-sm text-neutral-300 whitespace-pre-wrap">{c.content}</p>
+                  <p className="text-sm text-neutral-300 whitespace-pre-wrap">
+                    <MentionText text={c.content} />
+                  </p>
                   <div className="mt-2">
                     <ReactionButton
                       commentId={c.id}

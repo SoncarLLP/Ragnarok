@@ -4,7 +4,9 @@ import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
 import ReactionButton from "./ReactionButton";
+import ShareButton from "./ShareButton";
 import FollowButton from "./FollowButton";
+import MentionText from "./MentionText";
 import RoleBadge from "@/components/RoleBadge";
 import TierBadge from "@/components/TierBadge";
 import type { PostData } from "@/lib/community";
@@ -99,22 +101,17 @@ export default function PostCard({
   isFollowing,
   currentUserId,
   isAdmin = false,
+  userRole,
 }: {
   post: PostData;
   userReaction: string | null;
   isFollowing: boolean;
   currentUserId: string | null;
   isAdmin?: boolean;
+  userRole?: string | null;
 }) {
-  const [copied, setCopied] = useState(false);
   const [deleted, setDeleted] = useState(false);
   if (deleted) return null;
-
-  function handleShare() {
-    navigator.clipboard.writeText(`${window.location.origin}/community/${post.id}`);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 1500);
-  }
 
   const authorName = post.author.full_name || post.author.username || "Member";
   const authorHref = post.author.username
@@ -178,7 +175,7 @@ export default function PostCard({
                 Recipe
               </div>
             )}
-            <p className="line-clamp-5">{post.content}</p>
+            <p className="line-clamp-5"><MentionText text={post.content ?? ""} linkable={false} /></p>
             {post.type === "recipe" && post.ingredients && (
               <p className="mt-2 text-xs text-neutral-400 line-clamp-2">
                 <span className="text-neutral-300 font-medium">Ingredients: </span>
@@ -217,20 +214,13 @@ export default function PostCard({
         {isAdmin && <FlagButton postId={post.id} />}
         {isAdmin && <DeleteButton postId={post.id} onDeleted={() => setDeleted(true)} />}
 
-        <button
-          onClick={handleShare}
-          className={`${isAdmin ? "" : "ml-auto"} flex items-center gap-1.5 text-xs text-neutral-400 hover:text-white transition`}
-        >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={1.5}
-              d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 1 1 0-2.684m0 2.684 6.632 3.316m-6.632-6 6.632-3.316m0 0a3 3 0 1 0 5.367-2.684 3 3 0 0 0-5.367 2.684zm0 9.316a3 3 0 1 0 5.368 2.684 3 3 0 0 0-5.368-2.684z"
-            />
-          </svg>
-          {copied ? "Copied!" : "Share"}
-        </button>
+        <div className={isAdmin ? "" : "ml-auto"}>
+          <ShareButton
+            postId={post.id}
+            postContent={post.content}
+            userRole={userRole}
+          />
+        </div>
       </div>
     </article>
   );
