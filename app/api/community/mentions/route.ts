@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { extractMentionedUsernames } from "@/lib/mentions";
+import { cooldownExpired, MEMBER_COOLDOWN_MS } from "@/lib/email-cooldown";
 
 export async function POST(request: Request) {
   const supabase = await createClient();
@@ -83,6 +84,14 @@ export async function POST(request: Request) {
     const excerpt = text.slice(0, 200) + (text.length > 200 ? "…" : "");
 
     for (const p of profiles.filter((pr) => pr.id !== user.id)) {
+      // Check 12-hour email cooldown; in-app notification was already created by DB trigger
+      const { data: cooldownRow } = await admin
+        .from("profiles")
+        .select("last_email_sent_at")
+        .eq("id", p.id)
+        .single();
+      if (!cooldownExpired(cooldownRow?.last_email_sent_at, MEMBER_COOLDOWN_MS)) continue;
+
       const { data: authUser } = await admin.auth.admin.getUserById(p.id);
       const email = authUser?.user?.email;
       if (!email) continue;
@@ -121,6 +130,12 @@ export async function POST(request: Request) {
           `,
         }),
       }).catch(() => {}); // never let an email failure break the response
+
+      // Update cooldown timestamp (best-effort)
+      await admin
+        .from("profiles")
+        .update({ last_email_sent_at: new Date().toISOString() })
+        .eq("id", p.id);
     }
   }
 

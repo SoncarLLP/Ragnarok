@@ -8,6 +8,7 @@ import TierBadge from "@/components/TierBadge";
 import ReactionButton from "../ReactionButton";
 import MentionTextarea from "../MentionTextarea";
 import MentionText from "../MentionText";
+import FlagButton from "../FlagButton";
 import type { CommentData } from "@/lib/community";
 
 function timeAgo(date: string) {
@@ -164,7 +165,7 @@ export default function CommentSection({
                   <p className="text-sm text-neutral-300 whitespace-pre-wrap">
                     <MentionText text={c.content} />
                   </p>
-                  <div className="mt-2">
+                  <div className="mt-2 flex items-center gap-3">
                     <ReactionButton
                       commentId={c.id}
                       initialCount={c.reaction_count}
@@ -172,6 +173,9 @@ export default function CommentSection({
                       topReactions={c.top_reactions}
                       currentUserId={currentUserId}
                     />
+                    {currentUserId && currentUserId !== c.user_id && (
+                      <FlagButton commentId={c.id} />
+                    )}
                   </div>
                 </div>
               </div>

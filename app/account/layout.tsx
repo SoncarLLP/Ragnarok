@@ -28,7 +28,7 @@ export default async function AccountLayout({ children }: { children: React.Reac
         .is("read_at", null),
     ]);
 
-  const totalUnread = (totalUnread) + (unreadNotifications ?? 0);
+  const totalUnread = (unreadWarnings ?? 0) + (unreadNotifications ?? 0);
 
   const displayName =
     profile?.full_name || user.email?.split("@")[0] || "Member";

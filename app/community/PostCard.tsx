@@ -9,6 +9,7 @@ import FollowButton from "./FollowButton";
 import MentionText from "./MentionText";
 import RoleBadge from "@/components/RoleBadge";
 import TierBadge from "@/components/TierBadge";
+import FlagButton from "./FlagButton";
 import type { PostData } from "@/lib/community";
 
 function DeleteButton({ postId, onDeleted }: { postId: string; onDeleted: () => void }) {
@@ -48,30 +49,6 @@ function DeleteButton({ postId, onDeleted }: { postId: string; onDeleted: () => 
       title="Delete post"
     >
       {state === "loading" ? "…" : "🗑️"}
-    </button>
-  );
-}
-
-function FlagButton({ postId }: { postId: string }) {
-  const [state, setState] = useState<"idle" | "loading" | "done">("idle");
-  async function flag() {
-    setState("loading");
-    await fetch("/api/admin/community/flag", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ postId, action: "flag" }),
-    });
-    setState("done");
-  }
-  if (state === "done") return <span className="text-xs text-amber-400 px-1">Flagged</span>;
-  return (
-    <button
-      onClick={flag}
-      disabled={state === "loading"}
-      className="text-xs px-2 py-1 rounded bg-white/5 text-neutral-500 hover:text-amber-400 hover:bg-amber-500/10 transition disabled:opacity-50"
-      title="Flag for review"
-    >
-      {state === "loading" ? "…" : "🚩"}
     </button>
   );
 }
@@ -211,7 +188,9 @@ export default function PostCard({
           {post.comment_count}
         </Link>
 
-        {isAdmin && <FlagButton postId={post.id} />}
+        {currentUserId && currentUserId !== post.user_id && (
+          <FlagButton postId={post.id} />
+        )}
         {isAdmin && <DeleteButton postId={post.id} onDeleted={() => setDeleted(true)} />}
 
         <div className={isAdmin ? "" : "ml-auto"}>
