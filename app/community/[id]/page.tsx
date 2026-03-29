@@ -53,7 +53,7 @@ export default async function PostPage(props: unknown) {
 
   if (user) {
     const commentIds = (rawComments ?? []).map((c) => c.id);
-    const queries: Promise<unknown>[] = [
+    const queries: PromiseLike<unknown>[] = [
       supabase
         .from("reactions")
         .select("emoji")
