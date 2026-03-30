@@ -179,9 +179,9 @@ export default async function HomePage({ searchParams }: SearchProps) {
           <Image
             src="/soncar-logo-ragnarok.png"
             alt="RAGNAROK logo"
-            width={320}
-            height={320}
-            className="h-28 md:h-40 w-auto drop-shadow-[0_0_12px_rgba(182,125,42,0.35)]"
+            width={600}
+            height={600}
+            className="h-52 md:h-80 w-auto drop-shadow-[0_0_32px_rgba(182,125,42,0.45)]"
             priority
           />
           <h1 className="mt-6 leading-tight">
