@@ -47,6 +47,28 @@ export async function proxy(request: NextRequest) {
     return response;
   }
 
+  // ── Site Management routes: super_admin only ──────────────────
+  if (
+    pathname.startsWith("/site-management") ||
+    pathname.startsWith("/api/site-management")
+  ) {
+    if (!user) {
+      const loginUrl = request.nextUrl.clone();
+      loginUrl.pathname = "/auth/login";
+      loginUrl.searchParams.set("next", pathname);
+      return NextResponse.redirect(loginUrl);
+    }
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("role")
+      .eq("id", user.id)
+      .single();
+    if (profile?.role !== "super_admin") {
+      return new NextResponse("Access denied. Super admin only.", { status: 403 });
+    }
+    return response;
+  }
+
   // ── Account routes: require session ──────────────────────────
   if (pathname.startsWith("/account") && !user) {
     return NextResponse.redirect(new URL("/auth/login", request.url));
