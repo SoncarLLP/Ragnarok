@@ -18,9 +18,10 @@ export default async function NavWrapper() {
   let tier: string | null = null;
   let displayName: string | null = null;
   let unreadCount = 0;
+  let unreadMessages = 0;
 
   if (user) {
-    const [{ data: profile }, { count }] = await Promise.all([
+    const [{ data: profile }, { count }, msgCount] = await Promise.all([
       supabase
         .from("profiles")
         .select("role, tier, full_name")
@@ -32,12 +33,17 @@ export default async function NavWrapper() {
         .eq("user_id", user.id)
         .is("read_at", null)
         .eq("archived", false),
+      supabase.rpc("count_unread_message_conversations", { p_user_id: user.id }),
     ]);
 
     role = profile?.role ?? null;
     tier = profile?.tier ?? null;
     displayName = profile?.full_name || user.email?.split("@")[0] || null;
     unreadCount = count ?? 0;
+
+    if (role === "admin" || role === "super_admin") {
+      unreadMessages = (msgCount.data as number) ?? 0;
+    }
   }
 
   return (
@@ -50,6 +56,7 @@ export default async function NavWrapper() {
         tier={tier}
         displayName={displayName}
         unreadCount={unreadCount}
+        unreadMessages={unreadMessages}
       />
     </>
   );

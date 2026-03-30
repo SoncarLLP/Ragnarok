@@ -8,6 +8,7 @@ import BannedTab from "./BannedTab";
 import WarningsLog from "./WarningsLog";
 import BlockAuthTab from "./BlockAuthTab";
 import PinnedPostsTab from "./PinnedPostsTab";
+import MessagesTab from "./MessagesTab";
 import type { BlockAuthRecord, MemberOption } from "./BlockAuthTab";
 import type { PinnedPostRecord } from "./PinnedPostsTab";
 
@@ -46,6 +47,7 @@ type Props = {
   blockAuths?: BlockAuthRecord[];
   allMemberOptions?: MemberOption[];
   adminOptions?: MemberOption[];
+  pendingMessageReports?: number;
 };
 
 const BASE_TABS = [
@@ -58,12 +60,14 @@ const BASE_TABS = [
 ];
 const SUPER_ADMIN_TABS = [
   ...BASE_TABS,
+  { key: "messages", label: "Messages" },
   { key: "block_auth", label: "Block Auth" },
 ];
 
 export default function AdminTabs({
   currentUserRole, posts, comments, flags, members, warnings,
   pinnedPosts = [], blockAuths = [], allMemberOptions = [], adminOptions = [],
+  pendingMessageReports = 0,
 }: Props) {
   const [active, setActive] = useState("moderation");
 
@@ -100,6 +104,11 @@ export default function AdminTabs({
                 {pinnedPosts.length}
               </span>
             )}
+            {t.key === "messages" && pendingMessageReports > 0 && (
+              <span className="ml-1.5 px-1.5 py-0.5 text-xs rounded-full bg-rose-500/30 text-rose-300">
+                {pendingMessageReports}
+              </span>
+            )}
           </button>
         ))}
       </div>
@@ -128,6 +137,9 @@ export default function AdminTabs({
       )}
       {active === "warnings" && (
         <WarningsLog warnings={warnings} />
+      )}
+      {active === "messages" && currentUserRole === "super_admin" && (
+        <MessagesTab />
       )}
       {active === "block_auth" && currentUserRole === "super_admin" && (
         <BlockAuthTab

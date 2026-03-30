@@ -19,6 +19,7 @@ export default async function AccountLayout({ children }: { children: React.Reac
     { data: profile },
     { count: unreadNotifications },
     { count: pendingFollowRequests },
+    unreadMsgResult,
   ] = await Promise.all([
     supabase.from("profiles").select("full_name, role, tier").eq("id", user.id).single(),
     supabase
@@ -32,9 +33,12 @@ export default async function AccountLayout({ children }: { children: React.Reac
       .select("id", { count: "exact", head: true })
       .eq("target_id", user.id)
       .eq("status", "pending"),
+    supabase.rpc("count_unread_message_conversations", { p_user_id: user.id }),
   ]);
 
   const totalUnread = unreadNotifications ?? 0;
+  const isAdmin = profile?.role === "admin" || profile?.role === "super_admin";
+  const unreadMessages = isAdmin ? ((unreadMsgResult.data as number) ?? 0) : 0;
 
   const displayName =
     profile?.full_name || user.email?.split("@")[0] || "Member";
@@ -71,6 +75,7 @@ export default async function AccountLayout({ children }: { children: React.Reac
           <AccountNav
             unreadCount={totalUnread}
             pendingFollowRequests={pendingFollowRequests ?? 0}
+            unreadMessages={unreadMessages}
             role={profile?.role}
           />
         </div>
@@ -81,6 +86,7 @@ export default async function AccountLayout({ children }: { children: React.Reac
             <AccountNav
               unreadCount={totalUnread}
               pendingFollowRequests={pendingFollowRequests ?? 0}
+              unreadMessages={unreadMessages}
               role={profile?.role}
             />
           </div>

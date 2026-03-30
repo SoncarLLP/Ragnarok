@@ -9,16 +9,19 @@ export default function NavSidebar({
   tier,
   displayName,
   unreadCount = 0,
+  unreadMessages = 0,
 }: {
   role?: string | null;
   tier?: string | null;
   displayName?: string | null;
   unreadCount?: number;
+  unreadMessages?: number;
 }) {
   const [open, setOpen] = useState(false);
   const isAdmin = role === "admin" || role === "super_admin";
   const isSignedIn = !!(displayName || role || tier);
   const notifBadge = unreadCount > 0 ? (unreadCount > 99 ? "99+" : unreadCount) : null;
+  const msgBadge = unreadMessages > 0 ? (unreadMessages > 99 ? "99+" : unreadMessages) : null;
 
   // Lock body scroll and prevent horizontal overflow when open
   useEffect(() => {
@@ -188,6 +191,20 @@ export default function NavSidebar({
           {isAdmin && (
             <>
               <div className="my-3 border-t border-white/10" />
+              {/* Messages link with unread badge */}
+              <Link
+                href="/messages"
+                onClick={close}
+                className="flex items-center gap-4 px-4 py-3.5 rounded-xl text-[15px] font-medium text-neutral-200 hover:text-white hover:bg-white/10 active:bg-white/15 transition"
+              >
+                <span className="text-xl w-7 shrink-0 text-center">💬</span>
+                <span className="flex-1">Messages</span>
+                {msgBadge !== null && (
+                  <span className="min-w-[1.25rem] h-5 px-1 rounded-full bg-red-500 text-white text-xs font-bold flex items-center justify-center leading-none">
+                    {msgBadge}
+                  </span>
+                )}
+              </Link>
               <SidebarLink
                 href="/admin"
                 onClick={close}

@@ -15,10 +15,12 @@ const baseLinks = [
 export default function AccountNav({
   unreadCount = 0,
   pendingFollowRequests = 0,
+  unreadMessages = 0,
   role,
 }: {
   unreadCount?: number;
   pendingFollowRequests?: number;
+  unreadMessages?: number;
   role?: string | null;
   /** @deprecated use unreadCount */
   unreadWarnings?: number;
@@ -26,11 +28,13 @@ export default function AccountNav({
   const path = usePathname();
   const isAdmin = role === "admin" || role === "super_admin";
   const notifBadge = unreadCount > 99 ? "99+" : unreadCount;
+  const msgBadge = unreadMessages > 99 ? "99+" : unreadMessages;
 
   const links = isAdmin
     ? [
         ...baseLinks,
         { href: "/account/follow-requests", label: "Follow Requests" },
+        { href: "/messages", label: "Messages" },
         {
           href: "/admin",
           label: role === "super_admin" ? "Admin Panel 👑" : "Admin Panel 🛡️",
@@ -66,6 +70,11 @@ export default function AccountNav({
                 {pendingFollowRequests}
               </span>
             )}
+            {link.href === "/messages" && unreadMessages > 0 && (
+              <span className="ml-2 min-w-[1.25rem] h-5 px-1 rounded-full bg-red-500 text-white text-xs font-semibold flex items-center justify-center">
+                {msgBadge}
+              </span>
+            )}
           </Link>
         ))}
       </nav>
@@ -88,6 +97,9 @@ export default function AccountNav({
             )}
             {link.href === "/account/follow-requests" && pendingFollowRequests > 0 && (
               <span className="w-2 h-2 rounded-full bg-violet-400 shrink-0" />
+            )}
+            {link.href === "/messages" && unreadMessages > 0 && (
+              <span className="w-2 h-2 rounded-full bg-red-500 shrink-0" />
             )}
           </Link>
         ))}

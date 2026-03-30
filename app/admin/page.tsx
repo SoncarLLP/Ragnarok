@@ -79,6 +79,7 @@ export default async function AdminPage() {
     authUsersResult,
     { data: rawBlockAuths },
     { data: rawPinnedPosts },
+    { count: pendingMessageReports },
   ] = await Promise.all([
     admin
       .from("posts")
@@ -118,6 +119,13 @@ export default async function AdminPage() {
       .not("post_as_role", "is", null)
       .or("pin_indefinite.eq.true,pinned_until.gt." + new Date().toISOString())
       .order("created_at", { ascending: false }),
+    // Pending message reports count (super admin only)
+    currentUserRole === "super_admin"
+      ? admin
+          .from("conversation_reports")
+          .select("id", { count: "exact", head: true })
+          .eq("status", "pending")
+      : Promise.resolve({ count: 0 }),
   ]);
 
   // ── Build members list ───────────────────────────────────────
@@ -361,6 +369,7 @@ export default async function AdminPage() {
             adminOptions={adminOptions}
             members={members}
             warnings={warnings}
+            pendingMessageReports={pendingMessageReports ?? 0}
           />
         </section>
       </div>
