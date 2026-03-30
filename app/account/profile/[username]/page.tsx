@@ -6,8 +6,10 @@ import type { PostData } from "@/lib/community";
 import PostCard from "@/app/community/PostCard";
 import FollowButton from "@/app/community/FollowButton";
 import MemberBadge from "@/components/MemberBadge";
+import MessageButton from "@/app/messages/MessageButton";
 import { mergePrivacySettings, mergeExtendedVisibility, canView } from "@/lib/privacy";
 import type { AccountMode } from "@/lib/privacy";
+import { getDisplayName } from "@/lib/display-name";
 
 export default async function PublicProfilePage(props: unknown) {
   const rawParams =
@@ -29,7 +31,7 @@ export default async function PublicProfilePage(props: unknown) {
 
   const { data: profile } = await supabase
     .from("profiles")
-    .select("id, full_name, username, bio, avatar_url, role, tier, member_id, account_mode, privacy_settings, extended_profile_visibility")
+    .select("id, full_name, username, bio, avatar_url, role, tier, member_id, account_mode, privacy_settings, extended_profile_visibility, display_name_preference, messaging_disabled")
     .eq("username", username)
     .single();
 
@@ -182,7 +184,7 @@ export default async function PublicProfilePage(props: unknown) {
     );
   }
 
-  const displayName = profile.full_name || profile.username || "Member";
+  const displayName = getDisplayName(profile);
 
   return (
     <main className="min-h-screen bg-neutral-950 text-neutral-100">
@@ -211,7 +213,7 @@ export default async function PublicProfilePage(props: unknown) {
           <div className="flex-1 min-w-0">
             <div className="flex flex-wrap items-center gap-3">
               <h1 className="text-2xl font-semibold flex items-center gap-2 flex-wrap">
-                {canSeePersonalDetails ? displayName : profile.username ?? "Member"}
+                {displayName}
                 <MemberBadge role={profile.role} tier={profile.tier} />
               </h1>
               {isOwner ? (
@@ -222,13 +224,23 @@ export default async function PublicProfilePage(props: unknown) {
                   Edit profile
                 </Link>
               ) : currentUser ? (
-                <FollowButton
-                  targetUserId={profile.id}
-                  initialFollowing={isFollower}
-                  currentUserId={currentUser.id}
-                  targetAccountMode={accountMode}
-                  initialRequestPending={hasPendingRequest}
-                />
+                <div className="flex items-center gap-2 flex-wrap">
+                  <FollowButton
+                    targetUserId={profile.id}
+                    initialFollowing={isFollower}
+                    currentUserId={currentUser.id}
+                    targetAccountMode={accountMode}
+                    initialRequestPending={hasPendingRequest}
+                  />
+                  {/* Message button: only visible between admins/super_admins */}
+                  {isAdmin && (profile.role === "admin" || profile.role === "super_admin") && (
+                    <MessageButton
+                      targetUserId={profile.id}
+                      messagingDisabled={(profile as { messaging_disabled?: boolean | null }).messaging_disabled ?? false}
+                      viewerRole={viewerRole!}
+                    />
+                  )}
+                </div>
               ) : null}
             </div>
 

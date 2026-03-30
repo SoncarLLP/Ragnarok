@@ -16,9 +16,10 @@ export async function POST(request: Request) {
     account_mode?: string;
     privacy_settings?: unknown;
     extended_profile_visibility?: unknown;
+    messaging_disabled?: unknown;
   };
 
-  const { account_mode, privacy_settings, extended_profile_visibility } = body;
+  const { account_mode, privacy_settings, extended_profile_visibility, messaging_disabled } = body;
 
   if (account_mode && !VALID_MODES.includes(account_mode as AccountMode)) {
     return NextResponse.json({ error: "Invalid account_mode" }, { status: 400 });
@@ -33,6 +34,7 @@ export async function POST(request: Request) {
     updated_at: new Date().toISOString(),
   };
   if (account_mode) update.account_mode = account_mode;
+  if (typeof messaging_disabled === "boolean") update.messaging_disabled = messaging_disabled;
 
   const { error } = await supabase
     .from("profiles")

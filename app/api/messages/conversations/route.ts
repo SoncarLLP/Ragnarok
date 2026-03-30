@@ -202,23 +202,46 @@ export async function POST(req: NextRequest) {
         }
       }
     }
+
+    // Check if recipient has disabled direct messages.
+    // Super admins are always allowed to message anyone.
+    if (role !== "super_admin") {
+      const { data: otherProfile } = await supabase
+        .from("profiles")
+        .select("messaging_disabled")
+        .eq("id", participant_ids[0])
+        .single();
+      if (otherProfile?.messaging_disabled) {
+        return NextResponse.json(
+          { error: "This user has disabled direct messages" },
+          { status: 403 }
+        );
+      }
+    }
   }
 
-  // Create the conversation
-  const { data: conv, error: convErr } = await supabase
+  // Pre-generate the UUID so we don't need .select() after insert.
+  // (Supabase applies SELECT RLS to RETURNING, but the participant row
+  //  doesn't exist yet — is_conversation_participant() would return false
+  //  and the insert would appear to fail even though it succeeded.)
+  const convId = crypto.randomUUID();
+
+  const { error: convErr } = await supabase
     .from("conversations")
     .insert({
+      id: convId,
       type,
       name: type === "group" ? (name ?? "Group Chat") : null,
       description: type === "group" ? (description ?? null) : null,
       created_by: user!.id,
-    })
-    .select("id")
-    .single();
+    });
 
-  if (convErr || !conv) {
+  if (convErr) {
+    console.error("Conversation insert error:", convErr);
     return NextResponse.json({ error: "Failed to create conversation" }, { status: 500 });
   }
+
+  const conv = { id: convId };
 
   // Add participants
   const participantInserts = allParticipantIds.map((uid) => ({

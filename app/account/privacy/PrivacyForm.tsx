@@ -60,17 +60,23 @@ export default function PrivacyForm({
   initialAccountMode,
   initialPrivacySettings,
   initialExtendedVisibility,
+  role,
+  initialMessagingDisabled = false,
 }: {
   initialAccountMode: AccountMode;
   initialPrivacySettings: PrivacySettings;
   initialExtendedVisibility: ExtendedProfileVisibility;
+  role?: string | null;
+  initialMessagingDisabled?: boolean;
 }) {
   const [accountMode, setAccountMode] = useState<AccountMode>(initialAccountMode);
   const [ps, setPs] = useState<PrivacySettings>({ ...initialPrivacySettings });
   const [ev, setEv] = useState<ExtendedProfileVisibility>({ ...initialExtendedVisibility });
+  const [messagingDisabled, setMessagingDisabled] = useState(initialMessagingDisabled);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState("");
+  const isAdmin = role === "admin" || role === "super_admin";
 
   function updatePs<K extends keyof PrivacySettings>(key: K, value: PrivacySettings[K]) {
     setPs((prev) => ({ ...prev, [key]: value }));
@@ -90,7 +96,7 @@ export default function PrivacyForm({
       const res = await fetch("/api/privacy/settings", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ account_mode: accountMode, privacy_settings: ps, extended_profile_visibility: ev }),
+        body: JSON.stringify({ account_mode: accountMode, privacy_settings: ps, extended_profile_visibility: ev, messaging_disabled: messagingDisabled }),
       });
       if (!res.ok) throw new Error((await res.json()).error ?? "Failed to save");
       setSaved(true);
@@ -249,6 +255,39 @@ export default function PrivacyForm({
           </SettingRow>
         </div>
       </section>
+
+      {/* Messaging settings — admin/super_admin only */}
+      {isAdmin && (
+        <section>
+          <h2 className="text-base font-semibold mb-1">Messaging</h2>
+          <p className="text-xs text-neutral-500 mb-4">
+            Control whether other admins can start new direct message conversations with you.
+            Super admins can always message you regardless of this setting.
+          </p>
+          <div className="rounded-xl border border-white/10 bg-white/5 px-4">
+            <SettingRow
+              label="Disable direct messages"
+              description="When enabled, other admins cannot start new DM conversations with you."
+            >
+              <button
+                type="button"
+                role="switch"
+                aria-checked={messagingDisabled}
+                onClick={() => setMessagingDisabled((v) => !v)}
+                className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors focus:outline-none ${
+                  messagingDisabled ? "bg-amber-500" : "bg-neutral-700"
+                }`}
+              >
+                <span
+                  className={`pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow transform transition-transform ${
+                    messagingDisabled ? "translate-x-5" : "translate-x-0"
+                  }`}
+                />
+              </button>
+            </SettingRow>
+          </div>
+        </section>
+      )}
 
       {error && <p className="text-rose-400 text-sm">{error}</p>}
 

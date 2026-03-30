@@ -14,7 +14,7 @@ export default async function PrivacyPage() {
   const [{ data: profile }, { data: rawBlocked }] = await Promise.all([
     supabase
       .from("profiles")
-      .select("account_mode, privacy_settings, extended_profile_visibility")
+      .select("account_mode, privacy_settings, extended_profile_visibility, role, messaging_disabled")
       .eq("id", user.id)
       .single(),
     supabase
@@ -56,6 +56,8 @@ export default async function PrivacyPage() {
         initialAccountMode={accountMode}
         initialPrivacySettings={privacySettings}
         initialExtendedVisibility={extendedVisibility}
+        role={profile?.role ?? null}
+        initialMessagingDisabled={(profile as { messaging_disabled?: boolean | null } | null)?.messaging_disabled ?? false}
       />
 
       {/* Blocked members */}
