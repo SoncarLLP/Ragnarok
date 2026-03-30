@@ -133,7 +133,6 @@ export default async function HomePage({ searchParams }: SearchProps) {
               priority
             />
             <span className="font-semibold tracking-wide">Ragnarök</span>
-            <span className="ml-2 text-xs px-2 py-1 rounded bg-white/10">soncar.co.uk</span>
           </div>
           <nav className="flex items-center gap-4 text-sm text-neutral-300">
             <Link href="#shop" className="hidden md:block hover:text-white">Shop</Link>
@@ -185,10 +184,29 @@ export default async function HomePage({ searchParams }: SearchProps) {
             className="h-28 md:h-40 w-auto drop-shadow-[0_0_12px_rgba(182,125,42,0.35)]"
             priority
           />
-          <h1 className="mt-6 text-4xl md:text-6xl font-semibold leading-tight">
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-300 to-emerald-300">
-              {hero.heading}
-            </span>
+          <h1 className="mt-6 leading-tight">
+            {(() => {
+              const byIndex = hero.heading.toLowerCase().indexOf(" by ");
+              if (byIndex !== -1) {
+                const main = hero.heading.slice(0, byIndex);
+                const sub = hero.heading.slice(byIndex + 1); // "by ..."
+                return (
+                  <>
+                    <span className="block text-4xl md:text-6xl font-semibold text-white">
+                      {main}
+                    </span>
+                    <span className="block text-lg md:text-xl font-normal text-neutral-400 mt-1">
+                      {sub}
+                    </span>
+                  </>
+                );
+              }
+              return (
+                <span className="text-4xl md:text-6xl font-semibold text-white">
+                  {hero.heading}
+                </span>
+              );
+            })()}
           </h1>
           <p className="mt-4 max-w-2xl text-neutral-300">{hero.subtitle}</p>
           <div className="mt-7 flex gap-3 flex-wrap justify-center">
