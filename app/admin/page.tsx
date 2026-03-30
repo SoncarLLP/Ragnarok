@@ -321,17 +321,30 @@ export default async function AdminPage() {
               {currentUserRole}
             </span>
           </div>
-          <Link href="/" className="text-sm px-3 py-1.5 rounded bg-white/10 hover:bg-white/20">
-            View site
-          </Link>
+          <div className="flex items-center gap-2">
+            {currentUserRole === "super_admin" && (
+              <Link href="/site-management" className="text-sm px-3 py-1.5 rounded bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 hover:text-amber-200">
+                Site Management ⚙️
+              </Link>
+            )}
+            <Link href="/" className="text-sm px-3 py-1.5 rounded bg-white/10 hover:bg-white/20">
+              View site
+            </Link>
+          </div>
         </div>
 
         {/* Products */}
         <section>
           <h2 className="text-lg font-semibold mb-4">Products</h2>
           <p className="text-neutral-400 text-sm mb-4">
-            Product descriptions are managed in{" "}
-            <code className="text-neutral-200">lib/products.ts</code>.
+            Products are managed in{" "}
+            {currentUserRole === "super_admin" ? (
+              <Link href="/site-management/products" className="text-amber-300 hover:underline">
+                Site Management → Products
+              </Link>
+            ) : (
+              <span className="text-neutral-300">Site Management (super admin only)</span>
+            )}.
           </p>
           <div className="space-y-3">
             {products.map((p) => (

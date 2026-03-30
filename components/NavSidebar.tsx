@@ -211,6 +211,14 @@ export default function NavSidebar({
                 emoji={role === "super_admin" ? "👑" : "🛡️"}
                 label="Admin Panel"
               />
+              {role === "super_admin" && (
+                <SidebarLink
+                  href="/site-management"
+                  onClick={close}
+                  emoji="⚙️"
+                  label="Site Management"
+                />
+              )}
             </>
           )}
         </nav>

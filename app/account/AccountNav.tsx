@@ -30,6 +30,8 @@ export default function AccountNav({
   const notifBadge = unreadCount > 99 ? "99+" : unreadCount;
   const msgBadge = unreadMessages > 99 ? "99+" : unreadMessages;
 
+  const isSuperAdmin = role === "super_admin";
+
   const links = isAdmin
     ? [
         ...baseLinks,
@@ -37,8 +39,11 @@ export default function AccountNav({
         { href: "/messages", label: "Messages" },
         {
           href: "/admin",
-          label: role === "super_admin" ? "Admin Panel 👑" : "Admin Panel 🛡️",
+          label: isSuperAdmin ? "Admin Panel 👑" : "Admin Panel 🛡️",
         },
+        ...(isSuperAdmin
+          ? [{ href: "/site-management", label: "Site Management ⚙️" }]
+          : []),
       ]
     : [
         ...baseLinks,

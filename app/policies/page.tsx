@@ -283,7 +283,9 @@ export default function PoliciesPage() {
             <UL>
               <li>
                 <strong>Supabase Inc.</strong> — our database, authentication, and file storage
-                provider. Data may be hosted within the EU/EEA or US (under appropriate
+                provider. This includes storage of your account data, orders, loyalty events,
+                community activity, and site content (product catalogue, page content, and
+                uploaded images). Data may be hosted within the EU/EEA or US (under appropriate
                 safeguards). Privacy policy:{" "}
                 <span className="text-neutral-400">supabase.com/privacy</span>.
               </li>
