@@ -9,6 +9,7 @@ import { STOCK_STATUS_LABELS, penceToDisplay, DEFAULT_PRODUCT_THEMES } from "@/l
 import RunicDivider from "@/components/RunicDivider";
 import ProductThemeApplier from "@/components/ProductThemeApplier";
 import ProductParticleCanvas from "@/components/ProductParticleCanvas";
+import NorseKnotworkFrame from "@/components/NorseKnotworkFrame";
 
 const STATIC_SLUGS = ["freyjas-bloom", "duemmens-nectar", "loki-hell-fire"] as const;
 
@@ -138,31 +139,25 @@ export default async function ProductPage(props: Props) {
                     border: "1px solid var(--nrs-accent-border)",
                     boxShadow: "var(--nrs-glow)",
                     padding: "1.5rem",
+                    /* isolation:isolate keeps mix-blend-mode contained to this box */
+                    isolation: "isolate",
+                    color: "var(--nrs-accent)",
                   }}
                 >
-                  {/* Corner knotwork accents */}
-                  {["top-2 left-2", "top-2 right-2", "bottom-2 left-2", "bottom-2 right-2"].map((pos, i) => (
-                    <svg
-                      key={i}
-                      width="20" height="20" viewBox="0 0 20 20" fill="none"
-                      className={`absolute ${pos} opacity-40`}
-                      aria-hidden="true"
-                      style={{ transform: i === 1 ? "scaleX(-1)" : i === 2 ? "scaleY(-1)" : i === 3 ? "scale(-1)" : undefined }}
-                    >
-                      <path d="M2 18 L2 2 L18 2" stroke="var(--nrs-accent)" strokeWidth="1.5" fill="none" />
-                      <path d="M6 14 L6 6 L14 6" stroke="var(--nrs-accent)" strokeWidth="0.8" fill="none" strokeOpacity="0.5" />
-                    </svg>
-                  ))}
+                  {/* Norse knotwork frame — full interlaced SVG border */}
+                  <NorseKnotworkFrame />
 
                   {displayImages.length > 0 ? (
                     <Image
                       src={displayImages[0].url}
                       alt={displayImages[0].alt_text || product.name}
                       width={500} height={600}
-                      className="object-contain w-full h-[30rem]"
+                      className="object-contain w-full h-[30rem] relative z-[1]"
                       priority
                       style={{
-                        filter: "drop-shadow(0 8px 32px var(--nrs-accent-glow))",
+                        /* multiply: white pixels blend into the dark container
+                           background and disappear; packaging artwork remains visible */
+                        mixBlendMode: "multiply",
                       }}
                     />
                   ) : product.primary_image_url ? (
@@ -170,9 +165,9 @@ export default async function ProductPage(props: Props) {
                       src={product.primary_image_url}
                       alt={product.name}
                       width={500} height={600}
-                      className="object-contain w-full h-[30rem]"
+                      className="object-contain w-full h-[30rem] relative z-[1]"
                       priority
-                      style={{ filter: "drop-shadow(0 8px 32px var(--nrs-accent-glow))" }}
+                      style={{ mixBlendMode: "multiply" }}
                     />
                   ) : (
                     <div className="w-full h-[30rem] flex items-center justify-center"
@@ -188,11 +183,16 @@ export default async function ProductPage(props: Props) {
                     {displayImages.map((img) => (
                       <div key={img.id}
                         className="w-16 h-16 rounded-lg overflow-hidden shrink-0"
-                        style={{ background: "var(--nrs-bg-2)", border: "1px solid var(--nrs-border)" }}>
+                        style={{
+                          background: "var(--nrs-bg-2)",
+                          border: "1px solid var(--nrs-border)",
+                          isolation: "isolate",
+                        }}>
                         <Image
                           src={img.url} alt={img.alt_text || product.name}
                           width={64} height={64}
                           className="w-full h-full object-contain"
+                          style={{ mixBlendMode: "multiply" }}
                         />
                       </div>
                     ))}
@@ -388,24 +388,21 @@ export default async function ProductPage(props: Props) {
         <section className="mx-auto max-w-5xl px-4 py-12 grid md:grid-cols-2 gap-12 relative z-10">
           {/* Image */}
           <div className="relative rounded-xl overflow-hidden p-6"
-            style={{ background: "var(--nrs-bg-2)", border: "1px solid var(--nrs-accent-border)", boxShadow: "var(--nrs-glow)" }}>
-            {/* Corner knotwork */}
-            {["top-2 left-2", "top-2 right-2", "bottom-2 left-2", "bottom-2 right-2"].map((pos, i) => (
-              <svg
-                key={i} width="20" height="20" viewBox="0 0 20 20" fill="none"
-                className={`absolute ${pos} opacity-40`} aria-hidden="true"
-                style={{ transform: i === 1 ? "scaleX(-1)" : i === 2 ? "scaleY(-1)" : i === 3 ? "scale(-1)" : undefined }}
-              >
-                <path d="M2 18 L2 2 L18 2" stroke="var(--nrs-accent)" strokeWidth="1.5" fill="none" />
-                <path d="M6 14 L6 6 L14 6" stroke="var(--nrs-accent)" strokeWidth="0.8" fill="none" strokeOpacity="0.5" />
-              </svg>
-            ))}
+            style={{
+              background: "var(--nrs-bg-2)",
+              border: "1px solid var(--nrs-accent-border)",
+              boxShadow: "var(--nrs-glow)",
+              isolation: "isolate",
+              color: "var(--nrs-accent)",
+            }}>
+            {/* Norse knotwork frame — full interlaced SVG border */}
+            <NorseKnotworkFrame />
             <Image
               src={p.image} alt={p.name}
               width={500} height={600}
-              className="object-contain w-full h-[30rem]"
+              className="object-contain w-full h-[30rem] relative z-[1]"
               priority
-              style={{ filter: "drop-shadow(0 8px 32px var(--nrs-accent-glow))" }}
+              style={{ mixBlendMode: "multiply" }}
             />
           </div>
           {/* Details */}
