@@ -1,39 +1,68 @@
+/* ── Google Fonts must come first before any other rules ─────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap');
 @import "tailwindcss";
+@import "./themes.css";
 
+/* ── CSS font variables ──────────────────────────────────────────────────── */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --font-heading: 'Cinzel', 'Trajan Pro', serif;
+  --font-body:    'Crimson Text', 'Georgia', serif;
+  --font-ui:      system-ui, -apple-system, 'Segoe UI', sans-serif;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* ── Base document styles ────────────────────────────────────────────────── */
+html {
+  background: var(--nrs-bg, #0a0a0f);
+  color:      var(--nrs-text-body, #e8e4d9);
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--nrs-bg, #0a0a0f);
+  color:      var(--nrs-text-body, #e8e4d9);
+  font-family: var(--font-ui);
+  min-height: 100vh;
 }
 
-/* ── Notification bell wiggle ────────────────────────────────────── */
+/* ── Typography ──────────────────────────────────────────────────────────── */
+h1, h2, h3, h4, h5, h6,
+.font-heading {
+  font-family: var(--font-heading);
+  color:       var(--nrs-text, #ffffff);
+  line-height: 1.15;
+  letter-spacing: 0.03em;
+}
+
+/* Cinzel looks best with slightly tracked letters */
+h1 { letter-spacing: 0.04em; }
+h2 { letter-spacing: 0.03em; }
+h3 { letter-spacing: 0.02em; }
+
+/* ── Selection colour ────────────────────────────────────────────────────── */
+::selection {
+  background: var(--nrs-accent-dim, rgba(201,168,76,0.3));
+  color: var(--nrs-text, #fff);
+}
+
+/* ── Scrollbar ───────────────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--nrs-bg-2, #111118); }
+::-webkit-scrollbar-thumb {
+  background:    var(--nrs-accent-border, rgba(201,168,76,0.3));
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--nrs-accent, #c9a84c);
+}
+
+/* ── Notification bell wiggle ────────────────────────────────────────────── */
 @keyframes wiggle {
   0%, 100% { transform: rotate(0deg); }
   25%       { transform: rotate(-15deg); }
   75%       { transform: rotate(15deg); }
 }
 
-/* ── Tier badge animations ───────────────────────────────────────── */
-
+/* ── Tier badge animations ───────────────────────────────────────────────── */
 @keyframes tier-shimmer {
   0%   { background-position: -200% center; }
   100% { background-position:  200% center; }
@@ -111,18 +140,18 @@ body {
   animation: tier-super-diamond-glow 2.5s ease-in-out infinite;
 }
 
-/* ── Site Management utility class ──────────────────────────────── */
+/* ── Legacy input-field utility (kept for compatibility) ─────────────────── */
 .input-field {
-  width: 100%;
+  width:         100%;
   border-radius: 0.5rem;
-  border: 1px solid rgba(255,255,255,0.15);
-  background: rgba(255,255,255,0.05);
-  padding: 0.5rem 0.75rem;
-  font-size: 0.875rem;
-  color: #f5f5f5;
+  border:        1px solid rgba(255,255,255,0.15);
+  background:    rgba(255,255,255,0.05);
+  padding:       0.5rem 0.75rem;
+  font-size:     0.875rem;
+  color:         #f5f5f5;
 }
 .input-field:focus {
-  outline: none;
+  outline:      none;
   border-color: rgba(255,255,255,0.30);
 }
 
@@ -142,4 +171,22 @@ body {
   -webkit-background-clip: text;
   color: transparent;
   animation: tier-rainbow 4s ease infinite;
+}
+
+/* ── Prose overrides for themed content ──────────────────────────────────── */
+.prose-norse {
+  color: var(--nrs-text-body);
+}
+.prose-norse h1, .prose-norse h2, .prose-norse h3 {
+  font-family: var(--font-heading);
+  color: var(--nrs-text);
+}
+.prose-norse a {
+  color: var(--nrs-accent);
+}
+.prose-norse strong {
+  color: var(--nrs-text);
+}
+.prose-norse hr {
+  border-color: var(--nrs-border);
 }

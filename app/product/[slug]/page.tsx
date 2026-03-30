@@ -6,21 +6,21 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { getProduct, type Product } from "@/lib/products";
 import type { DBProductWithImages, CustomSegment } from "@/lib/site-management";
 import { STOCK_STATUS_LABELS, penceToDisplay } from "@/lib/site-management";
+import RunicDivider from "@/components/RunicDivider";
 
 const STATIC_SLUGS = ["freyjas-bloom", "duemmens-nectar", "loki-hell-fire"] as const;
 
 type Props = { params: Promise<{ slug: string }>; searchParams: Promise<{ preview?: string }> };
 
 export default async function ProductPage(props: Props) {
-  const { slug } = await props.params;
+  const { slug }    = await props.params;
   const { preview } = await props.searchParams;
-  const isPreview = preview === "1";
+  const isPreview   = preview === "1";
 
   if (!slug) return notFound();
 
   const admin = createAdminClient();
 
-  // ── Try DB first ──────────────────────────────────────────────
   let dbProduct: DBProductWithImages | null = null;
   let previewDraft: DBProductWithImages | null = null;
 
@@ -32,7 +32,6 @@ export default async function ProductPage(props: Props) {
 
   dbProduct = fromDb as DBProductWithImages | null;
 
-  // In preview mode, check if the user is a super_admin and load draft
   if (isPreview && dbProduct) {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
@@ -54,7 +53,6 @@ export default async function ProductPage(props: Props) {
 
   const product = previewDraft ?? dbProduct;
 
-  // ── Fall back to static data if not in DB ─────────────────────
   let staticProduct: Product | null = null;
   if (!product) {
     const isStaticSlug = (STATIC_SLUGS as readonly string[]).includes(slug);
@@ -63,12 +61,9 @@ export default async function ProductPage(props: Props) {
     if (!staticProduct) return notFound();
   }
 
-  // ── If product is hidden/archived and not in preview mode, 404 ─
-  if (product && product.visibility !== "published" && !isPreview) {
-    return notFound();
-  }
+  if (product && product.visibility !== "published" && !isPreview) return notFound();
 
-  // Render DB product
+  // ── DB product render ──────────────────────────────────────────────────────
   if (product) {
     const images = [...(product.product_images ?? [])].sort((a, b) => a.position - b.position);
     const primaryImage = images.find((img) => img.is_primary) ?? images[0];
@@ -86,52 +81,97 @@ export default async function ProductPage(props: Props) {
       : { data: [] };
 
     return (
-      <main className="bg-neutral-950 text-neutral-100 min-h-screen">
+      <main style={{ background: "var(--nrs-bg)", color: "var(--nrs-text-body)", minHeight: "100vh" }}>
+        {/* Header */}
+        <header className="nrs-header sticky top-0 z-40">
+          <div className="mx-auto max-w-7xl px-4 py-3 flex items-center justify-between">
+            <Link href="/" className="flex items-center gap-2 no-underline">
+              <Image src="/soncar-logo-ragnarok.png" alt="Ragnarök" width={48} height={48} className="h-7 w-auto" priority />
+              <span className="font-semibold text-sm tracking-widest" style={{ fontFamily: "var(--font-heading)", color: "var(--nrs-accent)" }}>
+                Ragnarök
+              </span>
+            </Link>
+            <nav className="flex items-center gap-3 text-sm">
+              <Link href="/#shop" className="nrs-nav-link hidden md:block">Shop</Link>
+              <Link href="/cart" className="nrs-btn text-xs py-1.5 px-3">Cart</Link>
+            </nav>
+          </div>
+        </header>
+
         {isPreview && (
-          <div className="sticky top-0 z-50 bg-amber-500/90 text-neutral-950 text-center text-sm py-2 font-semibold">
+          <div className="sticky top-0 z-50 text-center text-sm py-2 font-semibold"
+            style={{ background: "rgba(201,168,76,0.9)", color: "#0a0a0f" }}>
             ⚑ Preview mode — changes not yet published
           </div>
         )}
 
         <section className="mx-auto max-w-5xl px-4 py-12">
-          <div className="grid md:grid-cols-2 gap-10">
-            {/* Images */}
-            <div className="space-y-3">
-              <div className="bg-white/5 rounded-xl p-4 grid place-items-center">
+          <div className="grid md:grid-cols-2 gap-12">
+
+            {/* ── Product images ─────────────────────────────────────────── */}
+            <div className="space-y-4">
+              {/* Main image with Norse knotwork frame */}
+              <div
+                className="relative rounded-xl overflow-hidden"
+                style={{
+                  background: "var(--nrs-bg-2)",
+                  border: "1px solid var(--nrs-accent-border)",
+                  boxShadow: "var(--nrs-glow)",
+                  padding: "1.5rem",
+                }}
+              >
+                {/* Corner knotwork accents */}
+                {["top-2 left-2", "top-2 right-2", "bottom-2 left-2", "bottom-2 right-2"].map((pos, i) => (
+                  <svg
+                    key={i}
+                    width="20" height="20" viewBox="0 0 20 20" fill="none"
+                    className={`absolute ${pos} opacity-40`}
+                    aria-hidden="true"
+                    style={{ transform: i === 1 ? "scaleX(-1)" : i === 2 ? "scaleY(-1)" : i === 3 ? "scale(-1)" : undefined }}
+                  >
+                    <path d="M2 18 L2 2 L18 2" stroke="var(--nrs-accent)" strokeWidth="1.5" fill="none" />
+                    <path d="M6 14 L6 6 L14 6" stroke="var(--nrs-accent)" strokeWidth="0.8" fill="none" strokeOpacity="0.5" />
+                  </svg>
+                ))}
+
                 {displayImages.length > 0 ? (
                   <Image
                     src={displayImages[0].url}
                     alt={displayImages[0].alt_text || product.name}
-                    width={500}
-                    height={600}
-                    className="object-contain w-full h-[28rem]"
+                    width={500} height={600}
+                    className="object-contain w-full h-[30rem]"
                     priority
+                    style={{
+                      filter: "drop-shadow(0 8px 32px var(--nrs-accent-glow))",
+                    }}
                   />
                 ) : product.primary_image_url ? (
                   <Image
                     src={product.primary_image_url}
                     alt={product.name}
-                    width={500}
-                    height={600}
-                    className="object-contain w-full h-[28rem]"
+                    width={500} height={600}
+                    className="object-contain w-full h-[30rem]"
                     priority
+                    style={{ filter: "drop-shadow(0 8px 32px var(--nrs-accent-glow))" }}
                   />
                 ) : (
-                  <div className="w-full h-[28rem] flex items-center justify-center text-neutral-600">
+                  <div className="w-full h-[30rem] flex items-center justify-center"
+                    style={{ color: "var(--nrs-text-muted)" }}>
                     No image
                   </div>
                 )}
               </div>
+
               {/* Thumbnail strip */}
               {displayImages.length > 1 && (
-                <div className="flex gap-2 overflow-x-auto">
+                <div className="flex gap-2 overflow-x-auto pb-1">
                   {displayImages.map((img) => (
-                    <div key={img.id} className="w-16 h-16 rounded-lg bg-neutral-800 overflow-hidden shrink-0">
+                    <div key={img.id}
+                      className="w-16 h-16 rounded-lg overflow-hidden shrink-0"
+                      style={{ background: "var(--nrs-bg-2)", border: "1px solid var(--nrs-border)" }}>
                       <Image
-                        src={img.url}
-                        alt={img.alt_text || product.name}
-                        width={64}
-                        height={64}
+                        src={img.url} alt={img.alt_text || product.name}
+                        width={64} height={64}
                         className="w-full h-full object-contain"
                       />
                     </div>
@@ -140,67 +180,118 @@ export default async function ProductPage(props: Props) {
               )}
             </div>
 
-            {/* Details */}
+            {/* ── Product details ────────────────────────────────────────── */}
             <div>
-              <div className="flex items-center gap-2 flex-wrap mb-1">
+              {/* Badges */}
+              <div className="flex items-center gap-2 flex-wrap mb-3">
                 {product.is_featured && (
-                  <span className="text-xs px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-300">Featured</span>
+                  <span className="text-xs px-2.5 py-0.5 rounded-full font-semibold tracking-wide"
+                    style={{ background: "var(--nrs-accent-dim)", color: "var(--nrs-accent)", border: "1px solid var(--nrs-accent-border)" }}>
+                    Featured
+                  </span>
                 )}
-                <span className={`text-xs px-2 py-0.5 rounded-full ${
-                  product.stock_status === "in_stock" ? "bg-emerald-500/15 text-emerald-400" :
-                  product.stock_status === "low_stock" ? "bg-amber-500/15 text-amber-400" :
-                  product.stock_status === "out_of_stock" ? "bg-red-500/15 text-red-400" :
+                <span className={`text-xs px-2.5 py-0.5 rounded-full font-semibold ${
+                  product.stock_status === "in_stock"     ? "bg-emerald-500/15 text-emerald-400" :
+                  product.stock_status === "low_stock"    ? "bg-amber-500/15 text-amber-400"     :
+                  product.stock_status === "out_of_stock" ? "bg-red-500/15 text-red-400"         :
                   "bg-neutral-700 text-neutral-400"
                 }`}>
                   {STOCK_STATUS_LABELS[product.stock_status]}
                 </span>
               </div>
 
-              <h1 className="text-3xl font-semibold">{product.name}</h1>
+              {/* Title */}
+              <h1 className="text-3xl md:text-4xl font-bold mb-3 nrs-heading"
+                style={{ fontFamily: "var(--font-heading)", letterSpacing: "0.04em" }}>
+                {product.name}
+              </h1>
+
+              {/* Runic line under title */}
+              <div className="mb-4 h-px"
+                style={{ background: "linear-gradient(90deg, var(--nrs-accent-border), transparent)" }}
+                aria-hidden="true" />
+
+              {/* Description */}
               {product.description_html && (
                 <div
-                  className="mt-3 text-neutral-300 prose prose-invert prose-sm max-w-none"
+                  className="prose-norse prose prose-sm max-w-none mb-5"
+                  style={{ fontFamily: "var(--font-body)", fontSize: "1.05rem", lineHeight: 1.7 }}
                   dangerouslySetInnerHTML={{ __html: product.description_html }}
                 />
               )}
-              <div className="mt-4 text-xl font-semibold">{penceToDisplay(product.price_pence)}</div>
+
+              {/* Price */}
+              <div className="text-3xl font-bold mb-1"
+                style={{ fontFamily: "var(--font-heading)", color: "var(--nrs-accent)" }}>
+                {penceToDisplay(product.price_pence)}
+              </div>
+
               {product.loyalty_multiplier > 1 && (
-                <div className="mt-1 text-xs text-amber-300">
-                  🏅 {product.loyalty_multiplier}× loyalty points on this product
+                <div className="text-xs mb-5" style={{ color: "var(--nrs-accent)" }}>
+                  ᚱ {product.loyalty_multiplier}× loyalty points on this item
                 </div>
               )}
 
+              {/* CTA buttons */}
               <div className="mt-6 flex gap-3 flex-wrap">
                 <Link
                   href={`/cart?add=${product.slug}`}
-                  className="px-4 py-2 rounded bg-white/10 hover:bg-white/20 transition"
+                  className="nrs-btn nrs-btn-primary nrs-btn-traced px-7 py-3 font-bold uppercase tracking-widest text-sm"
                 >
-                  Add to cart
+                  Add to Cart
                 </Link>
-                <Link
-                  href="/#shop"
-                  className="px-4 py-2 rounded bg-white/5 hover:bg-white/10 transition"
-                >
-                  Back to shop
+                <Link href="/#shop" className="nrs-btn px-5 py-3 text-sm">
+                  Back to Shop
                 </Link>
               </div>
 
-              <ul className="mt-8 text-sm text-neutral-300 space-y-2">
-                <li>• UK dispatch 1–2 working days</li>
-                <li>• Premium: same-day ship, next-day delivery</li>
-                <li>• Free UK delivery £60+</li>
-              </ul>
+              {/* Delivery info — styled as ancient scroll panel */}
+              <div className="mt-8 rounded-xl p-5"
+                style={{
+                  background: "var(--nrs-panel)",
+                  border: "1px solid var(--nrs-border)",
+                }}>
+                <p className="text-xs font-semibold mb-3 tracking-widest uppercase"
+                  style={{ fontFamily: "var(--font-heading)", color: "var(--nrs-accent)" }}>
+                  Dispatch & Delivery
+                </p>
+                <ul className="space-y-1.5 text-sm" style={{ color: "var(--nrs-text-muted)", fontFamily: "var(--font-ui)" }}>
+                  <li className="flex items-center gap-2">
+                    <span style={{ color: "var(--nrs-accent)" }}>✦</span> UK dispatch 1–2 working days
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span style={{ color: "var(--nrs-accent)" }}>✦</span> Premium: same-day ship, next-day delivery
+                  </li>
+                  <li className="flex items-center gap-2">
+                    <span style={{ color: "var(--nrs-accent)" }}>✦</span> Free UK delivery £60+
+                  </li>
+                </ul>
+              </div>
             </div>
           </div>
 
-          {/* Custom segments */}
+          {/* ── Custom segments (parchment panels) ──────────────────────── */}
           {product.custom_segments && product.custom_segments.length > 0 && (
-            <div className="mt-12 space-y-6">
-              {(product.custom_segments as CustomSegment[]).map((seg) => (
-                <div key={seg.id} className="border-t border-white/10 pt-6">
-                  <h2 className="text-lg font-semibold mb-3">{seg.title}</h2>
+            <div className="mt-14 space-y-1">
+              <RunicDivider runes="ᛁᚾᚷᚱᛖᛞᛁᛖᚾᛏᛋ" className="mb-8" />
+              {(product.custom_segments as CustomSegment[]).map((seg, i) => (
+                <div key={seg.id}
+                  className="rounded-xl p-7"
+                  style={{
+                    background: "var(--nrs-panel)",
+                    border: "1px solid var(--nrs-border)",
+                    marginBottom: "1rem",
+                  }}>
+                  <h2 className="text-lg font-bold mb-4"
+                    style={{ fontFamily: "var(--font-heading)", color: "var(--nrs-accent)", letterSpacing: "0.06em" }}>
+                    {seg.title}
+                  </h2>
+                  <div className="h-px mb-4"
+                    style={{ background: "linear-gradient(90deg, var(--nrs-accent-border), transparent)" }}
+                    aria-hidden="true" />
                   <div
-                    className="text-neutral-300 prose prose-invert prose-sm max-w-none"
+                    className="prose-norse prose prose-sm max-w-none"
+                    style={{ fontFamily: "var(--font-body)", fontSize: "1rem", lineHeight: 1.75 }}
                     dangerouslySetInnerHTML={{ __html: seg.content_html }}
                   />
                 </div>
@@ -208,32 +299,30 @@ export default async function ProductPage(props: Props) {
             </div>
           )}
 
-          {/* Related products */}
+          {/* ── Related products ──────────────────────────────────────────── */}
           {relatedProducts.data && relatedProducts.data.length > 0 && (
-            <div className="mt-12">
-              <h2 className="text-lg font-semibold mb-4">You might also like</h2>
+            <div className="mt-14">
+              <RunicDivider runes="ᛋᛁᛗᛁᛚᚨᚱ" className="mb-8" />
+              <h2 className="text-xl font-bold mb-6 text-center"
+                style={{ fontFamily: "var(--font-heading)", letterSpacing: "0.06em" }}>
+                You Might Also Like
+              </h2>
               <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-4">
                 {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                 {(relatedProducts.data as any[]).map((rp) => (
-                  <Link
-                    key={rp.id}
-                    href={`/product/${rp.slug}`}
-                    className="rounded-xl border border-white/10 bg-white/[0.02] hover:bg-white/5 hover:border-white/20 overflow-hidden transition"
-                  >
+                  <Link key={rp.id} href={`/product/${rp.slug}`} className="nrs-card overflow-hidden group">
                     {rp.primary_image_url && (
-                      <div className="bg-neutral-900 p-2">
+                      <div className="p-3" style={{ background: "var(--nrs-bg-2)" }}>
                         <Image
-                          src={rp.primary_image_url}
-                          alt={rp.name}
-                          width={200}
-                          height={200}
-                          className="w-full h-32 object-contain"
+                          src={rp.primary_image_url} alt={rp.name}
+                          width={200} height={200}
+                          className="w-full h-28 object-contain transition-transform duration-300 group-hover:scale-105"
                         />
                       </div>
                     )}
                     <div className="p-3">
-                      <p className="text-sm font-medium">{rp.name}</p>
-                      <p className="text-xs text-neutral-400 mt-0.5">{penceToDisplay(rp.price_pence)}</p>
+                      <p className="text-sm font-medium" style={{ fontFamily: "var(--font-heading)", color: "var(--nrs-text)" }}>{rp.name}</p>
+                      <p className="text-xs mt-0.5" style={{ color: "var(--nrs-accent)" }}>{penceToDisplay(rp.price_pence)}</p>
                     </div>
                   </Link>
                 ))}
@@ -241,44 +330,85 @@ export default async function ProductPage(props: Props) {
             </div>
           )}
         </section>
+
+        {/* Footer */}
+        <footer style={{ borderTop: "1px solid var(--nrs-border)", background: "var(--nrs-bg-2)" }}>
+          <div className="mx-auto max-w-7xl px-4 py-6 text-center text-xs"
+            style={{ color: "var(--nrs-text-muted)", fontFamily: "var(--font-ui)" }}>
+            © {new Date().getFullYear()} SONCAR Limited · All rights reserved.
+          </div>
+        </footer>
       </main>
     );
   }
 
-  // ── Static fallback ───────────────────────────────────────────
+  // ── Static fallback ────────────────────────────────────────────────────────
   const p = staticProduct!;
   return (
-    <main className="bg-neutral-950 text-neutral-100 min-h-screen">
-      <section className="mx-auto max-w-5xl px-4 py-12 grid md:grid-cols-2 gap-10">
-        <div className="bg-white/5 rounded-xl p-4 grid place-items-center">
+    <main style={{ background: "var(--nrs-bg)", color: "var(--nrs-text-body)", minHeight: "100vh" }}>
+      <header className="nrs-header sticky top-0 z-40">
+        <div className="mx-auto max-w-7xl px-4 py-3 flex items-center gap-3">
+          <Link href="/" className="flex items-center gap-2">
+            <Image src="/soncar-logo-ragnarok.png" alt="Ragnarök" width={48} height={48} className="h-7 w-auto" />
+            <span className="font-semibold text-sm tracking-widest" style={{ fontFamily: "var(--font-heading)", color: "var(--nrs-accent)" }}>
+              Ragnarök
+            </span>
+          </Link>
+        </div>
+      </header>
+      <section className="mx-auto max-w-5xl px-4 py-12 grid md:grid-cols-2 gap-12">
+        {/* Image */}
+        <div className="relative rounded-xl overflow-hidden p-6"
+          style={{ background: "var(--nrs-bg-2)", border: "1px solid var(--nrs-accent-border)", boxShadow: "var(--nrs-glow)" }}>
           <Image
-            src={p.image}
-            alt={p.name}
-            width={500}
-            height={600}
-            className="object-contain w-full h-[28rem]"
+            src={p.image} alt={p.name}
+            width={500} height={600}
+            className="object-contain w-full h-[30rem]"
             priority
+            style={{ filter: "drop-shadow(0 8px 32px var(--nrs-accent-glow))" }}
           />
         </div>
+        {/* Details */}
         <div>
-          <h1 className="text-3xl font-semibold">{p.name}</h1>
-          <div className="mt-2 text-neutral-300">{p.blurb}</div>
-          <div className="mt-4 text-xl font-semibold">£{p.price.toFixed(2)}</div>
-          <div className="mt-6 flex gap-3">
-            <Link href={`/cart?add=${p.slug}`} className="px-4 py-2 rounded bg-white/10 hover:bg-white/20">
-              Add to cart
+          <h1 className="text-3xl font-bold mb-3 nrs-heading"
+            style={{ fontFamily: "var(--font-heading)" }}>
+            {p.name}
+          </h1>
+          <div className="h-px mb-4" style={{ background: "linear-gradient(90deg, var(--nrs-accent-border), transparent)" }} aria-hidden="true" />
+          <div className="mb-5" style={{ color: "var(--nrs-text-muted)", fontFamily: "var(--font-body)", fontSize: "1.05rem" }}>
+            {p.blurb}
+          </div>
+          <div className="text-3xl font-bold mb-6" style={{ fontFamily: "var(--font-heading)", color: "var(--nrs-accent)" }}>
+            £{p.price.toFixed(2)}
+          </div>
+          <div className="flex gap-3 flex-wrap">
+            <Link href={`/cart?add=${p.slug}`}
+              className="nrs-btn nrs-btn-primary nrs-btn-traced px-7 py-3 font-bold uppercase tracking-widest text-sm">
+              Add to Cart
             </Link>
-            <Link href="/#shop" className="px-4 py-2 rounded bg-white/5 hover:bg-white/10">
-              Back to shop
+            <Link href="/#shop" className="nrs-btn px-5 py-3 text-sm">
+              Back to Shop
             </Link>
           </div>
-          <ul className="mt-8 text-sm text-neutral-300 space-y-2">
-            <li>• UK dispatch 1–2 working days</li>
-            <li>• Premium: same-day ship, next-day delivery</li>
-            <li>• Free UK delivery £60+</li>
-          </ul>
+          <div className="mt-8 rounded-xl p-5"
+            style={{ background: "var(--nrs-panel)", border: "1px solid var(--nrs-border)" }}>
+            <p className="text-xs font-semibold mb-3 tracking-widest uppercase"
+              style={{ fontFamily: "var(--font-heading)", color: "var(--nrs-accent)" }}>
+              Dispatch & Delivery
+            </p>
+            <ul className="space-y-1.5 text-sm" style={{ color: "var(--nrs-text-muted)" }}>
+              <li className="flex items-center gap-2"><span style={{ color: "var(--nrs-accent)" }}>✦</span> UK dispatch 1–2 working days</li>
+              <li className="flex items-center gap-2"><span style={{ color: "var(--nrs-accent)" }}>✦</span> Premium: same-day ship, next-day delivery</li>
+              <li className="flex items-center gap-2"><span style={{ color: "var(--nrs-accent)" }}>✦</span> Free UK delivery £60+</li>
+            </ul>
+          </div>
         </div>
       </section>
+      <footer style={{ borderTop: "1px solid var(--nrs-border)", background: "var(--nrs-bg-2)" }}>
+        <div className="mx-auto max-w-7xl px-4 py-6 text-center text-xs" style={{ color: "var(--nrs-text-muted)" }}>
+          © {new Date().getFullYear()} SONCAR Limited · All rights reserved.
+        </div>
+      </footer>
     </main>
   );
 }

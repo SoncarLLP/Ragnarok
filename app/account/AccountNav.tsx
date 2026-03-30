@@ -4,12 +4,13 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const baseLinks = [
-  { href: "/account",               label: "Dashboard" },
-  { href: "/account/profile",       label: "Profile" },
-  { href: "/account/orders",        label: "Orders" },
-  { href: "/account/rewards",       label: "Rewards" },
-  { href: "/account/notifications", label: "Notifications" },
-  { href: "/account/privacy",       label: "Privacy & Safety" },
+  { href: "/account",                      label: "Dashboard" },
+  { href: "/account/profile",              label: "Profile" },
+  { href: "/account/orders",              label: "Orders" },
+  { href: "/account/rewards",             label: "Rewards" },
+  { href: "/account/notifications",       label: "Notifications" },
+  { href: "/account/privacy",             label: "Privacy & Safety" },
+  { href: "/account/settings/theme",      label: "Theme" },
 ];
 
 export default function AccountNav({

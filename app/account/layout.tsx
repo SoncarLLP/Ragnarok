@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { createClient } from "@/lib/supabase/server";
 import AccountNav from "./AccountNav";
 import LogoutButton from "./LogoutButton";
@@ -36,23 +37,36 @@ export default async function AccountLayout({ children }: { children: React.Reac
     supabase.rpc("count_unread_message_conversations", { p_user_id: user.id }),
   ]);
 
-  const totalUnread = unreadNotifications ?? 0;
-  const isAdmin = profile?.role === "admin" || profile?.role === "super_admin";
+  const totalUnread    = unreadNotifications ?? 0;
+  const isAdmin        = profile?.role === "admin" || profile?.role === "super_admin";
   const unreadMessages = isAdmin ? ((unreadMsgResult.data as number) ?? 0) : 0;
 
-  const displayName =
-    profile?.full_name || user.email?.split("@")[0] || "Member";
+  const displayName = profile?.full_name || user.email?.split("@")[0] || "Member";
 
   return (
-    <div className="min-h-screen bg-neutral-950 text-neutral-100">
+    <div style={{ minHeight: "100vh", background: "var(--nrs-bg)", color: "var(--nrs-text-body)" }}>
       {/* Header */}
-      <header className="sticky top-0 z-40 border-b border-white/10 bg-neutral-950/80 backdrop-blur">
+      <header className="nrs-header sticky top-0 z-40">
         <div className="mx-auto max-w-7xl px-4 py-3 flex items-center justify-between">
-          <Link href="/" className="font-semibold tracking-wide">
-            Ragnarök
+          <Link href="/" className="flex items-center gap-2 no-underline">
+            <Image
+              src="/soncar-logo-ragnarok.png"
+              alt="Ragnarök"
+              width={48} height={48}
+              className="h-7 w-auto"
+              priority
+            />
+            <span
+              className="font-semibold tracking-widest text-sm hidden sm:block"
+              style={{ fontFamily: "var(--font-heading)", color: "var(--nrs-accent)" }}
+            >
+              Ragnarök
+            </span>
           </Link>
+
           <div className="flex items-center gap-2">
-            <span className="text-sm text-neutral-400 hidden sm:flex items-center gap-1.5 mr-1">
+            <span className="text-sm hidden sm:flex items-center gap-1.5 mr-1"
+              style={{ color: "var(--nrs-text-muted)" }}>
               {displayName}
               <MemberBadge role={profile?.role} tier={profile?.tier} />
             </span>
@@ -70,8 +84,8 @@ export default async function AccountLayout({ children }: { children: React.Reac
 
       {/* Body */}
       <div className="mx-auto max-w-7xl px-4 py-8">
-        {/* Mobile nav rendered above content */}
-        <div className="md:hidden mb-2">
+        {/* Mobile nav */}
+        <div className="md:hidden mb-4">
           <AccountNav
             unreadCount={totalUnread}
             pendingFollowRequests={pendingFollowRequests ?? 0}

@@ -1,6 +1,12 @@
 // app/layout.tsx
 import type { Metadata } from "next";
 import "./globals.css";
+import { createClient } from "@/lib/supabase/server";
+import ThemeProvider from "@/components/ThemeProvider";
+import CinematicIntro from "@/components/CinematicIntro";
+import TierReveal from "@/components/TierReveal";
+import ScrollReveal from "@/components/ScrollReveal";
+import { formatTierName, tierFromPoints } from "@/lib/loyalty";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://soncar.co.uk"),
@@ -33,10 +39,68 @@ export const metadata: Metadata = {
   manifest: "/favicon/site.webmanifest",
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+/** Derive the automatic theme from a tier name. */
+function tierToTheme(tier: string | null | undefined): string {
+  if (!tier) return "bronze";
+  const t = formatTierName(tier).toLowerCase();
+  if (t.startsWith("diamond")) return "diamond";
+  if (t.startsWith("platinum")) return "platinum";
+  if (t.startsWith("gold")) return "gold";
+  if (t.startsWith("silver")) return "silver";
+  return "bronze";
+}
+
+/** Validate that a stored active_theme is a real theme name. */
+const VALID_THEMES = new Set(["bronze", "silver", "gold", "platinum", "fire", "diamond"]);
+
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  // Fetch the current user's theme server-side to avoid FOUC
+  let theme = "bronze";
+  let userId: string | null = null;
+  let userTier: string | null = null;
+  let tierRevealsSeen: Record<string, boolean> = {};
+
+  try {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      userId = user.id;
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("active_theme, tier, cumulative_points, tier_reveals_seen")
+        .eq("id", user.id)
+        .single();
+
+      if (profile) {
+        const tierName = formatTierName(profile.tier ?? tierFromPoints(profile.cumulative_points ?? 0));
+        userTier = tierName;
+        tierRevealsSeen = (profile.tier_reveals_seen as Record<string, boolean>) ?? {};
+        const storedTheme = profile.active_theme as string | null;
+        theme = (storedTheme && VALID_THEMES.has(storedTheme))
+          ? storedTheme
+          : tierToTheme(tierName);
+      }
+    }
+  } catch {
+    // Not critical — fall back to bronze theme
+  }
+
   return (
-    <html lang="en" className="bg-neutral-950 text-neutral-100">
-      <body>{children}</body>
+    <html lang="en" data-theme={theme} className="bg-[var(--nrs-bg)] text-[var(--nrs-text-body)]">
+      <body>
+        <ThemeProvider initialTheme={theme}>
+          <ScrollReveal />
+          {!userId && <CinematicIntro />}
+          {children}
+          {userId && (
+            <TierReveal
+              userId={userId}
+              currentTier={userTier ?? "Bronze 1"}
+              tierRevealsSeen={tierRevealsSeen}
+            />
+          )}
+        </ThemeProvider>
+      </body>
     </html>
   );
 }
