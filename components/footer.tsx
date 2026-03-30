@@ -4,7 +4,7 @@ export default function Footer() {
     <footer className="border-t border-white/10 bg-neutral-950/60">
       <div className="mx-auto max-w-7xl px-4 py-10 grid md:grid-cols-4 gap-8 text-sm">
         <div>
-          <div className="font-semibold">SONCAR</div>
+          <div className="font-semibold">Ragnarök</div>
           <p className="mt-2 text-neutral-400">Functional proteins for hydration, recovery, and glow.</p>
         </div>
 

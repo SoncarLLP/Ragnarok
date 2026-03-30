@@ -49,7 +49,7 @@ export default async function AccountLayout({ children }: { children: React.Reac
       <header className="sticky top-0 z-40 border-b border-white/10 bg-neutral-950/80 backdrop-blur">
         <div className="mx-auto max-w-7xl px-4 py-3 flex items-center justify-between">
           <Link href="/" className="font-semibold tracking-wide">
-            SONCAR
+            Ragnarök
           </Link>
           <div className="flex items-center gap-2">
             <span className="text-sm text-neutral-400 hidden sm:flex items-center gap-1.5 mr-1">

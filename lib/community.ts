@@ -34,7 +34,7 @@ export type PostData = {
   reaction_count: number;
   top_reactions: string[];
   comment_count: number;
-  // Official SONCAR Team post fields
+  // Official Ragnarök Team post fields
   post_as_role: string | null;
   pinned_until: string | null;
   pin_indefinite: boolean;

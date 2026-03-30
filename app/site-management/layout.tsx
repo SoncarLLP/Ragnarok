@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import SiteManagementNav from "./SiteManagementNav";
 
-export const metadata = { title: "Site Management · SONCAR" };
+export const metadata = { title: "Site Management · Ragnarök" };
 
 export default async function SiteManagementLayout({
   children,
@@ -45,7 +45,7 @@ export default async function SiteManagementLayout({
         <div className="mx-auto max-w-7xl px-4 py-3 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <Link href="/" className="font-semibold tracking-wide text-sm">
-              SONCAR
+              Ragnarök
             </Link>
             <span className="text-neutral-600">/</span>
             <span className="text-sm font-medium text-amber-300">Site Management</span>

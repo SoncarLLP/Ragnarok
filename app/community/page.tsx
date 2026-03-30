@@ -71,7 +71,7 @@ export default async function CommunityPage(props: unknown) {
   const posts: PostData[] = (rawPosts ?? []).map((p: any) => normalisePost(p));
 
   // Filter based on privacy: admins bypass all filters
-  // Official SONCAR Team posts are always visible
+  // Official Ragnarök Team posts are always visible
   const visible = isAdmin
     ? posts
     : posts.filter((p) => {
@@ -106,7 +106,7 @@ export default async function CommunityPage(props: unknown) {
         <div className="mx-auto max-w-7xl px-4 py-3 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <Link href="/" className="font-semibold tracking-wide">
-              SONCAR
+              Ragnarök
             </Link>
             <span className="text-neutral-600">/</span>
             <span className="text-neutral-300 text-sm">Community</span>
@@ -139,7 +139,7 @@ export default async function CommunityPage(props: unknown) {
         <div className="mb-6">
           <h1 className="text-2xl font-semibold">Community</h1>
           <p className="mt-1 text-sm text-neutral-400">
-            Training tips, recipes, progress and more from the SONCAR community
+            Training tips, recipes, progress and more from the Ragnarök community
           </p>
         </div>
 

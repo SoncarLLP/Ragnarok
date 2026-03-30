@@ -129,7 +129,7 @@ export default function MessagesClient({
         <div className="px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Link href="/" className="font-semibold tracking-wide text-sm">
-              SONCAR
+              Ragnarök
             </Link>
             <span className="text-white/20">/</span>
             <span className="text-sm text-neutral-300">Messages</span>

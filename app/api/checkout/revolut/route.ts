@@ -30,7 +30,7 @@ export async function POST(req: Request) {
       amount: body.total_pence,
       currency: "GBP",
       capture_mode: "AUTOMATIC",
-      description: body.description ?? "SONCAR Order",
+      description: body.description ?? "Ragnarök Order",
     }),
   });
 

@@ -44,7 +44,7 @@ export default async function AdminPage() {
             <>
               <p className="text-lg font-semibold mb-2">Sign in required</p>
               <p className="text-neutral-400 text-sm mb-5">
-                You need to be signed in to your SONCAR account before accessing the admin panel.
+                You need to be signed in to your Ragnarök account before accessing the admin panel.
               </p>
               <Link
                 href="/auth/login"
@@ -112,7 +112,7 @@ export default async function AdminPage() {
           .select("id, super_admin_id, member_id, blocked_admin_id, reason, created_at, revoked_at")
           .order("created_at", { ascending: false })
       : Promise.resolve({ data: [] }),
-    // Fetch all currently pinned SONCAR Team posts
+    // Fetch all currently pinned Ragnarök Team posts
     admin
       .from("posts")
       .select("id, type, content, categories, created_at, pinned_until, pin_indefinite, created_by_user_id")
@@ -310,7 +310,7 @@ export default async function AdminPage() {
         {/* Header */}
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-semibold">SONCAR Admin</h1>
+            <h1 className="text-2xl font-semibold">Ragnarök Admin</h1>
             <span
               className={`text-xs px-2 py-0.5 rounded-full ${
                 currentUserRole === "super_admin"

@@ -14,7 +14,7 @@ export default async function FAQPage() {
     <main className="bg-neutral-950 text-neutral-100 min-h-screen">
       <header className="sticky top-0 z-40 border-b border-white/10 bg-neutral-950/80 backdrop-blur">
         <div className="mx-auto max-w-7xl px-4 py-3 flex items-center justify-between">
-          <Link href="/" className="font-semibold tracking-wide">SONCAR</Link>
+          <Link href="/" className="font-semibold tracking-wide">Ragnarök</Link>
           <nav className="flex items-center gap-4 text-sm text-neutral-300">
             <Link href="/#shop" className="hidden md:block hover:text-white">Shop</Link>
             <Link href="/community" className="hidden md:block hover:text-white">Community</Link>

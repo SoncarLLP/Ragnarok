@@ -65,7 +65,7 @@ function PersonalAvatar({ url, name }: { url: string | null; name: string }) {
   );
 }
 
-/** Official SONCAR Team avatar — amber shield icon */
+/** Official Ragnarök Team avatar — amber shield icon */
 function SoncarTeamAvatar() {
   return (
     <div className="w-8 h-8 rounded-full bg-gradient-to-br from-amber-500 to-amber-700 flex items-center justify-center shrink-0 shadow-md shadow-amber-900/40">
@@ -115,7 +115,7 @@ export default function PostCard({
     : "#";
 
   if (isOfficialPost) {
-    // ── Official SONCAR Team post ─────────────────────────────────
+    // ── Official Ragnarök Team post ─────────────────────────────────
     return (
       <article className="rounded-xl border border-amber-500/25 bg-gradient-to-b from-slate-800/70 to-slate-900/80 overflow-hidden shadow-lg shadow-black/30">
         {/* Pinned banner */}
@@ -136,12 +136,12 @@ export default function PostCard({
           </span>
         </div>
 
-        {/* Author — always SONCAR Team */}
+        {/* Author — always Ragnarök Team */}
         <div className="px-4 pt-2 flex items-center justify-between gap-2">
           <div className="flex items-center gap-2 min-w-0">
             <SoncarTeamAvatar />
             <div className="min-w-0">
-              <div className="text-sm font-semibold text-amber-200">SONCAR Team</div>
+              <div className="text-sm font-semibold text-amber-200">Ragnarök Team</div>
               <div className="text-xs text-neutral-500">{timeAgo(post.created_at)}</div>
             </div>
           </div>

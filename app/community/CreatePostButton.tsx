@@ -244,11 +244,11 @@ export default function CreatePostButton({
                       }`}
                     >
                       <span className="text-base">🛡️</span>
-                      SONCAR Team
+                      Ragnarök Team
                     </button>
                   </div>
 
-                  {/* Pin options — shown when posting as SONCAR Team */}
+                  {/* Pin options — shown when posting as Ragnarök Team */}
                   {postingAs === "team" && (
                     <div className="pt-2 border-t border-white/10">
                       <label className="block text-xs text-neutral-400 mb-1.5">
@@ -443,7 +443,7 @@ export default function CreatePostButton({
                 {submitting
                   ? "Posting…"
                   : postingAs === "team"
-                  ? "Post as SONCAR Team"
+                  ? "Post as Ragnarök Team"
                   : "Post"}
               </button>
             </form>

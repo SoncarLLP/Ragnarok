@@ -132,7 +132,7 @@ export default async function HomePage({ searchParams }: SearchProps) {
               className="h-8 w-auto"
               priority
             />
-            <span className="font-semibold tracking-wide">SONCAR</span>
+            <span className="font-semibold tracking-wide">Ragnarök</span>
             <span className="ml-2 text-xs px-2 py-1 rounded bg-white/10">soncar.co.uk</span>
           </div>
           <nav className="flex items-center gap-4 text-sm text-neutral-300">

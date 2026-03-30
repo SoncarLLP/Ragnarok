@@ -9,6 +9,7 @@ import MentionTextarea from "../MentionTextarea";
 import MentionText from "../MentionText";
 import FlagButton from "../FlagButton";
 import type { CommentData } from "@/lib/community";
+import { getDisplayName } from "@/lib/display-name";
 
 function timeAgo(date: string) {
   const s = Math.floor((Date.now() - new Date(date).getTime()) / 1000);
@@ -52,7 +53,7 @@ export default function CommentSection({
       .from("comments")
       .insert({ post_id: postId, user_id: user.id, content: content.trim() })
       .select(
-        "id, post_id, user_id, content, created_at, profiles!comments_user_id_fkey(full_name, username, avatar_url, role, tier)"
+        "id, post_id, user_id, content, created_at, profiles!comments_user_id_fkey(full_name, username, avatar_url, role, tier, display_name_preference)"
       )
       .single();
 
@@ -128,8 +129,7 @@ export default function CommentSection({
       ) : (
         <div className="space-y-4">
           {comments.map((c) => {
-            const name =
-              c.profiles?.full_name || c.profiles?.username || "Member";
+            const name = c.profiles ? getDisplayName(c.profiles) : "Member";
             const href = c.profiles?.username
               ? `/account/profile/${c.profiles.username}`
               : "#";

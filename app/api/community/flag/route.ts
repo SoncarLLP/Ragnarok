@@ -123,7 +123,7 @@ export async function POST(request: Request) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        from: "SONCAR Moderation <hello@soncar.co.uk>",
+        from: "Ragnarök Moderation <hello@soncar.co.uk>",
         to: [email],
         subject: `${isBurst ? "URGENT: " : ""}Content flagged for review — ${reasonLabel}`,
         html: `
@@ -163,7 +163,7 @@ export async function POST(request: Request) {
               }
             </div>
             <p style="color:#9ca3af;font-size:12px;margin-top:32px;border-top:1px solid #e5e7eb;padding-top:16px">
-              This alert was sent to all SONCAR super administrators.
+              This alert was sent to all Ragnarök super administrators.
             </p>
           </div>
         `,

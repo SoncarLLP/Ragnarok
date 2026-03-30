@@ -145,7 +145,7 @@ export default function PinnedPostsTab({
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 flex-wrap mb-1">
                 <span className="text-xs px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-400/25 font-medium">
-                  SONCAR Team
+                  Ragnarök Team
                 </span>
                 <span className="text-xs text-neutral-500 capitalize">{post.type}</span>
                 {post.categories.length > 0 && (

@@ -1,12 +1,14 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
+import { getDisplayName } from "@/lib/display-name";
 
 interface Member {
   id: string;
   username: string;
   full_name: string | null;
   avatar_url: string | null;
+  display_name_preference?: string | null;
 }
 
 /**
@@ -189,12 +191,12 @@ export default function MentionTextarea({
                   />
                 ) : (
                   <div className="w-7 h-7 rounded-full bg-amber-700 flex items-center justify-center text-xs font-semibold shrink-0">
-                    {(m.full_name || m.username || "?").slice(0, 2).toUpperCase()}
+                    {getDisplayName(m).slice(0, 2).toUpperCase()}
                   </div>
                 )}
                 <div className="min-w-0">
                   <div className="text-neutral-100 truncate font-medium">
-                    {m.full_name || m.username}
+                    {getDisplayName(m)}
                   </div>
                   <div className="text-xs text-neutral-500 truncate">@{m.username}</div>
                 </div>

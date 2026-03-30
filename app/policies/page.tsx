@@ -86,7 +86,7 @@ export default function PoliciesPage() {
       <header className="sticky top-0 z-40 border-b border-white/10 bg-neutral-950/80 backdrop-blur">
         <div className="mx-auto max-w-4xl px-4 py-3 flex items-center justify-between gap-4">
           <Link href="/" className="font-semibold tracking-wide">
-            SONCAR
+            Ragnarök
           </Link>
           <div className="flex items-center gap-3">
             <span className="text-sm text-neutral-400">Policies &amp; Legal</span>
@@ -425,7 +425,7 @@ export default function PoliciesPage() {
 
             <H3 id="terms-accept">2.1 Acceptance of Terms</H3>
             <P>
-              By accessing or using the SONCAR website (soncar.co.uk) or placing an order, you
+              By accessing or using the Ragnarök website (soncar.co.uk) or placing an order, you
               agree to be bound by these Terms &amp; Conditions. If you do not agree, please do not
               use our website or services.
             </P>
@@ -902,7 +902,7 @@ export default function PoliciesPage() {
                 <tbody className="divide-y divide-white/5 text-neutral-300">
                   {[
                     ["sb-*-auth-token", "Supabase", "Maintains your login session", "Essential"],
-                    ["soncar_cart_v1", "SONCAR", "Stores your shopping cart contents in your browser (localStorage)", "Essential"],
+                    ["soncar_cart_v1", "Ragnarök", "Stores your shopping cart contents in your browser (localStorage)", "Essential"],
                     ["_vercel_*", "Vercel", "Load balancing and deployment routing", "Essential"],
                     ["_ga, _gid", "Google Analytics (if enabled)", "Tracks site usage and visitor statistics anonymously", "Analytics"],
                     ["_fbp, _fbc", "Meta (if enabled)", "Marketing attribution and personalised advertising", "Marketing"],
@@ -985,7 +985,7 @@ export default function PoliciesPage() {
               { href: "#comm-acceptable",   label: "Acceptable use" },
               { href: "#comm-prohibited",   label: "Prohibited content" },
               { href: "#comm-responsibility", label: "Member responsibilities" },
-              { href: "#comm-official",     label: "Official SONCAR Team posts" },
+              { href: "#comm-official",     label: "Official Ragnarök Team posts" },
               { href: "#comm-moderation",   label: "Moderation policy" },
               { href: "#comm-appeals",      label: "Appeals process" },
               { href: "#comm-removal",      label: "Content removal" },
@@ -999,7 +999,7 @@ export default function PoliciesPage() {
 
             <H3 id="comm-purpose">5.1 Purpose of the Community</H3>
             <P>
-              The SONCAR community section is a space for members to share training tips,
+              The Ragnarök community section is a space for members to share training tips,
               recipes, progress updates, and motivation. Our goal is to maintain a supportive,
               inclusive, and respectful environment for all members.
             </P>
@@ -1010,7 +1010,7 @@ export default function PoliciesPage() {
 
             <H3 id="comm-age">5.2 Age Requirements</H3>
             <P>
-              The SONCAR community is intended for users aged <strong>18 and over</strong>.
+              The Ragnarök community is intended for users aged <strong>18 and over</strong>.
               Users aged 16–17 may create an account and access the community with verifiable
               parental or guardian consent. We do not knowingly allow users under the age of 16
               to participate in the community section. If you become aware of a user under 16,
@@ -1063,7 +1063,7 @@ export default function PoliciesPage() {
                 information without their consent (&quot;doxxing&quot;).
               </li>
               <li>
-                <strong>Impersonation:</strong> impersonating SONCAR staff, other members, or
+                <strong>Impersonation:</strong> impersonating Ragnarök staff, other members, or
                 any public figure.
               </li>
             </UL>
@@ -1082,29 +1082,29 @@ export default function PoliciesPage() {
               remove content at our sole discretion.
             </P>
 
-            <H3 id="comm-official">5.6 Official SONCAR Team Posts</H3>
+            <H3 id="comm-official">5.6 Official Ragnarök Team Posts</H3>
             <P>
               From time to time, SONCAR Limited may publish official posts in the community feed
-              under the <strong>SONCAR Team</strong> identity. These posts are clearly labelled
+              under the <strong>Ragnarök Team</strong> identity. These posts are clearly labelled
               with an <strong>Official Post</strong> badge and are displayed with a distinct
               appearance to differentiate them from member-generated content.
             </P>
             <UL>
               <li>
-                <strong>Identity:</strong> Official posts are attributed to SONCAR Team as an
+                <strong>Identity:</strong> Official posts are attributed to Ragnarök Team as an
                 organisational identity, not to any individual member, admin, or employee. The
                 personal account, name, or profile of the individual who created the post is never
                 disclosed or linked on the post itself.
               </li>
               <li>
-                <strong>Pinned posts:</strong> Official SONCAR Team posts may be pinned to the top
+                <strong>Pinned posts:</strong> Official Ragnarök Team posts may be pinned to the top
                 of the community feed for a set duration (e.g. 24 hours, 7 days, 30 days) or
                 indefinitely. Pinned posts will display a pin indicator and the approximate time
                 remaining on the pin. Pinned posts always appear above regular member posts in the
                 feed, regardless of when they were published.
               </li>
               <li>
-                <strong>Multiple pinned posts:</strong> if more than one SONCAR Team post is pinned
+                <strong>Multiple pinned posts:</strong> if more than one Ragnarök Team post is pinned
                 at the same time, they are ordered by most recently created first.
               </li>
               <li>
@@ -1112,13 +1112,13 @@ export default function PoliciesPage() {
                 automatically unpinned once the pin period expires.
               </li>
               <li>
-                <strong>Deletion:</strong> Official SONCAR Team posts can only be removed by super
-                admins. Regular admins cannot delete SONCAR Team posts.
+                <strong>Deletion:</strong> Official Ragnarök Team posts can only be removed by super
+                admins. Regular admins cannot delete Ragnarök Team posts.
               </li>
             </UL>
             <P>
-              Official SONCAR Team posts may include announcements, product news, community
-              challenges, safety notices, or other information relevant to the SONCAR community.
+              Official Ragnarök Team posts may include announcements, product news, community
+              challenges, safety notices, or other information relevant to the Ragnarök community.
               They are subject to the same community standards as all other content.
             </P>
 
@@ -1166,7 +1166,7 @@ export default function PoliciesPage() {
               applicable law.
             </P>
 
-            <H3 id="comm-removal">5.9 SONCAR&apos;s Right to Remove Content</H3>
+            <H3 id="comm-removal">5.9 Ragnarök&apos;s Right to Remove Content</H3>
             <P>
               SONCAR Limited reserves the right to remove any content from the community
               section at any time and without prior notice, at our sole discretion. This
@@ -1177,10 +1177,10 @@ export default function PoliciesPage() {
 
             <H3 id="comm-ip">5.10 Intellectual Property</H3>
             <P>
-              You retain ownership of all content you post to the SONCAR community section. By
+              You retain ownership of all content you post to the Ragnarök community section. By
               posting content, you grant SONCAR Limited a <strong>non-exclusive, royalty-free,
               worldwide licence</strong> to display, reproduce, and distribute your content
-              within the SONCAR platform (including any future features, apps, or services) for
+              within the Ragnarök platform (including any future features, apps, or services) for
               as long as the content remains on the platform.
             </P>
             <P>
@@ -1251,14 +1251,14 @@ export default function PoliciesPage() {
             </UL>
             <P>
               SONCAR Limited reserves the right to modify, restrict, or expand social sharing
-              functionality at any time. When sharing SONCAR community content externally, you
+              functionality at any time. When sharing Ragnarök community content externally, you
               remain responsible for ensuring the content complies with these guidelines and the
               terms of service of the platform you share to.
             </P>
 
             <H3 id="comm-privacy">5.13 Account Privacy Modes</H3>
             <P>
-              Every SONCAR member can choose one of three account modes from their{" "}
+              Every Ragnarök member can choose one of three account modes from their{" "}
               <strong>Privacy &amp; Safety</strong> settings (accessible at{" "}
               <strong>/account/privacy</strong>):
             </P>
@@ -1276,7 +1276,7 @@ export default function PoliciesPage() {
               <li>
                 <strong>Private:</strong> your profile is completely hidden from all other
                 members and non-members. You will not appear in any search results. Your profile
-                is only visible to SONCAR admins and super admins for moderation purposes.
+                is only visible to Ragnarök admins and super admins for moderation purposes.
               </li>
             </UL>
             <P>
@@ -1305,7 +1305,7 @@ export default function PoliciesPage() {
               Members cannot see who has blocked them. Blocks are private and confidential.
             </P>
             <P>
-              <strong>Protections for moderation:</strong> SONCAR admins and super admins are
+              <strong>Protections for moderation:</strong> Ragnarök admins and super admins are
               immune to blocks by default, as they require the ability to view all content for
               moderation purposes. A super admin may, in exceptional circumstances, grant a
               specific member authorisation to block a specific admin if they deem it reasonable.
@@ -1362,7 +1362,7 @@ export default function PoliciesPage() {
 
             <H3 id="loy-overview">6.1 Scheme Overview</H3>
             <P>
-              The SONCAR Loyalty Scheme rewards members for purchases and community engagement.
+              The Ragnarök Loyalty Scheme rewards members for purchases and community engagement.
               Points are credited to your account automatically and count towards your
               membership tier. Participation is free and automatic for all registered account
               holders.
@@ -1397,7 +1397,7 @@ export default function PoliciesPage() {
               reversed if an order is subsequently refunded or cancelled.
             </P>
             <P>
-              SONCAR reserves the right to award bonus points for specific promotions, events,
+              Ragnarök reserves the right to award bonus points for specific promotions, events,
               or activities at its sole discretion. Bonus point events will be communicated via
               our website or email.
             </P>
@@ -1411,7 +1411,7 @@ export default function PoliciesPage() {
             </P>
             <P>
               There are thirteen membership tiers across five bands. Each band has three
-              sub-tiers (1, 2, 3), except Diamond which is a single tier reserved for SONCAR
+              sub-tiers (1, 2, 3), except Diamond which is a single tier reserved for Ragnarök
               team members:
             </P>
             <div className="overflow-x-auto">
@@ -1450,7 +1450,7 @@ export default function PoliciesPage() {
             </div>
             <P>
               Tier benefits (such as exclusive content, early access, or promotional offers)
-              are set by SONCAR from time to time and communicated to members via our website.
+              are set by Ragnarök from time to time and communicated to members via our website.
               We reserve the right to change tier benefits with reasonable notice.
             </P>
 
@@ -1458,7 +1458,7 @@ export default function PoliciesPage() {
             <P>
               Details of how to redeem your loyalty points will be communicated to members
               when redemption features are available. Redemption options, minimum thresholds,
-              and redemption values are set by SONCAR and may change from time to time.
+              and redemption values are set by Ragnarök and may change from time to time.
             </P>
             <P>
               Points redemption is subject to availability and cannot be applied
@@ -1509,7 +1509,7 @@ export default function PoliciesPage() {
               <li>
                 <strong>Account suspension:</strong> during a suspension, points continue to
                 accrue from active orders but cannot be redeemed. Suspended accounts may have
-                accrued points reinstated on lifting of the suspension, at SONCAR&apos;s discretion.
+                accrued points reinstated on lifting of the suspension, at Ragnarök&apos;s discretion.
               </li>
               <li>
                 <strong>Account ban for breach of terms:</strong> if your account is permanently
@@ -1545,7 +1545,7 @@ export default function PoliciesPage() {
 
         <div className="mt-6 text-center">
           <Link href="/" className="text-sm text-neutral-400 hover:text-white">
-            ← Back to SONCAR
+            ← Back to Ragnarök
           </Link>
         </div>
       </div>

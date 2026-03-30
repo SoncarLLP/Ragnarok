@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
 
 const GENDER_OPTIONS = [
@@ -24,6 +24,8 @@ const PRONOUNS_OPTIONS = [
   "prefer to self-describe",
 ];
 
+type UsernameStatus = "idle" | "checking" | "available" | "taken" | "invalid";
+
 export default function ProfileForm({
   initialFullName,
   initialPhone,
@@ -36,6 +38,7 @@ export default function ProfileForm({
   initialDateOfBirth,
   initialNationality,
   initialWebsite,
+  initialDisplayNamePreference,
 }: {
   initialFullName: string;
   initialPhone: string;
@@ -48,6 +51,7 @@ export default function ProfileForm({
   initialDateOfBirth: string;
   initialNationality: string;
   initialWebsite: string;
+  initialDisplayNamePreference: string;
 }) {
   const [fullName, setFullName] = useState(initialFullName);
   const [phone, setPhone] = useState(initialPhone);
@@ -55,6 +59,9 @@ export default function ProfileForm({
   const [bio, setBio] = useState(initialBio);
   const [avatarPreview, setAvatarPreview] = useState(initialAvatarUrl);
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [displayNamePreference, setDisplayNamePreference] = useState(
+    initialDisplayNamePreference || "username"
+  );
   // Extended fields
   const [gender, setGender] = useState(initialGender);
   const [pronouns, setPronouns] = useState(initialPronouns);
@@ -69,6 +76,64 @@ export default function ProfileForm({
   const [showExtended, setShowExtended] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
+  // Username availability state
+  const [usernameStatus, setUsernameStatus] = useState<UsernameStatus>("idle");
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const checkUsername = useCallback(async (value: string) => {
+    const trimmed = value.trim();
+
+    if (!trimmed) {
+      setUsernameStatus("idle");
+      return;
+    }
+
+    // Same as the initial value — no need to re-check
+    if (trimmed === initialUsername) {
+      setUsernameStatus("available");
+      return;
+    }
+
+    if (!/^[a-z0-9_]{3,30}$/.test(trimmed)) {
+      setUsernameStatus("invalid");
+      return;
+    }
+
+    setUsernameStatus("checking");
+    try {
+      const res = await fetch(
+        `/api/community/username/check?username=${encodeURIComponent(trimmed)}`
+      );
+      const data: { available: boolean } = await res.json();
+      setUsernameStatus(data.available ? "available" : "taken");
+    } catch {
+      setUsernameStatus("idle");
+    }
+  }, [initialUsername]);
+
+  function handleUsernameChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const value = e.target.value.toLowerCase();
+    setUsername(value);
+    setUsernameStatus("checking");
+
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      checkUsername(value);
+    }, 400);
+  }
+
+  // Run initial check if there's already a username set
+  useEffect(() => {
+    if (initialUsername) setUsernameStatus("available");
+  }, [initialUsername]);
+
+  // Cleanup debounce on unmount
+  useEffect(() => {
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
+  }, []);
+
   function handleAvatarChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -76,13 +141,23 @@ export default function ProfileForm({
     setAvatarPreview(URL.createObjectURL(file));
   }
 
+  // Determine whether saving should be blocked
+  const usernameTrimmed = username.trim();
+  const canSave =
+    !saving &&
+    (
+      !usernameTrimmed ||                          // no username entered — that's fine
+      usernameStatus === "available"               // or it's confirmed available
+    );
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (!canSave) return;
     setSaving(true);
     setSaved(false);
     setError("");
 
-    if (username && !/^[a-z0-9_]{3,30}$/.test(username)) {
+    if (usernameTrimmed && !/^[a-z0-9_]{3,30}$/.test(usernameTrimmed)) {
       setError("Username must be 3–30 lowercase letters, numbers, or underscores.");
       setSaving(false);
       return;
@@ -130,9 +205,10 @@ export default function ProfileForm({
       .update({
         full_name: fullName || null,
         phone: phone || null,
-        username: username || null,
+        username: usernameTrimmed || null,
         bio: bio || null,
         avatar_url: finalAvatarUrl || null,
+        display_name_preference: displayNamePreference,
         gender: gender || null,
         pronouns: pronouns || null,
         location_text: location || null,
@@ -144,9 +220,12 @@ export default function ProfileForm({
       .eq("id", user.id);
 
     if (err) {
-      setError(
-        err.code === "23505" ? "That username is already taken." : err.message
-      );
+      if (err.code === "23505") {
+        setError("That username is already taken.");
+        setUsernameStatus("taken");
+      } else {
+        setError(err.message);
+      }
     } else {
       setSaved(true);
       setTimeout(() => setSaved(false), 2500);
@@ -155,6 +234,39 @@ export default function ProfileForm({
   }
 
   const displayInitials = (fullName || username || "M").slice(0, 2).toUpperCase();
+
+  function UsernameIndicator() {
+    if (!usernameTrimmed) return null;
+    if (usernameStatus === "checking") {
+      return (
+        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-neutral-400">
+          checking…
+        </span>
+      );
+    }
+    if (usernameStatus === "available") {
+      return (
+        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-emerald-400" title="Username available">
+          ✅
+        </span>
+      );
+    }
+    if (usernameStatus === "taken") {
+      return (
+        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-rose-400" title="Username taken">
+          ❌
+        </span>
+      );
+    }
+    if (usernameStatus === "invalid") {
+      return (
+        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-amber-400" title="Invalid format">
+          ⚠️
+        </span>
+      );
+    }
+    return null;
+  }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
@@ -211,14 +323,67 @@ export default function ProfileForm({
           <input
             type="text"
             value={username}
-            onChange={(e) => setUsername(e.target.value.toLowerCase())}
+            onChange={handleUsernameChange}
             placeholder="yourname"
-            className="w-full rounded-md bg-neutral-900 border border-white/10 pl-7 pr-3 py-2.5 text-sm outline-none focus:border-white/30"
+            className="w-full rounded-md bg-neutral-900 border border-white/10 pl-7 pr-10 py-2.5 text-sm outline-none focus:border-white/30"
           />
+          <UsernameIndicator />
         </div>
         <p className="mt-1 text-xs text-neutral-500">
           3–30 chars · lowercase letters, numbers, underscores · used in your community profile URL
         </p>
+        {usernameStatus === "taken" && (
+          <p className="mt-1 text-xs text-rose-400">That username is already taken.</p>
+        )}
+      </div>
+
+      {/* Display name preference */}
+      <div className="rounded-lg border border-white/10 bg-white/5 p-4">
+        <label className="block text-sm text-neutral-300 mb-1 font-medium">
+          Display name preference
+        </label>
+        <p className="text-xs text-neutral-500 mb-3">
+          Choose what other members see when your name appears across the site.
+        </p>
+        <div className="space-y-2">
+          <label className="flex items-start gap-3 cursor-pointer group">
+            <input
+              type="radio"
+              name="displayNamePreference"
+              value="username"
+              checked={displayNamePreference === "username"}
+              onChange={() => setDisplayNamePreference("username")}
+              className="mt-0.5 accent-amber-400"
+            />
+            <div>
+              <div className="text-sm text-neutral-200 group-hover:text-white transition">
+                Show username <span className="text-neutral-500">(default)</span>
+              </div>
+              <div className="text-xs text-neutral-500">
+                Others see your @username — e.g. <span className="text-neutral-300">@{username || "yourname"}</span>
+              </div>
+            </div>
+          </label>
+          <label className="flex items-start gap-3 cursor-pointer group">
+            <input
+              type="radio"
+              name="displayNamePreference"
+              value="real_name"
+              checked={displayNamePreference === "real_name"}
+              onChange={() => setDisplayNamePreference("real_name")}
+              className="mt-0.5 accent-amber-400"
+            />
+            <div>
+              <div className="text-sm text-neutral-200 group-hover:text-white transition">
+                Show real name
+              </div>
+              <div className="text-xs text-neutral-500">
+                Others see your full name — e.g.{" "}
+                <span className="text-neutral-300">{fullName || "Your Name"}</span>
+              </div>
+            </div>
+          </label>
+        </div>
       </div>
 
       {/* Bio */}
@@ -392,12 +557,15 @@ export default function ProfileForm({
       <div className="flex items-center gap-3">
         <button
           type="submit"
-          disabled={saving}
-          className="px-4 py-2 rounded-md bg-white/10 hover:bg-white/20 disabled:opacity-60 text-sm transition"
+          disabled={!canSave}
+          className="px-4 py-2 rounded-md bg-white/10 hover:bg-white/20 disabled:opacity-60 disabled:cursor-not-allowed text-sm transition"
         >
           {saving ? "Saving…" : "Save changes"}
         </button>
         {saved && <span className="text-emerald-400 text-sm">Saved ✓</span>}
+        {usernameStatus === "taken" && !saved && (
+          <span className="text-rose-400 text-xs">Choose a different username to save</span>
+        )}
       </div>
     </form>
   );

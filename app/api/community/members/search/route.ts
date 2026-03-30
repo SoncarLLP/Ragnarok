@@ -12,7 +12,7 @@ export async function GET(request: Request) {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let query = (supabase.from("profiles") as any)
-    .select("id, username, full_name, avatar_url")
+    .select("id, username, full_name, avatar_url, display_name_preference")
     .not("username", "is", null)
     // Exclude private accounts from @mention search results
     .neq("account_mode", "private")

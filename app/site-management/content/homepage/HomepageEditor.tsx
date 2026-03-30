@@ -208,7 +208,7 @@ export default function HomepageEditor({
               value={content.hero.heading}
               onChange={(e) => update((p) => ({ ...p, hero: { ...p.hero, heading: e.target.value } }))}
               className="input-field"
-              placeholder="RAGNAROK by SONCAR"
+              placeholder="Ragnarök"
             />
           </Field>
           <Field label="Subtitle">

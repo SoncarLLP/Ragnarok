@@ -5,7 +5,7 @@ export default function BannedPage() {
         <div className="text-5xl mb-6">🚫</div>
         <h1 className="text-2xl font-semibold mb-3">Account Suspended</h1>
         <p className="text-neutral-400 text-sm leading-relaxed">
-          Your account has been suspended. You cannot access SONCAR services at
+          Your account has been suspended. You cannot access Ragnarök at
           this time.
         </p>
         <p className="mt-4 text-neutral-500 text-sm">

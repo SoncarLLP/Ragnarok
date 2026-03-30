@@ -30,7 +30,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Invalid request" }, { status: 400 });
   }
 
-  // For posts, check if it's a SONCAR Team post — only super_admins can delete those
+  // For posts, check if it's a Ragnarök Team post — only super_admins can delete those
   if (body.type === "post") {
     const { data: post } = await admin
       .from("posts")
@@ -40,7 +40,7 @@ export async function POST(req: Request) {
 
     if (post?.post_as_role && callerRole !== "super_admin") {
       return NextResponse.json(
-        { error: "Only super admins can delete SONCAR Team posts" },
+        { error: "Only super admins can delete Ragnarök Team posts" },
         { status: 403 }
       );
     }

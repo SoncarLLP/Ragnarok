@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import DeleteButton from "./DeleteButton";
+import { getDisplayName } from "@/lib/display-name";
 
 type Post = {
   id: string;
@@ -11,7 +12,7 @@ type Post = {
   image_url: string | null;
   categories: string[];
   created_at: string;
-  profiles: { full_name: string | null; username: string | null } | { full_name: string | null; username: string | null }[] | null;
+  profiles: { full_name: string | null; username: string | null; display_name_preference?: string | null } | { full_name: string | null; username: string | null; display_name_preference?: string | null }[] | null;
 };
 
 type Comment = {
@@ -19,12 +20,13 @@ type Comment = {
   content: string;
   created_at: string;
   post_id: string;
-  profiles: { full_name: string | null; username: string | null } | { full_name: string | null; username: string | null }[] | null;
+  profiles: { full_name: string | null; username: string | null; display_name_preference?: string | null } | { full_name: string | null; username: string | null; display_name_preference?: string | null }[] | null;
 };
 
 function authorName(profiles: Post["profiles"]): string {
   const p = Array.isArray(profiles) ? profiles[0] : profiles;
-  return p?.full_name || p?.username || "Unknown";
+  if (!p) return "Unknown";
+  return getDisplayName(p);
 }
 
 export default function ModerationSection({

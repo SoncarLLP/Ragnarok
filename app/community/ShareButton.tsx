@@ -119,7 +119,7 @@ export default function ShareButton({
   function handlePlatform(p: Platform) {
     const url = `${window.location.origin}/community/${postId}`;
     const text =
-      (postContent ?? "").slice(0, 100).trim() || "Check this out on SONCAR";
+      (postContent ?? "").slice(0, 100).trim() || "Check this out on Ragnarök";
 
     if (p.action === "copy") {
       handleCopy();

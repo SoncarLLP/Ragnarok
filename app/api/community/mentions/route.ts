@@ -103,12 +103,12 @@ export async function POST(request: Request) {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          from: "SONCAR <hello@soncar.co.uk>",
+          from: "Ragnarök <hello@soncar.co.uk>",
           to: [email],
-          subject: `${mentionerName} mentioned you on SONCAR`,
+          subject: `${mentionerName} mentioned you on Ragnarök`,
           html: `
             <div style="font-family:sans-serif;max-width:600px;margin:0 auto;color:#1a1a1a;padding:24px">
-              <h2 style="color:#f59e0b;margin-top:0">You were mentioned on SONCAR</h2>
+              <h2 style="color:#f59e0b;margin-top:0">You were mentioned on Ragnarök</h2>
               <p style="margin-bottom:8px">
                 <strong>${mentionerName}</strong> mentioned you in a ${context}:
               </p>
@@ -121,7 +121,7 @@ export async function POST(request: Request) {
                 </a>
               </p>
               <p style="color:#9ca3af;font-size:12px;margin-top:32px;border-top:1px solid #e5e7eb;padding-top:16px">
-                You received this because you were mentioned in a SONCAR community ${context}.
+                You received this because you were mentioned in a Ragnarök community ${context}.
                 Visit your
                 <a href="${siteUrl}/account/notifications" style="color:#f59e0b">notification settings</a>
                 to manage preferences.

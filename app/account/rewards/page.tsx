@@ -71,7 +71,7 @@ export default async function RewardsPage() {
 
         {isDiamond ? (
           <div className="mt-4 text-sm text-violet-300">
-            You&apos;ve reached Diamond — the highest tier on SONCAR. 👑
+            You&apos;ve reached Diamond — the highest tier on Ragnarök. 👑
           </div>
         ) : nextTier ? (
           <div className="mt-5">

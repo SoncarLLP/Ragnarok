@@ -107,7 +107,7 @@ export default function NavSidebar({
             onClick={close}
             className="font-semibold tracking-wide text-base"
           >
-            SONCAR
+            Ragnarök
           </Link>
           <button
             onClick={close}

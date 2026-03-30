@@ -64,7 +64,7 @@ export default function RevolutPayButton({ items }: { items: CartItem[] }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           total_pence,
-          description: `SONCAR: ${itemList}`,
+          description: `Ragnarök: ${itemList}`,
         }),
       });
 

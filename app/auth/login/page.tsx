@@ -34,7 +34,7 @@ export default function LoginPage() {
     <main className="min-h-screen bg-neutral-950 text-neutral-100 flex items-center justify-center px-4">
       <div className="w-full max-w-sm">
         <Link href="/" className="block text-center font-semibold tracking-wide text-lg mb-8">
-          SONCAR
+          Ragnarök
         </Link>
 
         <h1 className="text-2xl font-semibold text-center">Sign in</h1>

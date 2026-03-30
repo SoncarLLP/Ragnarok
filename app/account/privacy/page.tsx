@@ -49,7 +49,7 @@ export default async function PrivacyPage() {
     <div className="max-w-xl">
       <h1 className="text-2xl font-semibold mb-1">Privacy &amp; Safety</h1>
       <p className="text-sm text-neutral-400 mb-8">
-        Control who can see your profile and interact with you on SONCAR
+        Control who can see your profile and interact with you on Ragnarök
       </p>
 
       <PrivacyForm

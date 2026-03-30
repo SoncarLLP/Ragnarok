@@ -200,7 +200,7 @@ export function displayToPence(display: string): number {
 export function defaultHomepageContent(): HomepageContent {
   return {
     hero: {
-      heading: "RAGNAROK by SONCAR",
+      heading: "Ragnarök",
       subtitle: "Functional protein blends with mythic flair—crafted for hydration, recovery, and daily glow.",
       background_image_url: null,
       primary_cta_text: "Shop Bestsellers",
