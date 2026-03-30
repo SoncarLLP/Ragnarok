@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import AccountNav from "./AccountNav";
 import LogoutButton from "./LogoutButton";
 import NavSidebar from "@/components/NavSidebar";
+import NotificationBell from "@/components/NotificationBell";
 import MemberBadge from "@/components/MemberBadge";
 
 export default async function AccountLayout({ children }: { children: React.ReactNode }) {
@@ -16,21 +17,16 @@ export default async function AccountLayout({ children }: { children: React.Reac
 
   const [
     { data: profile },
-    { count: unreadWarnings },
     { count: unreadNotifications },
     { count: pendingFollowRequests },
   ] = await Promise.all([
     supabase.from("profiles").select("full_name, role, tier").eq("id", user.id).single(),
     supabase
-      .from("member_warnings")
-      .select("id", { count: "exact", head: true })
-      .eq("user_id", user.id)
-      .is("read_at", null),
-    supabase
       .from("notifications")
       .select("id", { count: "exact", head: true })
       .eq("user_id", user.id)
-      .is("read_at", null),
+      .is("read_at", null)
+      .eq("archived", false),
     supabase
       .from("follow_requests")
       .select("id", { count: "exact", head: true })
@@ -38,7 +34,7 @@ export default async function AccountLayout({ children }: { children: React.Reac
       .eq("status", "pending"),
   ]);
 
-  const totalUnread = (unreadWarnings ?? 0) + (unreadNotifications ?? 0);
+  const totalUnread = unreadNotifications ?? 0;
 
   const displayName =
     profile?.full_name || user.email?.split("@")[0] || "Member";
@@ -51,22 +47,19 @@ export default async function AccountLayout({ children }: { children: React.Reac
           <Link href="/" className="font-semibold tracking-wide">
             SONCAR
           </Link>
-          <div className="flex items-center gap-4">
-            {totalUnread > 0 && (
-              <Link
-                href="/account/notifications"
-                className="flex items-center gap-1.5 text-sm text-amber-300 hover:text-amber-200"
-              >
-                <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
-                {totalUnread} notification{totalUnread !== 1 ? "s" : ""}
-              </Link>
-            )}
-            <span className="text-sm text-neutral-400 hidden sm:flex items-center gap-1.5">
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-neutral-400 hidden sm:flex items-center gap-1.5 mr-1">
               {displayName}
               <MemberBadge role={profile?.role} tier={profile?.tier} />
             </span>
+            <NotificationBell userId={user.id} initialUnreadCount={totalUnread} />
             <LogoutButton />
-            <NavSidebar role={profile?.role} />
+            <NavSidebar
+              role={profile?.role}
+              tier={profile?.tier}
+              displayName={displayName}
+              unreadCount={totalUnread}
+            />
           </div>
         </div>
       </header>
@@ -76,7 +69,7 @@ export default async function AccountLayout({ children }: { children: React.Reac
         {/* Mobile nav rendered above content */}
         <div className="md:hidden mb-2">
           <AccountNav
-            unreadWarnings={totalUnread}
+            unreadCount={totalUnread}
             pendingFollowRequests={pendingFollowRequests ?? 0}
             role={profile?.role}
           />
@@ -86,7 +79,7 @@ export default async function AccountLayout({ children }: { children: React.Reac
           {/* Desktop sidebar */}
           <div className="hidden md:block">
             <AccountNav
-              unreadWarnings={totalUnread}
+              unreadCount={totalUnread}
               pendingFollowRequests={pendingFollowRequests ?? 0}
               role={profile?.role}
             />
