@@ -49,7 +49,7 @@ export async function POST(req: NextRequest, { params }: Params) {
     "slug", "name", "description_html", "price_pence", "stock_status",
     "visibility", "is_featured", "primary_image_url", "custom_segments",
     "meta_title", "meta_description", "related_product_ids", "loyalty_multiplier",
-    "sort_order",
+    "sort_order", "theme",
   ];
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

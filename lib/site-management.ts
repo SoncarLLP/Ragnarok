@@ -1,6 +1,79 @@
 // lib/site-management.ts
 // Types and helpers for the Site Management system
 
+// ── Product theme types ──────────────────────────────────────────
+
+export type ParticleEffectType = "petals" | "embers" | "droplets" | "sparks" | "none";
+
+export type ProductTheme = {
+  bg:             string;  // primary background colour
+  bg2:            string;  // secondary background colour
+  card:           string;  // card background colour
+  panel:          string;  // panel background colour
+  accent:         string;  // accent / highlight colour
+  accentGlow:     string;  // rgba accent glow (used in box-shadow)
+  accentBorder:   string;  // rgba accent border
+  heading:        string;  // heading text colour
+  marbleC1:       string;  // marble effect base colour 1
+  marbleC2:       string;  // marble effect base colour 2
+  marbleVein:     string;  // marble vein rgba
+  marbleSpeed:    string;  // marble animation speed e.g. "14s"
+  particleEffect: ParticleEffectType;
+  glowColor:      string;  // atmospheric glow rgba
+};
+
+/** Default Claude Code themes — used as the reset target in Site Management. */
+export const DEFAULT_PRODUCT_THEMES: Record<string, ProductTheme> = {
+  "freyjas-bloom": {
+    bg:             "#160814",
+    bg2:            "#1e0e1e",
+    card:           "#1a0c1a",
+    panel:          "#261420",
+    accent:         "#c9849c",
+    accentGlow:     "rgba(201,132,156,0.45)",
+    accentBorder:   "rgba(201,132,156,0.32)",
+    heading:        "#e8b4c8",
+    marbleC1:       "#3d0828",
+    marbleC2:       "#5c2040",
+    marbleVein:     "rgba(212,168,180,0.32)",
+    marbleSpeed:    "18s",
+    particleEffect: "petals",
+    glowColor:      "rgba(180,80,120,0.4)",
+  },
+  "duemmens-nectar": {
+    bg:             "#0f0800",
+    bg2:            "#180d00",
+    card:           "#140a00",
+    panel:          "#201200",
+    accent:         "#d4980a",
+    accentGlow:     "rgba(212,152,10,0.45)",
+    accentBorder:   "rgba(212,152,10,0.35)",
+    heading:        "#f0b830",
+    marbleC1:       "#1e0c00",
+    marbleC2:       "#3d1e00",
+    marbleVein:     "rgba(212,152,10,0.42)",
+    marbleSpeed:    "16s",
+    particleEffect: "droplets",
+    glowColor:      "rgba(210,130,20,0.45)",
+  },
+  "loki-hell-fire": {
+    bg:             "#080400",
+    bg2:            "#110500",
+    card:           "#0e0400",
+    panel:          "#180800",
+    accent:         "#e85010",
+    accentGlow:     "rgba(232,80,16,0.55)",
+    accentBorder:   "rgba(232,80,16,0.45)",
+    heading:        "#ff7030",
+    marbleC1:       "#180400",
+    marbleC2:       "#3d0a00",
+    marbleVein:     "rgba(232,80,16,0.5)",
+    marbleSpeed:    "10s",
+    particleEffect: "embers",
+    glowColor:      "rgba(220,50,10,0.6)",
+  },
+};
+
 // ── Product types ────────────────────────────────────────────────
 
 export type StockStatus = "in_stock" | "low_stock" | "out_of_stock" | "coming_soon";
@@ -52,6 +125,7 @@ export type DBProduct = {
   related_product_ids: string[];
   loyalty_multiplier: number;
   sort_order: number;
+  theme: ProductTheme | null;
   created_at: string;
   updated_at: string;
   created_by: string | null;

@@ -9,11 +9,14 @@ import type {
   CustomSegment,
   StockStatus,
   ProductVisibility,
+  ProductTheme,
+  ParticleEffectType,
 } from "@/lib/site-management";
 import {
   STOCK_STATUS_LABELS,
   VISIBILITY_LABELS,
   DEFAULT_SEGMENT_TEMPLATES,
+  DEFAULT_PRODUCT_THEMES,
   penceToDisplay,
   displayToPence,
 } from "@/lib/site-management";
@@ -37,6 +40,7 @@ type FormState = {
   related_product_ids: string[];
   loyalty_multiplier: string;
   sort_order: string;
+  theme: ProductTheme | null;
 };
 
 type Props = {
@@ -63,6 +67,7 @@ function productToForm(p: DBProductWithImages): FormState {
     related_product_ids: p.related_product_ids ?? [],
     loyalty_multiplier: String(p.loyalty_multiplier ?? 1),
     sort_order: String(p.sort_order ?? 0),
+    theme: (p.theme as ProductTheme | null) ?? null,
   };
 }
 
@@ -82,6 +87,7 @@ function draftToForm(draft: Record<string, any>): Partial<FormState> {
   if ("related_product_ids" in draft) out.related_product_ids = draft.related_product_ids;
   if ("loyalty_multiplier" in draft) out.loyalty_multiplier = String(draft.loyalty_multiplier);
   if ("sort_order" in draft) out.sort_order = String(draft.sort_order);
+  if ("theme" in draft) out.theme = draft.theme as ProductTheme | null;
   return out;
 }
 
@@ -100,6 +106,7 @@ function formToDraft(form: FormState) {
     related_product_ids: form.related_product_ids,
     loyalty_multiplier: parseFloat(form.loyalty_multiplier) || 1,
     sort_order: parseInt(form.sort_order) || 0,
+    theme: form.theme,
   };
 }
 
@@ -125,7 +132,7 @@ export default function ProductEditor({
   const [publishing, setPublishing] = useState(false);
   const [showPublishModal, setShowPublishModal] = useState(false);
   const [showDiscardModal, setShowDiscardModal] = useState(false);
-  const [activeTab, setActiveTab] = useState<"core" | "segments" | "seo" | "history">("core");
+  const [activeTab, setActiveTab] = useState<"core" | "segments" | "theme" | "seo" | "history">("core");
   const [toast, setToast] = useState<string | null>(null);
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isDirty = useRef(false);
@@ -241,10 +248,11 @@ export default function ProductEditor({
   useEffect(() => () => { if (saveTimer.current) clearTimeout(saveTimer.current); }, []);
 
   const tabs = [
-    { key: "core", label: "Core details" },
+    { key: "core",     label: "Core details" },
     { key: "segments", label: `Segments (${form.custom_segments.length})` },
-    { key: "seo", label: "SEO & settings" },
-    { key: "history", label: "Version history" },
+    { key: "theme",    label: "Theme" },
+    { key: "seo",      label: "SEO & settings" },
+    { key: "history",  label: "Version history" },
   ] as const;
 
   return (
@@ -534,6 +542,15 @@ export default function ProductEditor({
         </div>
       )}
 
+      {/* ── Tab: Theme ── */}
+      {activeTab === "theme" && (
+        <ThemeTab
+          slug={form.slug}
+          theme={form.theme}
+          onChange={(t) => update("theme", t)}
+        />
+      )}
+
       {/* ── Tab: SEO & Settings ── */}
       {activeTab === "seo" && (
         <div className="space-y-5">
@@ -630,6 +647,199 @@ export default function ProductEditor({
     </div>
   );
 }
+
+// ── ThemeTab ──────────────────────────────────────────────────────────────────
+
+const PARTICLE_OPTIONS: { value: ParticleEffectType; label: string }[] = [
+  { value: "petals",   label: "Petals (Freyja's Bloom)"     },
+  { value: "embers",   label: "Embers (Loki Hell Fire)"     },
+  { value: "droplets", label: "Droplets (Dümmens Nectar)"   },
+  { value: "sparks",   label: "Sparks"                       },
+  { value: "none",     label: "None"                         },
+];
+
+const THEME_FIELDS: { key: keyof ProductTheme; label: string; type: "color" | "text" }[] = [
+  { key: "bg",           label: "Primary background",   type: "color" },
+  { key: "bg2",          label: "Secondary background", type: "color" },
+  { key: "card",         label: "Card background",      type: "color" },
+  { key: "panel",        label: "Panel background",     type: "color" },
+  { key: "accent",       label: "Accent colour",        type: "color" },
+  { key: "heading",      label: "Heading colour",       type: "color" },
+  { key: "marbleC1",     label: "Marble base 1",        type: "color" },
+  { key: "marbleC2",     label: "Marble base 2",        type: "color" },
+  { key: "accentGlow",   label: "Accent glow (rgba)",   type: "text"  },
+  { key: "accentBorder", label: "Accent border (rgba)", type: "text"  },
+  { key: "marbleVein",   label: "Marble vein (rgba)",   type: "text"  },
+  { key: "marbleSpeed",  label: "Marble speed (e.g. 14s)", type: "text" },
+  { key: "glowColor",    label: "Atmospheric glow (rgba)", type: "text" },
+];
+
+function ThemeTab({
+  slug,
+  theme,
+  onChange,
+}: {
+  slug: string;
+  theme: ProductTheme | null;
+  onChange: (t: ProductTheme | null) => void;
+}) {
+  const defaultTheme = DEFAULT_PRODUCT_THEMES[slug] ?? null;
+  // Effective theme for the editor: custom override or default
+  const effective: ProductTheme | null = theme ?? defaultTheme;
+
+  const update = (key: keyof ProductTheme, value: string) => {
+    const base = effective ?? (defaultTheme ?? ({} as ProductTheme));
+    onChange({ ...base, [key]: value } as ProductTheme);
+  };
+
+  const handleReset = () => {
+    // Reset to the Claude Code default for this slug (null = use default)
+    onChange(null);
+  };
+
+  return (
+    <div className="space-y-8">
+      <div className="flex items-start justify-between gap-4 flex-wrap">
+        <div>
+          <p className="text-sm text-neutral-400">
+            Customise the atmospheric theme that appears when members visit this product page.
+            Changes are saved to the draft and published with the product.
+          </p>
+          {!defaultTheme && (
+            <p className="text-xs text-amber-400 mt-1">
+              No default theme defined for slug <code className="font-mono">{slug}</code>. A custom theme must be set manually.
+            </p>
+          )}
+        </div>
+        <div className="flex gap-2 shrink-0">
+          {defaultTheme && (
+            <button
+              type="button"
+              onClick={handleReset}
+              className="text-xs px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-neutral-400 hover:text-white border border-white/10 transition"
+            >
+              Reset to default
+            </button>
+          )}
+          <a
+            href={`/product/${slug}?preview=1`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-xs px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-neutral-400 hover:text-white border border-white/10 transition"
+          >
+            Preview ↗
+          </a>
+        </div>
+      </div>
+
+      {/* Live mini-preview */}
+      {effective && (
+        <div
+          className="rounded-xl overflow-hidden border border-white/10"
+          style={{ background: effective.bg }}
+        >
+          <div className="px-5 py-3 flex items-center gap-3 border-b border-white/10"
+            style={{ background: effective.bg2 }}>
+            <div className="w-3 h-3 rounded-full" style={{ background: effective.accent }} />
+            <span className="text-xs font-semibold tracking-widest" style={{ color: effective.accent, fontFamily: "var(--font-heading, serif)" }}>
+              Ragnarök
+            </span>
+          </div>
+          <div className="p-5 grid grid-cols-[1fr_auto] gap-4 items-start">
+            {/* Text preview */}
+            <div>
+              <div className="text-lg font-bold mb-1" style={{ color: effective.heading, fontFamily: "var(--font-heading, serif)" }}>
+                {slug.split("-").map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(" ")}
+              </div>
+              <div className="h-px mb-3" style={{ background: effective.accentBorder }} />
+              <div className="text-xs mb-3" style={{ color: "rgba(240,236,228,0.5)" }}>
+                Product description preview…
+              </div>
+              <div className="text-xl font-bold" style={{ color: effective.accent }}>£30.00</div>
+            </div>
+            {/* Colour swatches */}
+            <div className="grid grid-cols-3 gap-1.5">
+              {[effective.bg, effective.bg2, effective.card, effective.panel, effective.accent, effective.heading].map((c, i) => (
+                <div key={i} className="w-6 h-6 rounded" style={{ background: c, border: "1px solid rgba(255,255,255,0.12)" }} title={c} />
+              ))}
+            </div>
+          </div>
+          {/* Particle type indicator */}
+          <div className="px-5 pb-4 text-xs" style={{ color: effective.accent }}>
+            ✦ Particle effect: {effective.particleEffect}
+          </div>
+        </div>
+      )}
+
+      {/* Colour pickers */}
+      <div>
+        <h3 className="text-sm font-semibold text-neutral-300 mb-4">Colours &amp; effects</h3>
+        <div className="grid sm:grid-cols-2 gap-4">
+          {THEME_FIELDS.map(({ key, label, type }) => (
+            <div key={key} className="space-y-1.5">
+              <label className="block text-xs font-medium text-neutral-400">{label}</label>
+              {type === "color" ? (
+                <div className="flex items-center gap-2">
+                  <input
+                    type="color"
+                    value={effective?.[key] ?? "#000000"}
+                    onChange={(e) => update(key, e.target.value)}
+                    className="w-9 h-9 rounded cursor-pointer border border-white/15 bg-transparent"
+                    style={{ padding: "2px" }}
+                  />
+                  <input
+                    type="text"
+                    value={effective?.[key] ?? ""}
+                    onChange={(e) => update(key, e.target.value)}
+                    placeholder="#rrggbb"
+                    className="flex-1 rounded-lg border border-white/15 bg-white/5 px-2.5 py-1.5 text-xs text-neutral-100 font-mono focus:outline-none focus:border-white/30"
+                  />
+                </div>
+              ) : (
+                <input
+                  type="text"
+                  value={effective?.[key] ?? ""}
+                  onChange={(e) => update(key, e.target.value)}
+                  placeholder={key === "marbleSpeed" ? "14s" : "rgba(r,g,b,a)"}
+                  className="w-full rounded-lg border border-white/15 bg-white/5 px-2.5 py-1.5 text-xs text-neutral-100 font-mono focus:outline-none focus:border-white/30"
+                />
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Particle effect selector */}
+      <div className="space-y-1.5">
+        <label className="block text-sm font-medium text-neutral-300">Particle effect</label>
+        <p className="text-xs text-neutral-600">The ambient particle animation shown on the product page.</p>
+        <select
+          value={effective?.particleEffect ?? "none"}
+          onChange={(e) => update("particleEffect", e.target.value)}
+          className="w-full max-w-xs rounded-lg border border-white/15 bg-neutral-900 px-3 py-2 text-sm text-neutral-100 focus:outline-none focus:border-white/30"
+        >
+          {PARTICLE_OPTIONS.map((o) => (
+            <option key={o.value} value={o.value}>{o.label}</option>
+          ))}
+        </select>
+      </div>
+
+      {/* Custom theme indicator */}
+      {theme !== null && defaultTheme && (
+        <p className="text-xs text-amber-400/70">
+          This product has a custom theme override. Reset to default to restore the Claude Code defaults.
+        </p>
+      )}
+      {theme === null && defaultTheme && (
+        <p className="text-xs text-neutral-600">
+          Using default theme. Changing any value above will create a custom override.
+        </p>
+      )}
+    </div>
+  );
+}
+
+// ── Field ─────────────────────────────────────────────────────────────────────
 
 function Field({
   label,
