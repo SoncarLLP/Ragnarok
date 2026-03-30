@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { CATEGORIES, normalisePost, POST_SELECT } from "@/lib/community";
+import { CATEGORIES, normalisePost, POST_SELECT, isPostPinned } from "@/lib/community";
 import type { Category, PostData } from "@/lib/community";
 import CategoryFilter from "./CategoryFilter";
 import PostCard from "./PostCard";
@@ -71,9 +71,12 @@ export default async function CommunityPage(props: unknown) {
   const posts: PostData[] = (rawPosts ?? []).map((p: any) => normalisePost(p));
 
   // Filter based on privacy: admins bypass all filters
+  // Official SONCAR Team posts are always visible
   const visible = isAdmin
     ? posts
     : posts.filter((p) => {
+        // Official posts are always shown
+        if (p.post_as_role) return true;
         // Hide posts from users I've blocked
         if (blockedByMeIds.has(p.user_id)) return false;
         const mode = p.author.account_mode;
@@ -84,10 +87,16 @@ export default async function CommunityPage(props: unknown) {
         return true;
       });
 
-  // Followed users' posts first, then the rest
+  // Sort: pinned official posts first (most recently created), then followed users, then rest
+  const pinnedPosts = visible
+    .filter((p) => isPostPinned(p))
+    .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+
+  const unpinnedPosts = visible.filter((p) => !isPostPinned(p));
   const sorted = [
-    ...visible.filter((p) => followedIds.has(p.user_id)),
-    ...visible.filter((p) => !followedIds.has(p.user_id)),
+    ...pinnedPosts,
+    ...unpinnedPosts.filter((p) => followedIds.has(p.user_id)),
+    ...unpinnedPosts.filter((p) => !followedIds.has(p.user_id)),
   ];
 
   return (
@@ -111,7 +120,7 @@ export default async function CommunityPage(props: unknown) {
                 >
                   My Account
                 </Link>
-                <CreatePostButton userId={user.id} />
+                <CreatePostButton userId={user.id} userRole={userRole} />
               </>
             ) : (
               <Link

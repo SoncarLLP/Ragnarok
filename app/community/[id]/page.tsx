@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { createClient } from "@/lib/supabase/server";
-import { normalisePost, POST_SELECT } from "@/lib/community";
+import { normalisePost, POST_SELECT, isPostPinned, pinTimeRemaining } from "@/lib/community";
 import ReactionButton from "../ReactionButton";
 import ShareButton from "../ShareButton";
 import FollowButton from "../FollowButton";
@@ -10,6 +10,7 @@ import MentionText from "../MentionText";
 import CommentSection from "./CommentSection";
 import MemberBadge from "@/components/MemberBadge";
 import type { CommentData } from "@/lib/community";
+import { getDisplayName } from "@/lib/display-name";
 
 export default async function PostPage(props: unknown) {
   const rawParams =
@@ -43,7 +44,7 @@ export default async function PostPage(props: unknown) {
   const { data: rawComments } = await supabase
     .from("comments")
     .select(
-      "id, post_id, user_id, content, created_at, profiles!comments_user_id_fkey(full_name, username, avatar_url, role, tier), reactions!comment_id(emoji)"
+      "id, post_id, user_id, content, created_at, profiles!comments_user_id_fkey(full_name, username, avatar_url, role, tier, display_name_preference), reactions!comment_id(emoji)"
     )
     .eq("post_id", id)
     .order("created_at", { ascending: true });
@@ -131,10 +132,14 @@ export default async function PostPage(props: unknown) {
     };
   });
 
-  const authorHref = post.author.username
+  const isOfficialPost = !!post.post_as_role;
+  const pinned = isPostPinned(post);
+  const pinLabel = pinned ? pinTimeRemaining(post) : null;
+
+  const authorHref = !isOfficialPost && post.author.username
     ? `/account/profile/${post.author.username}`
     : "#";
-  const authorName = post.author.full_name || post.author.username || "Member";
+  const authorName = getDisplayName(post.author);
 
   return (
     <main className="min-h-screen bg-neutral-950 text-neutral-100">
@@ -146,36 +151,82 @@ export default async function PostPage(props: unknown) {
           ← Community
         </Link>
 
-        <article className="rounded-xl border border-white/10 bg-white/5 overflow-hidden">
+        <article className={`rounded-xl overflow-hidden ${
+          isOfficialPost
+            ? "border border-amber-500/25 bg-gradient-to-b from-slate-800/70 to-slate-900/80 shadow-lg shadow-black/30"
+            : "border border-white/10 bg-white/5"
+        }`}>
+
+          {/* Pinned banner — official posts only */}
+          {isOfficialPost && pinned && (
+            <div className="flex items-center gap-1.5 px-6 py-2 bg-amber-500/15 border-b border-amber-500/20 text-xs text-amber-300">
+              <span>📌</span>
+              <span>{pinLabel}</span>
+            </div>
+          )}
+
+          {/* Official Post badge */}
+          {isOfficialPost && (
+            <div className="px-6 pt-4 pb-0">
+              <span className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-400/30 font-medium">
+                <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z" />
+                </svg>
+                Official Post
+              </span>
+            </div>
+          )}
+
           {/* Author */}
-          <div className="px-6 pt-6 flex items-center justify-between gap-4">
-            <Link href={authorHref} className="flex items-center gap-3">
-              {post.author.avatar_url ? (
-                <img
-                  src={post.author.avatar_url}
-                  alt={authorName}
-                  className="w-10 h-10 rounded-full object-cover"
-                />
-              ) : (
-                <div className="w-10 h-10 rounded-full bg-amber-700 flex items-center justify-center text-sm font-semibold shrink-0">
-                  {authorName.slice(0, 2).toUpperCase()}
+          <div className="px-6 pt-4 flex items-center justify-between gap-4">
+            {isOfficialPost ? (
+              /* SONCAR Team author display — no profile link */
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-amber-500 to-amber-700 flex items-center justify-center shrink-0 shadow-md shadow-amber-900/40">
+                  <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4z" />
+                  </svg>
                 </div>
-              )}
-              <div>
-                <div className="font-medium flex items-center gap-1.5 flex-wrap">
-                  {authorName}
-                  <MemberBadge role={post.author.role} tier={post.author.tier} />
-                </div>
-                <div className="text-xs text-neutral-500">
-                  {new Date(post.created_at).toLocaleDateString("en-GB", {
-                    day: "numeric",
-                    month: "long",
-                    year: "numeric",
-                  })}
+                <div>
+                  <div className="font-semibold text-amber-200">SONCAR Team</div>
+                  <div className="text-xs text-neutral-500">
+                    {new Date(post.created_at).toLocaleDateString("en-GB", {
+                      day: "numeric",
+                      month: "long",
+                      year: "numeric",
+                    })}
+                  </div>
                 </div>
               </div>
-            </Link>
-            {user && user.id !== post.user_id && (
+            ) : (
+              <Link href={authorHref} className="flex items-center gap-3">
+                {post.author.avatar_url ? (
+                  <img
+                    src={post.author.avatar_url}
+                    alt={authorName}
+                    className="w-10 h-10 rounded-full object-cover"
+                  />
+                ) : (
+                  <div className="w-10 h-10 rounded-full bg-amber-700 flex items-center justify-center text-sm font-semibold shrink-0">
+                    {authorName.slice(0, 2).toUpperCase()}
+                  </div>
+                )}
+                <div>
+                  <div className="font-medium flex items-center gap-1.5 flex-wrap">
+                    {authorName}
+                    <MemberBadge role={post.author.role} tier={post.author.tier} />
+                  </div>
+                  <div className="text-xs text-neutral-500">
+                    {new Date(post.created_at).toLocaleDateString("en-GB", {
+                      day: "numeric",
+                      month: "long",
+                      year: "numeric",
+                    })}
+                  </div>
+                </div>
+              </Link>
+            )}
+            {!isOfficialPost && user && user.id !== post.user_id && (
               <FollowButton
                 targetUserId={post.user_id}
                 initialFollowing={isFollowing}

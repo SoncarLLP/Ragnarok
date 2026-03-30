@@ -8,9 +8,46 @@ import MentionTextarea from "./MentionTextarea";
 
 const PRESET_CATEGORIES = CATEGORIES as readonly string[];
 
-export default function CreatePostButton({ userId }: { userId: string }) {
+const PIN_OPTIONS = [
+  { value: "none",        label: "Do not pin" },
+  { value: "24h",         label: "Pin for 24 hours" },
+  { value: "3d",          label: "Pin for 3 days" },
+  { value: "7d",          label: "Pin for 7 days" },
+  { value: "14d",         label: "Pin for 14 days" },
+  { value: "30d",         label: "Pin for 30 days" },
+  { value: "indefinite",  label: "Pin indefinitely (super admin only)" },
+] as const;
+
+type PinValue = (typeof PIN_OPTIONS)[number]["value"];
+
+function pinValueToTimestamp(value: PinValue): { pinned_until: string | null; pin_indefinite: boolean } {
+  if (value === "none") return { pinned_until: null, pin_indefinite: false };
+  if (value === "indefinite") return { pinned_until: null, pin_indefinite: true };
+  const durations: Record<string, number> = {
+    "24h": 24 * 60 * 60 * 1000,
+    "3d":  3  * 24 * 60 * 60 * 1000,
+    "7d":  7  * 24 * 60 * 60 * 1000,
+    "14d": 14 * 24 * 60 * 60 * 1000,
+    "30d": 30 * 24 * 60 * 60 * 1000,
+  };
+  return {
+    pinned_until: new Date(Date.now() + durations[value]).toISOString(),
+    pin_indefinite: false,
+  };
+}
+
+export default function CreatePostButton({
+  userId,
+  userRole,
+}: {
+  userId: string;
+  userRole?: string | null;
+}) {
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
+
+  const isAdminOrAbove = userRole === "admin" || userRole === "super_admin";
+  const isSuperAdmin   = userRole === "super_admin";
 
   const [open, setOpen] = useState(false);
   const [type, setType] = useState<"text" | "photo" | "recipe">("text");
@@ -23,6 +60,11 @@ export default function CreatePostButton({ userId }: { userId: string }) {
   const [customTag, setCustomTag] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
+
+  // Official post fields
+  const [postingAs, setPostingAs] = useState<"self" | "team">("self");
+  const [pinOption, setPinOption] = useState<PinValue>("none");
+
   const fileRef = useRef<HTMLInputElement>(null);
 
   function reset() {
@@ -35,6 +77,8 @@ export default function CreatePostButton({ userId }: { userId: string }) {
     setImageFile(null);
     setImagePreview(null);
     setError("");
+    setPostingAs("self");
+    setPinOption("none");
   }
 
   function toggleCat(cat: string) {
@@ -57,9 +101,21 @@ export default function CreatePostButton({ userId }: { userId: string }) {
     setCustomTag("");
   }
 
+  // When switching away from team mode, reset pin option
+  function handlePostingAsChange(value: "self" | "team") {
+    setPostingAs(value);
+    if (value === "self") setPinOption("none");
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (type === "photo" && !imageFile) { setError("Please select a photo."); return; }
+
+    // Validate pin option permissions
+    if (postingAs === "team" && pinOption === "indefinite" && !isSuperAdmin) {
+      setError("Only super admins can pin indefinitely.");
+      return;
+    }
 
     setSubmitting(true);
     setError("");
@@ -81,6 +137,15 @@ export default function CreatePostButton({ userId }: { userId: string }) {
         image_url = publicUrl;
       }
 
+      // Build official post fields
+      const isTeamPost = postingAs === "team" && isAdminOrAbove;
+      const roleForPost = isTeamPost
+        ? (userRole as "admin" | "super_admin")
+        : null;
+      const { pinned_until, pin_indefinite } = isTeamPost
+        ? pinValueToTimestamp(pinOption)
+        : { pinned_until: null, pin_indefinite: false };
+
       const { data: inserted, error: insertErr } = await supabase
         .from("posts")
         .insert({
@@ -91,6 +156,11 @@ export default function CreatePostButton({ userId }: { userId: string }) {
           ingredients: type === "recipe" ? ingredients.trim() || null : null,
           method: type === "recipe" ? method.trim() || null : null,
           categories: selectedCats,
+          post_as_role: roleForPost,
+          pinned_until,
+          pin_indefinite,
+          created_by_role: roleForPost,
+          created_by_user_id: isTeamPost ? userId : null,
         })
         .select("id")
         .single();
@@ -116,6 +186,11 @@ export default function CreatePostButton({ userId }: { userId: string }) {
     }
   }
 
+  // Filter pin options: remove "indefinite" for non-super-admins
+  const availablePinOptions = PIN_OPTIONS.filter(
+    (o) => o.value !== "indefinite" || isSuperAdmin
+  );
+
   return (
     <>
       <button
@@ -140,6 +215,61 @@ export default function CreatePostButton({ userId }: { userId: string }) {
             </div>
 
             <form onSubmit={handleSubmit} className="px-5 py-4 space-y-4">
+
+              {/* Post as — admin/super_admin only */}
+              {isAdminOrAbove && (
+                <div className="rounded-lg border border-white/10 bg-white/5 p-3 space-y-2">
+                  <p className="text-xs font-medium text-neutral-400 uppercase tracking-wide">
+                    Post as
+                  </p>
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => handlePostingAsChange("self")}
+                      className={`flex-1 py-2 rounded-lg text-sm transition ${
+                        postingAs === "self"
+                          ? "bg-white/15 text-white"
+                          : "bg-white/5 text-neutral-400 hover:text-white"
+                      }`}
+                    >
+                      Myself
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handlePostingAsChange("team")}
+                      className={`flex-1 py-2 rounded-lg text-sm transition flex items-center justify-center gap-1.5 ${
+                        postingAs === "team"
+                          ? "bg-amber-500/25 text-amber-300 border border-amber-400/30"
+                          : "bg-white/5 text-neutral-400 hover:text-white border border-transparent"
+                      }`}
+                    >
+                      <span className="text-base">🛡️</span>
+                      SONCAR Team
+                    </button>
+                  </div>
+
+                  {/* Pin options — shown when posting as SONCAR Team */}
+                  {postingAs === "team" && (
+                    <div className="pt-2 border-t border-white/10">
+                      <label className="block text-xs text-neutral-400 mb-1.5">
+                        Pin this post
+                      </label>
+                      <select
+                        value={pinOption}
+                        onChange={(e) => setPinOption(e.target.value as PinValue)}
+                        className="w-full rounded-md bg-neutral-800 border border-white/10 px-3 py-2 text-sm text-neutral-200 outline-none focus:border-white/30"
+                      >
+                        {availablePinOptions.map((o) => (
+                          <option key={o.value} value={o.value}>
+                            {o.label}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                </div>
+              )}
+
               {/* Type */}
               <div className="flex gap-2">
                 {(["text", "photo", "recipe"] as const).map((t) => (
@@ -304,9 +434,17 @@ export default function CreatePostButton({ userId }: { userId: string }) {
               <button
                 type="submit"
                 disabled={submitting}
-                className="w-full py-2.5 rounded-lg bg-white/10 hover:bg-white/20 disabled:opacity-60 text-sm font-medium transition"
+                className={`w-full py-2.5 rounded-lg disabled:opacity-60 text-sm font-medium transition ${
+                  postingAs === "team"
+                    ? "bg-amber-500/25 hover:bg-amber-500/35 text-amber-200"
+                    : "bg-white/10 hover:bg-white/20"
+                }`}
               >
-                {submitting ? "Posting…" : "Post"}
+                {submitting
+                  ? "Posting…"
+                  : postingAs === "team"
+                  ? "Post as SONCAR Team"
+                  : "Post"}
               </button>
             </form>
           </div>

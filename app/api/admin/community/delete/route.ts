@@ -19,7 +19,8 @@ export async function POST(req: Request) {
     .eq("id", user.id)
     .single();
 
-  if (!["admin", "super_admin"].includes(callerProfile?.role ?? "")) {
+  const callerRole = callerProfile?.role ?? "";
+  if (!["admin", "super_admin"].includes(callerRole)) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
@@ -27,6 +28,22 @@ export async function POST(req: Request) {
 
   if (!body.id || !["post", "comment"].includes(body.type)) {
     return NextResponse.json({ error: "Invalid request" }, { status: 400 });
+  }
+
+  // For posts, check if it's a SONCAR Team post — only super_admins can delete those
+  if (body.type === "post") {
+    const { data: post } = await admin
+      .from("posts")
+      .select("post_as_role")
+      .eq("id", body.id)
+      .single();
+
+    if (post?.post_as_role && callerRole !== "super_admin") {
+      return NextResponse.json(
+        { error: "Only super admins can delete SONCAR Team posts" },
+        { status: 403 }
+      );
+    }
   }
 
   const table = body.type === "post" ? "posts" : "comments";

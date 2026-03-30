@@ -7,16 +7,18 @@ import MembersTab from "./MembersTab";
 import BannedTab from "./BannedTab";
 import WarningsLog from "./WarningsLog";
 import BlockAuthTab from "./BlockAuthTab";
+import PinnedPostsTab from "./PinnedPostsTab";
 import type { BlockAuthRecord, MemberOption } from "./BlockAuthTab";
+import type { PinnedPostRecord } from "./PinnedPostsTab";
 
 type Post = {
   id: string; type: string; content: string | null; image_url: string | null;
   categories: string[]; created_at: string;
-  profiles: { full_name: string | null; username: string | null } | { full_name: string | null; username: string | null }[] | null;
+  profiles: { full_name: string | null; username: string | null; display_name_preference?: string | null } | { full_name: string | null; username: string | null; display_name_preference?: string | null }[] | null;
 };
 type Comment = {
   id: string; content: string; created_at: string; post_id: string;
-  profiles: { full_name: string | null; username: string | null } | { full_name: string | null; username: string | null }[] | null;
+  profiles: { full_name: string | null; username: string | null; display_name_preference?: string | null } | { full_name: string | null; username: string | null; display_name_preference?: string | null }[] | null;
 };
 export type FlagRecord = {
   id: string; post_id: string; reason: string | null; created_at: string;
@@ -40,6 +42,7 @@ type Props = {
   flags: FlagRecord[];
   members: MemberRecord[];
   warnings: WarningRecord[];
+  pinnedPosts?: PinnedPostRecord[];
   blockAuths?: BlockAuthRecord[];
   allMemberOptions?: MemberOption[];
   adminOptions?: MemberOption[];
@@ -48,6 +51,7 @@ type Props = {
 const BASE_TABS = [
   { key: "moderation", label: "Moderation" },
   { key: "flagged",    label: "Flagged" },
+  { key: "pinned",     label: "Pinned Posts" },
   { key: "members",    label: "Members" },
   { key: "banned",     label: "Banned" },
   { key: "warnings",   label: "Warnings" },
@@ -57,7 +61,10 @@ const SUPER_ADMIN_TABS = [
   { key: "block_auth", label: "Block Auth" },
 ];
 
-export default function AdminTabs({ currentUserRole, posts, comments, flags, members, warnings, blockAuths = [], allMemberOptions = [], adminOptions = [] }: Props) {
+export default function AdminTabs({
+  currentUserRole, posts, comments, flags, members, warnings,
+  pinnedPosts = [], blockAuths = [], allMemberOptions = [], adminOptions = [],
+}: Props) {
   const [active, setActive] = useState("moderation");
 
   const banned = members.filter((m) => m.status === "banned");
@@ -88,6 +95,11 @@ export default function AdminTabs({ currentUserRole, posts, comments, flags, mem
                 {banned.length}
               </span>
             )}
+            {t.key === "pinned" && pinnedPosts.length > 0 && (
+              <span className="ml-1.5 px-1.5 py-0.5 text-xs rounded-full bg-amber-500/20 text-amber-300">
+                {pinnedPosts.length}
+              </span>
+            )}
           </button>
         ))}
       </div>
@@ -101,6 +113,12 @@ export default function AdminTabs({ currentUserRole, posts, comments, flags, mem
       )}
       {active === "flagged" && (
         <FlaggedTab flags={flags} />
+      )}
+      {active === "pinned" && (
+        <PinnedPostsTab
+          posts={pinnedPosts}
+          currentUserRole={currentUserRole}
+        />
       )}
       {active === "members" && (
         <MembersTab members={members} currentUserRole={currentUserRole} />

@@ -978,20 +978,21 @@ export default function PoliciesPage() {
           ─────────────────────────────────────────────────────── */}
           <Section id="community" title="Community Guidelines">
             <TableOfContents items={[
-              { href: "#comm-purpose",   label: "Purpose of the community" },
-              { href: "#comm-age",       label: "Age requirements" },
-              { href: "#comm-acceptable",label: "Acceptable use" },
-              { href: "#comm-prohibited",label: "Prohibited content" },
+              { href: "#comm-purpose",      label: "Purpose of the community" },
+              { href: "#comm-age",          label: "Age requirements" },
+              { href: "#comm-acceptable",   label: "Acceptable use" },
+              { href: "#comm-prohibited",   label: "Prohibited content" },
               { href: "#comm-responsibility", label: "Member responsibilities" },
-              { href: "#comm-moderation",label: "Moderation policy" },
-              { href: "#comm-appeals",   label: "Appeals process" },
-              { href: "#comm-removal",   label: "Content removal" },
-              { href: "#comm-ip",        label: "Intellectual property" },
-              { href: "#comm-mentions",    label: "Member mentions (@mentions)" },
-              { href: "#comm-sharing",     label: "Social sharing" },
-              { href: "#comm-privacy",     label: "Account privacy modes" },
-              { href: "#comm-blocks",      label: "Blocking members" },
-              { href: "#comm-follow-req",  label: "Follow requests" },
+              { href: "#comm-official",     label: "Official SONCAR Team posts" },
+              { href: "#comm-moderation",   label: "Moderation policy" },
+              { href: "#comm-appeals",      label: "Appeals process" },
+              { href: "#comm-removal",      label: "Content removal" },
+              { href: "#comm-ip",           label: "Intellectual property" },
+              { href: "#comm-mentions",     label: "Member mentions (@mentions)" },
+              { href: "#comm-sharing",      label: "Social sharing" },
+              { href: "#comm-privacy",      label: "Account privacy modes" },
+              { href: "#comm-blocks",       label: "Blocking members" },
+              { href: "#comm-follow-req",   label: "Follow requests" },
             ]} />
 
             <H3 id="comm-purpose">5.1 Purpose of the Community</H3>
@@ -1056,7 +1057,7 @@ export default function PoliciesPage() {
                 violence, or content not suitable for a general audience.
               </li>
               <li>
-                <strong>Personal data of others:</strong> sharing another person's private
+                <strong>Personal data of others:</strong> sharing another person&apos;s private
                 information without their consent (&quot;doxxing&quot;).
               </li>
               <li>
@@ -1079,7 +1080,47 @@ export default function PoliciesPage() {
               remove content at our sole discretion.
             </P>
 
-            <H3 id="comm-moderation">5.6 Moderation Policy</H3>
+            <H3 id="comm-official">5.6 Official SONCAR Team Posts</H3>
+            <P>
+              From time to time, SONCAR Limited may publish official posts in the community feed
+              under the <strong>SONCAR Team</strong> identity. These posts are clearly labelled
+              with an <strong>Official Post</strong> badge and are displayed with a distinct
+              appearance to differentiate them from member-generated content.
+            </P>
+            <UL>
+              <li>
+                <strong>Identity:</strong> Official posts are attributed to SONCAR Team as an
+                organisational identity, not to any individual member, admin, or employee. The
+                personal account, name, or profile of the individual who created the post is never
+                disclosed or linked on the post itself.
+              </li>
+              <li>
+                <strong>Pinned posts:</strong> Official SONCAR Team posts may be pinned to the top
+                of the community feed for a set duration (e.g. 24 hours, 7 days, 30 days) or
+                indefinitely. Pinned posts will display a pin indicator and the approximate time
+                remaining on the pin. Pinned posts always appear above regular member posts in the
+                feed, regardless of when they were published.
+              </li>
+              <li>
+                <strong>Multiple pinned posts:</strong> if more than one SONCAR Team post is pinned
+                at the same time, they are ordered by most recently created first.
+              </li>
+              <li>
+                <strong>Automatic unpinning:</strong> posts pinned for a fixed duration are
+                automatically unpinned once the pin period expires.
+              </li>
+              <li>
+                <strong>Deletion:</strong> Official SONCAR Team posts can only be removed by super
+                admins. Regular admins cannot delete SONCAR Team posts.
+              </li>
+            </UL>
+            <P>
+              Official SONCAR Team posts may include announcements, product news, community
+              challenges, safety notices, or other information relevant to the SONCAR community.
+              They are subject to the same community standards as all other content.
+            </P>
+
+            <H3 id="comm-moderation">5.7 Moderation Policy</H3>
             <P>
               Our moderation team (members with <strong>admin</strong> or{" "}
               <strong>super admin</strong> roles) has the authority to:
@@ -1101,7 +1142,7 @@ export default function PoliciesPage() {
               action is required to comply with the law.
             </P>
 
-            <H3 id="comm-appeals">5.7 Appeals Process</H3>
+            <H3 id="comm-appeals">5.8 Appeals Process</H3>
             <P>
               If you believe a moderation decision (content removal, warning, or ban) was made
               in error, you may appeal by emailing{" "}
@@ -1123,7 +1164,7 @@ export default function PoliciesPage() {
               applicable law.
             </P>
 
-            <H3 id="comm-removal">5.8 SONCAR&apos;s Right to Remove Content</H3>
+            <H3 id="comm-removal">5.9 SONCAR&apos;s Right to Remove Content</H3>
             <P>
               SONCAR Limited reserves the right to remove any content from the community
               section at any time and without prior notice, at our sole discretion. This
@@ -1132,7 +1173,7 @@ export default function PoliciesPage() {
               explicitly covered by these guidelines.
             </P>
 
-            <H3 id="comm-ip">5.9 Intellectual Property</H3>
+            <H3 id="comm-ip">5.10 Intellectual Property</H3>
             <P>
               You retain ownership of all content you post to the SONCAR community section. By
               posting content, you grant SONCAR Limited a <strong>non-exclusive, royalty-free,
@@ -1151,7 +1192,7 @@ export default function PoliciesPage() {
               third-party intellectual property rights.
             </P>
 
-            <H3 id="comm-mentions">5.10 Member Mentions (@mentions)</H3>
+            <H3 id="comm-mentions">5.11 Member Mentions (@mentions)</H3>
             <P>
               You can mention other members in posts and comments by typing{" "}
               <strong>@</strong> followed by their username. When you mention a member:
@@ -1185,7 +1226,7 @@ export default function PoliciesPage() {
               <strong>hello@soncar.co.uk</strong> and our moderation team will review it.
             </P>
 
-            <H3 id="comm-sharing">5.11 Social Sharing</H3>
+            <H3 id="comm-sharing">5.12 Social Sharing</H3>
             <P>
               Community posts may be shared externally to social media platforms via the Share
               button on each post. Social sharing functionality is currently{" "}
@@ -1213,7 +1254,7 @@ export default function PoliciesPage() {
               terms of service of the platform you share to.
             </P>
 
-            <H3 id="comm-privacy">5.12 Account Privacy Modes</H3>
+            <H3 id="comm-privacy">5.13 Account Privacy Modes</H3>
             <P>
               Every SONCAR member can choose one of three account modes from their{" "}
               <strong>Privacy &amp; Safety</strong> settings (accessible at{" "}
@@ -1243,7 +1284,7 @@ export default function PoliciesPage() {
               section of your profile on an individual basis.
             </P>
 
-            <H3 id="comm-blocks">5.13 Blocking Members</H3>
+            <H3 id="comm-blocks">5.14 Blocking Members</H3>
             <P>
               You can block any other member from your{" "}
               <strong>Privacy &amp; Safety</strong> settings. When you block a member:
@@ -1270,7 +1311,7 @@ export default function PoliciesPage() {
               Super admins themselves can never be blocked.
             </P>
 
-            <H3 id="comm-follow-req">5.14 Follow Requests</H3>
+            <H3 id="comm-follow-req">5.15 Follow Requests</H3>
             <P>
               When a member&apos;s account is in <strong>Followers-only</strong> mode, other
               members will see a <strong>Request to Follow</strong> button on their profile

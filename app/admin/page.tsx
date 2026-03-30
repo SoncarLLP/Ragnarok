@@ -5,6 +5,8 @@ import { products } from "@/lib/products";
 import AdminTabs from "./AdminTabs";
 import type { FlagRecord, MemberRecord, WarningRecord } from "./AdminTabs";
 import type { BlockAuthRecord, MemberOption } from "./BlockAuthTab";
+import type { PinnedPostRecord } from "./PinnedPostsTab";
+import { getDisplayName } from "@/lib/display-name";
 
 export default async function AdminPage() {
   if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
@@ -76,15 +78,16 @@ export default async function AdminPage() {
     { data: profileRows },
     authUsersResult,
     { data: rawBlockAuths },
+    { data: rawPinnedPosts },
   ] = await Promise.all([
     admin
       .from("posts")
-      .select("id, type, content, image_url, categories, created_at, profiles!posts_user_id_fkey(full_name, username)")
+      .select("id, type, content, image_url, categories, created_at, profiles!posts_user_id_fkey(full_name, username, display_name_preference)")
       .order("created_at", { ascending: false })
       .limit(30),
     admin
       .from("comments")
-      .select("id, content, created_at, profiles!comments_user_id_fkey(full_name, username), post_id")
+      .select("id, content, created_at, profiles!comments_user_id_fkey(full_name, username, display_name_preference), post_id")
       .order("created_at", { ascending: false })
       .limit(30),
     admin
@@ -108,6 +111,13 @@ export default async function AdminPage() {
           .select("id, super_admin_id, member_id, blocked_admin_id, reason, created_at, revoked_at")
           .order("created_at", { ascending: false })
       : Promise.resolve({ data: [] }),
+    // Fetch all currently pinned SONCAR Team posts
+    admin
+      .from("posts")
+      .select("id, type, content, categories, created_at, pinned_until, pin_indefinite, created_by_user_id")
+      .not("post_as_role", "is", null)
+      .or("pin_indefinite.eq.true,pinned_until.gt." + new Date().toISOString())
+      .order("created_at", { ascending: false }),
   ]);
 
   // ── Build members list ───────────────────────────────────────
@@ -133,7 +143,7 @@ export default async function AdminPage() {
   if (flagPostIds.length > 0) {
     const { data: fps } = await admin
       .from("posts")
-      .select("id, type, content, image_url, profiles!posts_user_id_fkey(full_name, username)")
+      .select("id, type, content, image_url, profiles!posts_user_id_fkey(full_name, username, display_name_preference)")
       .in("id", flagPostIds);
     for (const fp of fps ?? []) {
       flagPostMap[fp.id] = fp;
@@ -152,10 +162,9 @@ export default async function AdminPage() {
       post_content: (fp?.content as string | null) ?? null,
       post_type: (fp?.type as string) ?? "text",
       post_image_url: (fp?.image_url as string | null) ?? null,
-      post_author:
-        (author as { full_name?: string | null; username?: string | null } | null)?.full_name ||
-        (author as { full_name?: string | null; username?: string | null } | null)?.username ||
-        "Unknown",
+      post_author: author
+        ? getDisplayName(author as { full_name?: string | null; username?: string | null; display_name_preference?: string | null })
+        : "Unknown",
     };
   });
 
@@ -166,11 +175,11 @@ export default async function AdminPage() {
       ...(rawWarnings?.map((w) => w.sent_by).filter(Boolean) ?? []),
     ]),
   ];
-  const wpMap: Record<string, { full_name: string | null; username: string | null; member_id: number | null }> = {};
+  const wpMap: Record<string, { full_name: string | null; username: string | null; member_id: number | null; display_name_preference?: string | null }> = {};
   if (warningProfileIds.length > 0) {
     const { data: wProfiles } = await admin
       .from("profiles")
-      .select("id, full_name, username, member_id")
+      .select("id, full_name, username, member_id, display_name_preference")
       .in("id", warningProfileIds);
     for (const wp of wProfiles ?? []) {
       wpMap[wp.id] = wp;
@@ -185,9 +194,9 @@ export default async function AdminPage() {
       message: w.message,
       created_at: w.created_at,
       read_at: w.read_at ?? null,
-      recipient_name: recip?.full_name || recip?.username || "Unknown",
+      recipient_name: recip ? getDisplayName(recip) : "Unknown",
       recipient_member_id: recip?.member_id ?? null,
-      sender_name: sender?.full_name || sender?.username || "Admin",
+      sender_name: sender ? getDisplayName(sender) : "Admin",
     };
   });
 
@@ -237,6 +246,54 @@ export default async function AdminPage() {
       role: p.role ?? "member",
     }));
     adminOptions = allMemberOptions.filter((m) => m.role === "admin");
+  }
+
+  // ── Build pinned posts list ──────────────────────────────────
+  // For super_admins, resolve creator names from created_by_user_id
+  let pinnedPosts: PinnedPostRecord[] = [];
+  if (rawPinnedPosts && rawPinnedPosts.length > 0) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const typed = rawPinnedPosts as any[];
+
+    if (currentUserRole === "super_admin") {
+      const creatorIds = [
+        ...new Set(typed.map((p) => p.created_by_user_id).filter(Boolean)),
+      ] as string[];
+      const creatorMap: Record<string, { full_name: string | null; username: string | null }> = {};
+      if (creatorIds.length > 0) {
+        const { data: creatorProfiles } = await admin
+          .from("profiles")
+          .select("id, full_name, username")
+          .in("id", creatorIds);
+        for (const cp of creatorProfiles ?? []) creatorMap[cp.id] = cp;
+      }
+      pinnedPosts = typed.map((p) => {
+        const creator = p.created_by_user_id ? creatorMap[p.created_by_user_id] : null;
+        return {
+          id: p.id,
+          type: p.type,
+          content: p.content ?? null,
+          categories: p.categories ?? [],
+          created_at: p.created_at,
+          pinned_until: p.pinned_until ?? null,
+          pin_indefinite: p.pin_indefinite ?? false,
+          creator_name: creator ? (creator.full_name || creator.username || null) : null,
+          creator_username: creator?.username ?? null,
+        };
+      });
+    } else {
+      pinnedPosts = typed.map((p) => ({
+        id: p.id,
+        type: p.type,
+        content: p.content ?? null,
+        categories: p.categories ?? [],
+        created_at: p.created_at,
+        pinned_until: p.pinned_until ?? null,
+        pin_indefinite: p.pin_indefinite ?? false,
+        creator_name: null,
+        creator_username: null,
+      }));
+    }
   }
 
   return (
@@ -298,6 +355,7 @@ export default async function AdminPage() {
             posts={rawPosts ?? []}
             comments={rawComments ?? []}
             flags={flags}
+            pinnedPosts={pinnedPosts}
             blockAuths={blockAuths}
             allMemberOptions={allMemberOptions}
             adminOptions={adminOptions}
