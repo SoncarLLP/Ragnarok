@@ -166,14 +166,11 @@ export async function POST(
   // ── Content moderation ────────────────────────────────────────────
   if (message_type === "text" && content?.trim()) {
     const admin = createAdminClient();
-    const { blocked, whitelist } = await getModerationsFromDB(admin as Parameters<typeof getModerationsFromDB>[0]);
+    const { blocked, whitelist } = await getModerationsFromDB(admin);
     const modResult = checkTextContent(content.trim(), blocked, whitelist);
     if (!modResult.allowed) {
-      await logModerationEvent(
-        admin as Parameters<typeof logModerationEvent>[0],
-        user!.id, "dm", content.trim(), modResult.reason, modResult.blockedWords
-      );
-      await applyModerationStrike(admin as Parameters<typeof applyModerationStrike>[0], user!.id);
+      await logModerationEvent(admin, user!.id, "dm", content.trim(), modResult.reason, modResult.blockedWords);
+      await applyModerationStrike(admin, user!.id);
       return NextResponse.json({
         error: "Your message was blocked because it contains language that violates our community guidelines.",
       }, { status: 422 });

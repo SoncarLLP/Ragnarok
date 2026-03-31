@@ -3,6 +3,8 @@
 //   Layer 1 — Word & phrase filter (server-side, DB-backed with hardcoded seed list)
 //   Layer 2 — NsfwJS image safety (server-side, no external API)
 
+import type { SupabaseClient } from "@supabase/supabase-js";
+
 // ─────────────────────────────────────────────────────────────────────────────
 // BUILT-IN BLOCKED WORDS SEED LIST
 // Context-aware whole-word matching to avoid false positives.
@@ -130,13 +132,7 @@ export function checkTextContent(
  * Loads the current blocked words and whitelist from the database.
  * Falls back to built-in lists if DB is unavailable.
  */
-export async function getModerationsFromDB(adminClient: {
-  from: (table: string) => {
-    select: (cols: string) => {
-      in: (col: string, vals: string[]) => Promise<{ data: { key: string; value: unknown }[] | null }>;
-    };
-  };
-}): Promise<{ blocked: string[]; whitelist: string[] }> {
+export async function getModerationsFromDB(adminClient: SupabaseClient): Promise<{ blocked: string[]; whitelist: string[] }> {
   try {
     const { data } = await adminClient
       .from("moderation_settings")
@@ -160,7 +156,7 @@ export async function getModerationsFromDB(adminClient: {
  * Fire-and-forget — does not throw.
  */
 export async function logModerationEvent(
-  adminClient: { from: (t: string) => { insert: (d: unknown) => Promise<unknown> } },
+  adminClient: SupabaseClient,
   userId: string | null,
   contentType: string,
   excerpt: string,
@@ -185,13 +181,7 @@ export async function logModerationEvent(
  * Returns the new strike count and whether the account was suspended.
  */
 export async function applyModerationStrike(
-  adminClient: {
-    from: (t: string) => {
-      select: (c: string) => { eq: (col: string, val: string) => { single: () => Promise<{ data: { moderation_strikes: number; id: string } | null }> } };
-      update: (d: unknown) => { eq: (col: string, val: string) => Promise<{ error: unknown }> };
-      insert: (d: unknown) => Promise<unknown>;
-    };
-  },
+  adminClient: SupabaseClient,
   userId: string
 ): Promise<{ strikes: number; suspended: boolean }> {
   const { data: profile } = await adminClient
