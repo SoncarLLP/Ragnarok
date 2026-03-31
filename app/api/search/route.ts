@@ -27,7 +27,7 @@ export async function GET(req: Request) {
       .select("role")
       .eq("id", user.id)
       .single();
-    userRole = (profile?.role as typeof userRole) ?? "member";
+    userRole = (profile?.role as "member" | "admin" | "super_admin" | null) ?? "member";
   }
 
   const isAdmin = userRole === "admin" || userRole === "super_admin";
