@@ -54,20 +54,23 @@ function tierToTheme(tier: string | null | undefined): string {
 const VALID_THEMES = new Set(["bronze", "silver", "gold", "platinum", "fire", "diamond"]);
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  // Fetch the current user's theme server-side to avoid FOUC
+  // Fetch the current user's theme + light mode preference server-side to avoid FOUC
   let theme = "bronze";
   let userId: string | null = null;
   let userTier: string | null = null;
   let tierRevealsSeen: Record<string, boolean> = {};
+  let lightMode: boolean | null = null;
+  let isSignedIn = false;
 
   try {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (user) {
       userId = user.id;
+      isSignedIn = true;
       const { data: profile } = await supabase
         .from("profiles")
-        .select("active_theme, tier, cumulative_points, tier_reveals_seen")
+        .select("active_theme, tier, cumulative_points, tier_reveals_seen, light_mode_preference")
         .eq("id", user.id)
         .single();
 
@@ -79,16 +82,32 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         theme = (storedTheme && VALID_THEMES.has(storedTheme))
           ? storedTheme
           : tierToTheme(tierName);
+        // null = follow system, true = light, false = dark
+        lightMode = (profile.light_mode_preference as boolean | null) ?? null;
       }
     }
   } catch {
-    // Not critical — fall back to bronze theme
+    // Not critical — fall back to bronze theme, system colour scheme
   }
 
+  // Derive data-mode attribute for server-side rendering (prevents FOUC for auth users)
+  // Guests: no attribute — CSS media query handles system preference natively
+  const dataMode =
+    lightMode === true ? "light" : lightMode === false ? "dark" : undefined;
+
   return (
-    <html lang="en" data-theme={theme} className="bg-[var(--nrs-bg)] text-[var(--nrs-text-body)]">
+    <html
+      lang="en"
+      data-theme={theme}
+      {...(dataMode ? { "data-mode": dataMode } : {})}
+      className="bg-[var(--nrs-bg)] text-[var(--nrs-text-body)]"
+    >
       <body>
-        <ThemeProvider initialTheme={theme}>
+        <ThemeProvider
+          initialTheme={theme}
+          initialLightMode={lightMode}
+          isSignedIn={isSignedIn}
+        >
           <ScrollReveal />
           {!userId && <CinematicIntro />}
           {children}

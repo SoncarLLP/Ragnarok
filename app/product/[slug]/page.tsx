@@ -95,7 +95,7 @@ export default async function ProductPage(props: Props) {
     return (
       <>
         {/* Apply product theme client-side with smooth transition */}
-        {resolvedTheme && <ProductThemeApplier theme={resolvedTheme} />}
+        {resolvedTheme && <ProductThemeApplier theme={resolvedTheme} slug={slug} />}
 
         <main style={{ background: "var(--nrs-bg)", color: "var(--nrs-text-body)", minHeight: "100vh", position: "relative" }}>
           {/* Ambient particle effect for this product */}
@@ -372,7 +372,7 @@ export default async function ProductPage(props: Props) {
   const p = staticProduct!;
   return (
     <>
-      {resolvedTheme && <ProductThemeApplier theme={resolvedTheme} />}
+      {resolvedTheme && <ProductThemeApplier theme={resolvedTheme} slug={slug} />}
 
       <main style={{ background: "var(--nrs-bg)", color: "var(--nrs-text-body)", minHeight: "100vh", position: "relative" }}>
         {/* Ambient particles */}

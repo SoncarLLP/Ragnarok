@@ -1,12 +1,12 @@
 import { createClient } from "@/lib/supabase/server";
 import NavSidebar from "./NavSidebar";
 import NotificationBell from "./NotificationBell";
+import DarkModeToggle from "./DarkModeToggle";
 
 /**
  * Async server component — fetches the current user's profile and unread
- * notification count, then renders the bell + hamburger sidebar together.
- * Safe to use on any page; gracefully handles unauthenticated users
- * (bell is not rendered when signed out).
+ * notification count, then renders the bell + mode toggle + hamburger sidebar.
+ * Safe to use on any page; gracefully handles unauthenticated users.
  */
 export default async function NavWrapper() {
   const supabase = await createClient();
@@ -46,8 +46,11 @@ export default async function NavWrapper() {
     }
   }
 
+  const isSignedIn = !!user;
+
   return (
     <>
+      <DarkModeToggle isSignedIn={isSignedIn} />
       {user && (
         <NotificationBell userId={user.id} initialUnreadCount={unreadCount} />
       )}

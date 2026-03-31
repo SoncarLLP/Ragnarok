@@ -846,3 +846,914 @@
     transform: none;
   }
 }
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   LIGHT MODE — NORSE DAY THEMES
+   Applied when data-mode="light" is set explicitly on <html>, OR when the
+   OS/browser reports prefers-color-scheme: light and no explicit dark mode
+   has been chosen (html:not([data-mode="dark"])).
+
+   Structure:
+     1. Shared light-mode selector mixin (reused for both explicit + media)
+     2. @media (prefers-color-scheme: light) block — system auto-detection
+     3. [data-mode="light"] block — explicit user preference
+
+   All existing dark-mode selectors are untouched.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+
+/* ── Light mode transition helper ──────────────────────────────────────── */
+/* A faster transition class applied by ThemeProvider during mode switch.   */
+.nrs-mode-transitioning,
+.nrs-mode-transitioning * {
+  transition:
+    background-color 0.3s ease,
+    border-color 0.3s ease,
+    color 0.3s ease,
+    box-shadow 0.3s ease,
+    opacity 0.3s ease !important;
+}
+
+/* ── Toggle icon spin animation ─────────────────────────────────────────── */
+@keyframes nrs-mode-spin {
+  0%   { transform: rotate(0deg) scale(1); }
+  40%  { transform: rotate(180deg) scale(0.7); }
+  100% { transform: rotate(360deg) scale(1); }
+}
+
+.nrs-mode-icon-spin {
+  animation: nrs-mode-spin 0.4s ease-out forwards;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   BRONZE LIGHT — Warm Parchment (base light palette)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@media (prefers-color-scheme: light) {
+  html:not([data-mode="dark"]),
+  html:not([data-mode="dark"])[data-theme="bronze"] {
+    --nrs-bg:             #f4ede0;
+    --nrs-bg-2:           #ede3d0;
+    --nrs-card:           #faf6ef;
+    --nrs-card-hover:     #f5efe2;
+    --nrs-panel:          #e8ddc8;
+
+    --nrs-accent:         #8b6914;
+    --nrs-accent-dim:     rgba(139, 105, 20, 0.12);
+    --nrs-accent-glow:    rgba(139, 105, 20, 0.28);
+    --nrs-accent-border:  rgba(139, 105, 20, 0.30);
+
+    --nrs-text:           #1a1208;
+    --nrs-text-body:      #2d2010;
+    --nrs-text-muted:     rgba(45, 32, 16, 0.55);
+
+    --nrs-border:         rgba(139, 115, 85, 0.28);
+    --nrs-border-subtle:  rgba(139, 115, 85, 0.12);
+
+    --nrs-marble-c1:      #f4ede0;
+    --nrs-marble-c2:      #ede3d0;
+    --nrs-marble-vein:    rgba(139, 105, 20, 0.16);
+    --nrs-marble-speed:   14s;
+
+    --nrs-btn-bg:         rgba(139, 105, 20, 0.10);
+    --nrs-btn-border:     rgba(139, 105, 20, 0.32);
+    --nrs-btn-hover:      rgba(139, 105, 20, 0.18);
+    --nrs-btn-primary:    #8b6914;
+    --nrs-btn-primary-fg: #faf6ef;
+
+    --nrs-hero-overlay:   radial-gradient(ellipse 130% 70% at 50% -5%, rgba(139,105,20,0.10) 0%, transparent 65%),
+                          radial-gradient(ellipse 90% 50% at 85% 15%, rgba(232,221,200,0.6) 0%, transparent 55%);
+
+    --nrs-header-bg:      rgba(244, 237, 224, 0.92);
+    --nrs-shadow:         0 4px 32px rgba(0, 0, 0, 0.10);
+    --nrs-glow:           0 0 24px rgba(139, 105, 20, 0.14);
+    --nrs-heading-color:  #1a1208;
+    --nrs-particle:       ember;
+  }
+}
+
+html[data-mode="light"],
+html[data-mode="light"][data-theme="bronze"] {
+  --nrs-bg:             #f4ede0;
+  --nrs-bg-2:           #ede3d0;
+  --nrs-card:           #faf6ef;
+  --nrs-card-hover:     #f5efe2;
+  --nrs-panel:          #e8ddc8;
+
+  --nrs-accent:         #8b6914;
+  --nrs-accent-dim:     rgba(139, 105, 20, 0.12);
+  --nrs-accent-glow:    rgba(139, 105, 20, 0.28);
+  --nrs-accent-border:  rgba(139, 105, 20, 0.30);
+
+  --nrs-text:           #1a1208;
+  --nrs-text-body:      #2d2010;
+  --nrs-text-muted:     rgba(45, 32, 16, 0.55);
+
+  --nrs-border:         rgba(139, 115, 85, 0.28);
+  --nrs-border-subtle:  rgba(139, 115, 85, 0.12);
+
+  --nrs-marble-c1:      #f4ede0;
+  --nrs-marble-c2:      #ede3d0;
+  --nrs-marble-vein:    rgba(139, 105, 20, 0.16);
+  --nrs-marble-speed:   14s;
+
+  --nrs-btn-bg:         rgba(139, 105, 20, 0.10);
+  --nrs-btn-border:     rgba(139, 105, 20, 0.32);
+  --nrs-btn-hover:      rgba(139, 105, 20, 0.18);
+  --nrs-btn-primary:    #8b6914;
+  --nrs-btn-primary-fg: #faf6ef;
+
+  --nrs-hero-overlay:   radial-gradient(ellipse 130% 70% at 50% -5%, rgba(139,105,20,0.10) 0%, transparent 65%),
+                        radial-gradient(ellipse 90% 50% at 85% 15%, rgba(232,221,200,0.6) 0%, transparent 55%);
+
+  --nrs-header-bg:      rgba(244, 237, 224, 0.92);
+  --nrs-shadow:         0 4px 32px rgba(0, 0, 0, 0.10);
+  --nrs-glow:           0 0 24px rgba(139, 105, 20, 0.14);
+  --nrs-heading-color:  #1a1208;
+  --nrs-particle:       ember;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SILVER LIGHT — Forest Greens & Copper on Parchment
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@media (prefers-color-scheme: light) {
+  html:not([data-mode="dark"])[data-theme="silver"] {
+    --nrs-bg:             #f4ede0;
+    --nrs-bg-2:           #ede3d0;
+    --nrs-card:           #faf6ef;
+    --nrs-card-hover:     #f0ead8;
+    --nrs-panel:          #d8e0cc;
+
+    --nrs-accent:         #7a4f1e;
+    --nrs-accent-dim:     rgba(122, 79, 30, 0.12);
+    --nrs-accent-glow:    rgba(122, 79, 30, 0.28);
+    --nrs-accent-border:  rgba(122, 79, 30, 0.30);
+
+    --nrs-text:           #1a2008;
+    --nrs-text-body:      #283018;
+    --nrs-text-muted:     rgba(40, 48, 24, 0.55);
+
+    --nrs-border:         rgba(45, 74, 45, 0.24);
+    --nrs-border-subtle:  rgba(45, 74, 45, 0.10);
+
+    --nrs-marble-c1:      #f4ede0;
+    --nrs-marble-c2:      #e4eed8;
+    --nrs-marble-vein:    rgba(45, 74, 45, 0.14);
+    --nrs-marble-speed:   16s;
+
+    --nrs-btn-bg:         rgba(122, 79, 30, 0.10);
+    --nrs-btn-border:     rgba(122, 79, 30, 0.32);
+    --nrs-btn-hover:      rgba(122, 79, 30, 0.18);
+    --nrs-btn-primary:    #7a4f1e;
+    --nrs-btn-primary-fg: #f4ede0;
+
+    --nrs-hero-overlay:   radial-gradient(ellipse 130% 70% at 50% -5%, rgba(45,74,45,0.10) 0%, transparent 65%),
+                          radial-gradient(ellipse 90% 50% at 85% 15%, rgba(228,238,216,0.7) 0%, transparent 55%);
+
+    --nrs-header-bg:      rgba(244, 237, 224, 0.92);
+    --nrs-shadow:         0 4px 32px rgba(0, 0, 0, 0.10);
+    --nrs-glow:           0 0 24px rgba(122, 79, 30, 0.14);
+    --nrs-heading-color:  #1a2008;
+    --nrs-particle:       leaf;
+  }
+}
+
+html[data-mode="light"][data-theme="silver"] {
+  --nrs-bg:             #f4ede0;
+  --nrs-bg-2:           #ede3d0;
+  --nrs-card:           #faf6ef;
+  --nrs-card-hover:     #f0ead8;
+  --nrs-panel:          #d8e0cc;
+
+  --nrs-accent:         #7a4f1e;
+  --nrs-accent-dim:     rgba(122, 79, 30, 0.12);
+  --nrs-accent-glow:    rgba(122, 79, 30, 0.28);
+  --nrs-accent-border:  rgba(122, 79, 30, 0.30);
+
+  --nrs-text:           #1a2008;
+  --nrs-text-body:      #283018;
+  --nrs-text-muted:     rgba(40, 48, 24, 0.55);
+
+  --nrs-border:         rgba(45, 74, 45, 0.24);
+  --nrs-border-subtle:  rgba(45, 74, 45, 0.10);
+
+  --nrs-marble-c1:      #f4ede0;
+  --nrs-marble-c2:      #e4eed8;
+  --nrs-marble-vein:    rgba(45, 74, 45, 0.14);
+  --nrs-marble-speed:   16s;
+
+  --nrs-btn-bg:         rgba(122, 79, 30, 0.10);
+  --nrs-btn-border:     rgba(122, 79, 30, 0.32);
+  --nrs-btn-hover:      rgba(122, 79, 30, 0.18);
+  --nrs-btn-primary:    #7a4f1e;
+  --nrs-btn-primary-fg: #f4ede0;
+
+  --nrs-hero-overlay:   radial-gradient(ellipse 130% 70% at 50% -5%, rgba(45,74,45,0.10) 0%, transparent 65%),
+                        radial-gradient(ellipse 90% 50% at 85% 15%, rgba(228,238,216,0.7) 0%, transparent 55%);
+
+  --nrs-header-bg:      rgba(244, 237, 224, 0.92);
+  --nrs-shadow:         0 4px 32px rgba(0, 0, 0, 0.10);
+  --nrs-glow:           0 0 24px rgba(122, 79, 30, 0.14);
+  --nrs-heading-color:  #1a2008;
+  --nrs-particle:       leaf;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   GOLD LIGHT — Warm Cream, Gold Accents, Subtle Royal Purple
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@media (prefers-color-scheme: light) {
+  html:not([data-mode="dark"])[data-theme="gold"] {
+    --nrs-bg:             #faf6ef;
+    --nrs-bg-2:           #f4ede0;
+    --nrs-card:           #ffffff;
+    --nrs-card-hover:     #fdf9f2;
+    --nrs-panel:          #f0e8d5;
+
+    --nrs-accent:         #8b6914;
+    --nrs-accent-dim:     rgba(139, 105, 20, 0.12);
+    --nrs-accent-glow:    rgba(139, 105, 20, 0.30);
+    --nrs-accent-border:  rgba(139, 105, 20, 0.32);
+
+    --nrs-text:           #1a1208;
+    --nrs-text-body:      #2d2010;
+    --nrs-text-muted:     rgba(45, 32, 16, 0.55);
+
+    --nrs-border:         rgba(139, 105, 20, 0.22);
+    --nrs-border-subtle:  rgba(120, 80, 160, 0.08);
+
+    --nrs-marble-c1:      #faf6ef;
+    --nrs-marble-c2:      #f4ede0;
+    --nrs-marble-vein:    rgba(139, 105, 20, 0.18);
+    --nrs-marble-speed:   11s;
+
+    --nrs-btn-bg:         rgba(139, 105, 20, 0.10);
+    --nrs-btn-border:     rgba(139, 105, 20, 0.35);
+    --nrs-btn-hover:      rgba(139, 105, 20, 0.18);
+    --nrs-btn-primary:    #8b6914;
+    --nrs-btn-primary-fg: #faf6ef;
+
+    --nrs-hero-overlay:   radial-gradient(ellipse 130% 70% at 50% -5%, rgba(139,105,20,0.12) 0%, transparent 65%),
+                          radial-gradient(ellipse 70% 50% at 80% 20%, rgba(244,237,224,0.8) 0%, transparent 50%);
+
+    --nrs-header-bg:      rgba(250, 246, 239, 0.92);
+    --nrs-shadow:         0 4px 32px rgba(0, 0, 0, 0.10);
+    --nrs-glow:           0 0 28px rgba(139, 105, 20, 0.16);
+    --nrs-heading-color:  #1a1208;
+    --nrs-particle:       mote;
+  }
+}
+
+html[data-mode="light"][data-theme="gold"] {
+  --nrs-bg:             #faf6ef;
+  --nrs-bg-2:           #f4ede0;
+  --nrs-card:           #ffffff;
+  --nrs-card-hover:     #fdf9f2;
+  --nrs-panel:          #f0e8d5;
+
+  --nrs-accent:         #8b6914;
+  --nrs-accent-dim:     rgba(139, 105, 20, 0.12);
+  --nrs-accent-glow:    rgba(139, 105, 20, 0.30);
+  --nrs-accent-border:  rgba(139, 105, 20, 0.32);
+
+  --nrs-text:           #1a1208;
+  --nrs-text-body:      #2d2010;
+  --nrs-text-muted:     rgba(45, 32, 16, 0.55);
+
+  --nrs-border:         rgba(139, 105, 20, 0.22);
+  --nrs-border-subtle:  rgba(120, 80, 160, 0.08);
+
+  --nrs-marble-c1:      #faf6ef;
+  --nrs-marble-c2:      #f4ede0;
+  --nrs-marble-vein:    rgba(139, 105, 20, 0.18);
+  --nrs-marble-speed:   11s;
+
+  --nrs-btn-bg:         rgba(139, 105, 20, 0.10);
+  --nrs-btn-border:     rgba(139, 105, 20, 0.35);
+  --nrs-btn-hover:      rgba(139, 105, 20, 0.18);
+  --nrs-btn-primary:    #8b6914;
+  --nrs-btn-primary-fg: #faf6ef;
+
+  --nrs-hero-overlay:   radial-gradient(ellipse 130% 70% at 50% -5%, rgba(139,105,20,0.12) 0%, transparent 65%),
+                        radial-gradient(ellipse 70% 50% at 80% 20%, rgba(244,237,224,0.8) 0%, transparent 50%);
+
+  --nrs-header-bg:      rgba(250, 246, 239, 0.92);
+  --nrs-shadow:         0 4px 32px rgba(0, 0, 0, 0.10);
+  --nrs-glow:           0 0 28px rgba(139, 105, 20, 0.16);
+  --nrs-heading-color:  #1a1208;
+  --nrs-particle:       mote;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   PLATINUM LIGHT — Pale Ice Blue & Silver on Near-White
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@media (prefers-color-scheme: light) {
+  html:not([data-mode="dark"])[data-theme="platinum"] {
+    --nrs-bg:             #e8f4f8;
+    --nrs-bg-2:           #dcedf5;
+    --nrs-card:           #f4f9fc;
+    --nrs-card-hover:     #ebf4f9;
+    --nrs-panel:          #cce4f0;
+
+    --nrs-accent:         #3a7a9a;
+    --nrs-accent-dim:     rgba(58, 122, 154, 0.12);
+    --nrs-accent-glow:    rgba(58, 122, 154, 0.28);
+    --nrs-accent-border:  rgba(58, 122, 154, 0.30);
+
+    --nrs-text:           #0a1a28;
+    --nrs-text-body:      #182a38;
+    --nrs-text-muted:     rgba(24, 42, 56, 0.55);
+
+    --nrs-border:         rgba(58, 122, 154, 0.22);
+    --nrs-border-subtle:  rgba(58, 122, 154, 0.09);
+
+    --nrs-marble-c1:      #e8f4f8;
+    --nrs-marble-c2:      #cce4f0;
+    --nrs-marble-vein:    rgba(58, 122, 154, 0.16);
+    --nrs-marble-speed:   18s;
+
+    --nrs-btn-bg:         rgba(58, 122, 154, 0.10);
+    --nrs-btn-border:     rgba(58, 122, 154, 0.32);
+    --nrs-btn-hover:      rgba(58, 122, 154, 0.18);
+    --nrs-btn-primary:    #3a7a9a;
+    --nrs-btn-primary-fg: #e8f4f8;
+
+    --nrs-hero-overlay:   radial-gradient(ellipse 130% 70% at 50% -5%, rgba(58,122,154,0.10) 0%, transparent 65%),
+                          radial-gradient(ellipse 90% 50% at 80% 15%, rgba(204,228,240,0.7) 0%, transparent 55%);
+
+    --nrs-header-bg:      rgba(232, 244, 248, 0.92);
+    --nrs-shadow:         0 4px 32px rgba(0, 0, 0, 0.08);
+    --nrs-glow:           0 0 28px rgba(58, 122, 154, 0.16);
+    --nrs-heading-color:  #0a1a28;
+    --nrs-particle:       snow;
+  }
+}
+
+html[data-mode="light"][data-theme="platinum"] {
+  --nrs-bg:             #e8f4f8;
+  --nrs-bg-2:           #dcedf5;
+  --nrs-card:           #f4f9fc;
+  --nrs-card-hover:     #ebf4f9;
+  --nrs-panel:          #cce4f0;
+
+  --nrs-accent:         #3a7a9a;
+  --nrs-accent-dim:     rgba(58, 122, 154, 0.12);
+  --nrs-accent-glow:    rgba(58, 122, 154, 0.28);
+  --nrs-accent-border:  rgba(58, 122, 154, 0.30);
+
+  --nrs-text:           #0a1a28;
+  --nrs-text-body:      #182a38;
+  --nrs-text-muted:     rgba(24, 42, 56, 0.55);
+
+  --nrs-border:         rgba(58, 122, 154, 0.22);
+  --nrs-border-subtle:  rgba(58, 122, 154, 0.09);
+
+  --nrs-marble-c1:      #e8f4f8;
+  --nrs-marble-c2:      #cce4f0;
+  --nrs-marble-vein:    rgba(58, 122, 154, 0.16);
+  --nrs-marble-speed:   18s;
+
+  --nrs-btn-bg:         rgba(58, 122, 154, 0.10);
+  --nrs-btn-border:     rgba(58, 122, 154, 0.32);
+  --nrs-btn-hover:      rgba(58, 122, 154, 0.18);
+  --nrs-btn-primary:    #3a7a9a;
+  --nrs-btn-primary-fg: #e8f4f8;
+
+  --nrs-hero-overlay:   radial-gradient(ellipse 130% 70% at 50% -5%, rgba(58,122,154,0.10) 0%, transparent 65%),
+                        radial-gradient(ellipse 90% 50% at 80% 15%, rgba(204,228,240,0.7) 0%, transparent 55%);
+
+  --nrs-header-bg:      rgba(232, 244, 248, 0.92);
+  --nrs-shadow:         0 4px 32px rgba(0, 0, 0, 0.08);
+  --nrs-glow:           0 0 28px rgba(58, 122, 154, 0.16);
+  --nrs-heading-color:  #0a1a28;
+  --nrs-particle:       snow;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   FIRE LIGHT — Warm Amber & Soft Embers on Cream
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@media (prefers-color-scheme: light) {
+  html:not([data-mode="dark"])[data-theme="fire"] {
+    --nrs-bg:             #fdf0e0;
+    --nrs-bg-2:           #f8e4cc;
+    --nrs-card:           #fff8f0;
+    --nrs-card-hover:     #fdf0e0;
+    --nrs-panel:          #f0d8b0;
+
+    --nrs-accent:         #c24a08;
+    --nrs-accent-dim:     rgba(194, 74, 8, 0.12);
+    --nrs-accent-glow:    rgba(194, 74, 8, 0.28);
+    --nrs-accent-border:  rgba(194, 74, 8, 0.30);
+
+    --nrs-text:           #1a0a00;
+    --nrs-text-body:      #2d1800;
+    --nrs-text-muted:     rgba(45, 24, 0, 0.55);
+
+    --nrs-border:         rgba(194, 74, 8, 0.22);
+    --nrs-border-subtle:  rgba(194, 74, 8, 0.08);
+
+    --nrs-marble-c1:      #fdf0e0;
+    --nrs-marble-c2:      #f8e4cc;
+    --nrs-marble-vein:    rgba(194, 74, 8, 0.18);
+    --nrs-marble-speed:   8s;
+
+    --nrs-btn-bg:         rgba(194, 74, 8, 0.10);
+    --nrs-btn-border:     rgba(194, 74, 8, 0.32);
+    --nrs-btn-hover:      rgba(194, 74, 8, 0.18);
+    --nrs-btn-primary:    #c24a08;
+    --nrs-btn-primary-fg: #fdf0e0;
+
+    --nrs-hero-overlay:   radial-gradient(ellipse 130% 70% at 50% -5%, rgba(194,74,8,0.12) 0%, transparent 65%),
+                          radial-gradient(ellipse 90% 50% at 85% 10%, rgba(248,228,204,0.8) 0%, transparent 55%);
+
+    --nrs-header-bg:      rgba(253, 240, 224, 0.92);
+    --nrs-shadow:         0 4px 32px rgba(0, 0, 0, 0.10);
+    --nrs-glow:           0 0 32px rgba(194, 74, 8, 0.18);
+    --nrs-heading-color:  #1a0a00;
+    --nrs-particle:       fire;
+  }
+}
+
+html[data-mode="light"][data-theme="fire"] {
+  --nrs-bg:             #fdf0e0;
+  --nrs-bg-2:           #f8e4cc;
+  --nrs-card:           #fff8f0;
+  --nrs-card-hover:     #fdf0e0;
+  --nrs-panel:          #f0d8b0;
+
+  --nrs-accent:         #c24a08;
+  --nrs-accent-dim:     rgba(194, 74, 8, 0.12);
+  --nrs-accent-glow:    rgba(194, 74, 8, 0.28);
+  --nrs-accent-border:  rgba(194, 74, 8, 0.30);
+
+  --nrs-text:           #1a0a00;
+  --nrs-text-body:      #2d1800;
+  --nrs-text-muted:     rgba(45, 24, 0, 0.55);
+
+  --nrs-border:         rgba(194, 74, 8, 0.22);
+  --nrs-border-subtle:  rgba(194, 74, 8, 0.08);
+
+  --nrs-marble-c1:      #fdf0e0;
+  --nrs-marble-c2:      #f8e4cc;
+  --nrs-marble-vein:    rgba(194, 74, 8, 0.18);
+  --nrs-marble-speed:   8s;
+
+  --nrs-btn-bg:         rgba(194, 74, 8, 0.10);
+  --nrs-btn-border:     rgba(194, 74, 8, 0.32);
+  --nrs-btn-hover:      rgba(194, 74, 8, 0.18);
+  --nrs-btn-primary:    #c24a08;
+  --nrs-btn-primary-fg: #fdf0e0;
+
+  --nrs-hero-overlay:   radial-gradient(ellipse 130% 70% at 50% -5%, rgba(194,74,8,0.12) 0%, transparent 65%),
+                        radial-gradient(ellipse 90% 50% at 85% 10%, rgba(248,228,204,0.8) 0%, transparent 55%);
+
+  --nrs-header-bg:      rgba(253, 240, 224, 0.92);
+  --nrs-shadow:         0 4px 32px rgba(0, 0, 0, 0.10);
+  --nrs-glow:           0 0 32px rgba(194, 74, 8, 0.18);
+  --nrs-heading-color:  #1a0a00;
+  --nrs-particle:       fire;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   DIAMOND LIGHT — Soft Prismatic Pastels on Bright White
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@media (prefers-color-scheme: light) {
+  html:not([data-mode="dark"])[data-theme="diamond"] {
+    --nrs-bg:             #fafafa;
+    --nrs-bg-2:           #f0f0f8;
+    --nrs-card:           #ffffff;
+    --nrs-card-hover:     #f8f8ff;
+    --nrs-panel:          #e8e4f8;
+
+    --nrs-accent:         #6040b0;
+    --nrs-accent-dim:     rgba(96, 64, 176, 0.10);
+    --nrs-accent-glow:    rgba(96, 64, 176, 0.25);
+    --nrs-accent-border:  rgba(96, 64, 176, 0.25);
+
+    --nrs-text:           #0a0818;
+    --nrs-text-body:      #1a1530;
+    --nrs-text-muted:     rgba(26, 21, 48, 0.55);
+
+    --nrs-border:         rgba(96, 64, 176, 0.18);
+    --nrs-border-subtle:  rgba(96, 64, 176, 0.08);
+
+    --nrs-marble-c1:      #fafafa;
+    --nrs-marble-c2:      #f0f0f8;
+    --nrs-marble-vein:    rgba(167, 139, 250, 0.20);
+    --nrs-marble-speed:   22s;
+
+    --nrs-btn-bg:         rgba(96, 64, 176, 0.08);
+    --nrs-btn-border:     rgba(96, 64, 176, 0.28);
+    --nrs-btn-hover:      rgba(96, 64, 176, 0.15);
+    --nrs-btn-primary:    #6040b0;
+    --nrs-btn-primary-fg: #fafafa;
+
+    --nrs-hero-overlay:   radial-gradient(ellipse 130% 70% at 50% -5%, rgba(96,64,176,0.08) 0%, transparent 65%),
+                          radial-gradient(ellipse 90% 50% at 80% 10%, rgba(240,240,248,0.8) 0%, transparent 55%);
+
+    --nrs-header-bg:      rgba(250, 250, 250, 0.92);
+    --nrs-shadow:         0 4px 32px rgba(0, 0, 0, 0.06);
+    --nrs-glow:           0 0 32px rgba(96, 64, 176, 0.16);
+    --nrs-heading-color:  #0a0818;
+    --nrs-particle:       prism;
+  }
+}
+
+html[data-mode="light"][data-theme="diamond"] {
+  --nrs-bg:             #fafafa;
+  --nrs-bg-2:           #f0f0f8;
+  --nrs-card:           #ffffff;
+  --nrs-card-hover:     #f8f8ff;
+  --nrs-panel:          #e8e4f8;
+
+  --nrs-accent:         #6040b0;
+  --nrs-accent-dim:     rgba(96, 64, 176, 0.10);
+  --nrs-accent-glow:    rgba(96, 64, 176, 0.25);
+  --nrs-accent-border:  rgba(96, 64, 176, 0.25);
+
+  --nrs-text:           #0a0818;
+  --nrs-text-body:      #1a1530;
+  --nrs-text-muted:     rgba(26, 21, 48, 0.55);
+
+  --nrs-border:         rgba(96, 64, 176, 0.18);
+  --nrs-border-subtle:  rgba(96, 64, 176, 0.08);
+
+  --nrs-marble-c1:      #fafafa;
+  --nrs-marble-c2:      #f0f0f8;
+  --nrs-marble-vein:    rgba(167, 139, 250, 0.20);
+  --nrs-marble-speed:   22s;
+
+  --nrs-btn-bg:         rgba(96, 64, 176, 0.08);
+  --nrs-btn-border:     rgba(96, 64, 176, 0.28);
+  --nrs-btn-hover:      rgba(96, 64, 176, 0.15);
+  --nrs-btn-primary:    #6040b0;
+  --nrs-btn-primary-fg: #fafafa;
+
+  --nrs-hero-overlay:   radial-gradient(ellipse 130% 70% at 50% -5%, rgba(96,64,176,0.08) 0%, transparent 65%),
+                        radial-gradient(ellipse 90% 50% at 80% 10%, rgba(240,240,248,0.8) 0%, transparent 55%);
+
+  --nrs-header-bg:      rgba(250, 250, 250, 0.92);
+  --nrs-shadow:         0 4px 32px rgba(0, 0, 0, 0.06);
+  --nrs-glow:           0 0 32px rgba(96, 64, 176, 0.16);
+  --nrs-heading-color:  #0a0818;
+  --nrs-particle:       prism;
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   LIGHT MODE — TYPOGRAPHY & HEADING EFFECTS
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Base: override heading colour to use the theme text colour */
+html[data-mode="light"] h1,
+html[data-mode="light"] h2,
+html[data-mode="light"] h3,
+html[data-mode="light"] h4,
+html[data-mode="light"] h5,
+html[data-mode="light"] h6,
+html[data-mode="light"] .font-heading {
+  color: var(--nrs-heading-color, var(--nrs-text));
+}
+
+@media (prefers-color-scheme: light) {
+  html:not([data-mode="dark"]) h1,
+  html:not([data-mode="dark"]) h2,
+  html:not([data-mode="dark"]) h3,
+  html:not([data-mode="dark"]) h4,
+  html:not([data-mode="dark"]) h5,
+  html:not([data-mode="dark"]) h6,
+  html:not([data-mode="dark"]) .font-heading {
+    color: var(--nrs-heading-color, var(--nrs-text));
+  }
+}
+
+/* Gold light: gold leaf shimmer on headings */
+@keyframes nrs-gold-leaf-shimmer {
+  0%   { text-shadow: 0 1px 2px rgba(139,105,20,0.25), 0 0 8px rgba(139,105,20,0.15); }
+  50%  { text-shadow: 0 1px 2px rgba(200,160,40,0.40), 0 0 16px rgba(200,160,40,0.25); }
+  100% { text-shadow: 0 1px 2px rgba(139,105,20,0.25), 0 0 8px rgba(139,105,20,0.15); }
+}
+
+html[data-mode="light"][data-theme="gold"] h1,
+html[data-mode="light"][data-theme="gold"] .nrs-heading {
+  animation: nrs-gold-leaf-shimmer 4s ease-in-out infinite;
+}
+
+@media (prefers-color-scheme: light) {
+  html:not([data-mode="dark"])[data-theme="gold"] h1,
+  html:not([data-mode="dark"])[data-theme="gold"] .nrs-heading {
+    animation: nrs-gold-leaf-shimmer 4s ease-in-out infinite;
+  }
+}
+
+/* Diamond light: rainbow shimmer using darker pastel tones (visible on white) */
+@keyframes nrs-prism-text-light {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+html[data-mode="light"][data-theme="diamond"] h1,
+html[data-mode="light"][data-theme="diamond"] h2,
+html[data-mode="light"][data-theme="diamond"] .nrs-heading {
+  background: linear-gradient(
+    90deg,
+    #6040b0 0%, #b03070 16%, #2060b0 33%, #107850 50%,
+    #907010 66%, #b03070 83%, #6040b0 100%
+  );
+  background-size: 300% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  animation: nrs-prism-text-light 7s ease infinite;
+}
+
+@media (prefers-color-scheme: light) {
+  html:not([data-mode="dark"])[data-theme="diamond"] h1,
+  html:not([data-mode="dark"])[data-theme="diamond"] h2,
+  html:not([data-mode="dark"])[data-theme="diamond"] .nrs-heading {
+    background: linear-gradient(
+      90deg,
+      #6040b0 0%, #b03070 16%, #2060b0 33%, #107850 50%,
+      #907010 66%, #b03070 83%, #6040b0 100%
+    );
+    background-size: 300% 100%;
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    animation: nrs-prism-text-light 7s ease infinite;
+  }
+}
+
+/* Fire light: softer forge flicker */
+@keyframes nrs-forge-flicker-light {
+  0%, 90%, 100% { text-shadow: 0 0 6px rgba(194,74,8,0.20); }
+  95%            { text-shadow: 0 0 12px rgba(194,74,8,0.40), 0 0 24px rgba(194,74,8,0.15); }
+}
+
+html[data-mode="light"][data-theme="fire"] h1,
+html[data-mode="light"][data-theme="fire"] .nrs-heading {
+  animation: nrs-forge-flicker-light 6s ease-in-out infinite;
+}
+
+@media (prefers-color-scheme: light) {
+  html:not([data-mode="dark"])[data-theme="fire"] h1,
+  html:not([data-mode="dark"])[data-theme="fire"] .nrs-heading {
+    animation: nrs-forge-flicker-light 6s ease-in-out infinite;
+  }
+}
+
+/* Platinum light: soft ice shimmer on headings */
+@keyframes nrs-ice-shimmer-light {
+  0%   { text-shadow: 0 0 8px rgba(58,122,154,0.20); }
+  50%  { text-shadow: 0 0 16px rgba(58,122,154,0.35), 0 0 32px rgba(58,122,154,0.10); }
+  100% { text-shadow: 0 0 8px rgba(58,122,154,0.20); }
+}
+
+html[data-mode="light"][data-theme="platinum"] h1,
+html[data-mode="light"][data-theme="platinum"] .nrs-heading {
+  animation: nrs-ice-shimmer-light 5s ease-in-out infinite;
+}
+
+@media (prefers-color-scheme: light) {
+  html:not([data-mode="dark"])[data-theme="platinum"] h1,
+  html:not([data-mode="dark"])[data-theme="platinum"] .nrs-heading {
+    animation: nrs-ice-shimmer-light 5s ease-in-out infinite;
+  }
+}
+
+/* Disable the dark-mode heading effects when in light mode */
+html[data-mode="light"][data-theme="gold"] h1,
+html[data-mode="light"][data-theme="gold"] .nrs-heading,
+html[data-mode="light"][data-theme="fire"] h1,
+html[data-mode="light"][data-theme="fire"] .nrs-heading,
+html[data-mode="light"][data-theme="platinum"] h1,
+html[data-mode="light"][data-theme="platinum"] .nrs-heading {
+  /* Reset any inherited dark-mode text-shadow before our light ones apply */
+  text-shadow: none;
+}
+
+@media (prefers-color-scheme: light) {
+  html:not([data-mode="dark"])[data-theme="gold"] h1,
+  html:not([data-mode="dark"])[data-theme="gold"] .nrs-heading,
+  html:not([data-mode="dark"])[data-theme="fire"] h1,
+  html:not([data-mode="dark"])[data-theme="fire"] .nrs-heading,
+  html:not([data-mode="dark"])[data-theme="platinum"] h1,
+  html:not([data-mode="dark"])[data-theme="platinum"] .nrs-heading {
+    text-shadow: none;
+  }
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   LIGHT MODE — AURORA OVERRIDES (Platinum & Diamond)
+   Soft pastel aurora feels airy on light backgrounds.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Platinum light aurora */
+html[data-mode="light"][data-theme="platinum"] .nrs-aurora::before {
+  background: conic-gradient(
+    from 120deg at 40% 50%,
+    transparent 0deg, rgba(58,122,154,0.08) 30deg, rgba(80,160,180,0.06) 60deg,
+    transparent 90deg, rgba(100,140,200,0.06) 130deg, transparent 180deg
+  );
+}
+
+html[data-mode="light"][data-theme="platinum"] .nrs-aurora::after {
+  background: conic-gradient(
+    from 280deg at 65% 45%,
+    transparent 0deg, rgba(80,160,200,0.06) 40deg,
+    transparent 90deg, rgba(58,122,154,0.07) 140deg,
+    transparent 200deg
+  );
+}
+
+@media (prefers-color-scheme: light) {
+  html:not([data-mode="dark"])[data-theme="platinum"] .nrs-aurora::before {
+    background: conic-gradient(
+      from 120deg at 40% 50%,
+      transparent 0deg, rgba(58,122,154,0.08) 30deg, rgba(80,160,180,0.06) 60deg,
+      transparent 90deg, rgba(100,140,200,0.06) 130deg, transparent 180deg
+    );
+  }
+  html:not([data-mode="dark"])[data-theme="platinum"] .nrs-aurora::after {
+    background: conic-gradient(
+      from 280deg at 65% 45%,
+      transparent 0deg, rgba(80,160,200,0.06) 40deg,
+      transparent 90deg, rgba(58,122,154,0.07) 140deg,
+      transparent 200deg
+    );
+  }
+}
+
+/* Diamond light aurora — soft prismatic pastels */
+html[data-mode="light"][data-theme="diamond"] .nrs-aurora::before {
+  background: conic-gradient(
+    from 110deg at 40% 50%,
+    transparent 0deg, rgba(96,64,176,0.08) 25deg, rgba(64,96,176,0.06) 50deg,
+    rgba(32,120,80,0.05) 75deg, transparent 100deg, rgba(180,48,100,0.06) 150deg,
+    transparent 180deg
+  );
+}
+
+html[data-mode="light"][data-theme="diamond"] .nrs-aurora::after {
+  background: conic-gradient(
+    from 260deg at 60% 40%,
+    transparent 0deg, rgba(64,96,176,0.06) 30deg, rgba(96,64,176,0.08) 70deg,
+    rgba(180,48,100,0.05) 110deg, transparent 160deg
+  );
+}
+
+@media (prefers-color-scheme: light) {
+  html:not([data-mode="dark"])[data-theme="diamond"] .nrs-aurora::before {
+    background: conic-gradient(
+      from 110deg at 40% 50%,
+      transparent 0deg, rgba(96,64,176,0.08) 25deg, rgba(64,96,176,0.06) 50deg,
+      rgba(32,120,80,0.05) 75deg, transparent 100deg, rgba(180,48,100,0.06) 150deg,
+      transparent 180deg
+    );
+  }
+  html:not([data-mode="dark"])[data-theme="diamond"] .nrs-aurora::after {
+    background: conic-gradient(
+      from 260deg at 60% 40%,
+      transparent 0deg, rgba(64,96,176,0.06) 30deg, rgba(96,64,176,0.08) 70deg,
+      rgba(180,48,100,0.05) 110deg, transparent 160deg
+    );
+  }
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   LIGHT MODE — CARD & UI ADJUSTMENTS
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Ensure card text is readable on light backgrounds */
+html[data-mode="light"] .nrs-card {
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06), 0 0 0 1px var(--nrs-border);
+}
+
+html[data-mode="light"] .nrs-card:hover {
+  box-shadow: var(--nrs-glow), 0 4px 16px rgba(0,0,0,0.10);
+}
+
+@media (prefers-color-scheme: light) {
+  html:not([data-mode="dark"]) .nrs-card {
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06), 0 0 0 1px var(--nrs-border);
+  }
+  html:not([data-mode="dark"]) .nrs-card:hover {
+    box-shadow: var(--nrs-glow), 0 4px 16px rgba(0,0,0,0.10);
+  }
+}
+
+/* Disable dark-mode theme-specific card hover animations in light mode */
+html[data-mode="light"][data-theme="fire"] .nrs-card:hover,
+html[data-mode="light"][data-theme="gold"] .nrs-card:hover,
+html[data-mode="light"][data-theme="diamond"] .nrs-card:hover {
+  animation: none;
+  box-shadow: var(--nrs-glow), 0 4px 16px rgba(0,0,0,0.10);
+}
+
+@media (prefers-color-scheme: light) {
+  html:not([data-mode="dark"])[data-theme="fire"] .nrs-card:hover,
+  html:not([data-mode="dark"])[data-theme="gold"] .nrs-card:hover,
+  html:not([data-mode="dark"])[data-theme="diamond"] .nrs-card:hover {
+    animation: none;
+    box-shadow: var(--nrs-glow), 0 4px 16px rgba(0,0,0,0.10);
+  }
+}
+
+/* Scrollbar in light mode */
+html[data-mode="light"] ::-webkit-scrollbar-track,
+html[data-mode="light"] ::-webkit-scrollbar-track {
+  background: var(--nrs-bg-2);
+}
+
+@media (prefers-color-scheme: light) {
+  html:not([data-mode="dark"]) ::-webkit-scrollbar-track {
+    background: var(--nrs-bg-2);
+  }
+}
+
+/* Diamond star-field: disable on light backgrounds */
+html[data-mode="light"][data-theme="diamond"] .nrs-hero-bg::after {
+  display: none;
+}
+
+@media (prefers-color-scheme: light) {
+  html:not([data-mode="dark"])[data-theme="diamond"] .nrs-hero-bg::after {
+    display: none;
+  }
+}
+
+/* NavSidebar gets a light background in light mode */
+html[data-mode="light"] .nrs-sidebar-panel {
+  background: var(--nrs-card);
+  border-color: var(--nrs-border);
+}
+
+@media (prefers-color-scheme: light) {
+  html:not([data-mode="dark"]) .nrs-sidebar-panel {
+    background: var(--nrs-card);
+    border-color: var(--nrs-border);
+  }
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   LIGHT MODE — CINEMATIC INTRO ADAPTATION
+   Lighter atmospheric tones replace the dark intro overlay.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+html[data-mode="light"] .nrs-intro-overlay {
+  background: rgba(244, 237, 224, 0.97);
+}
+
+html[data-mode="light"] .nrs-intro-lightning-overlay {
+  background: rgba(139, 105, 20, 0.04);
+}
+
+@media (prefers-color-scheme: light) {
+  html:not([data-mode="dark"]) .nrs-intro-overlay {
+    background: rgba(244, 237, 224, 0.97);
+  }
+  html:not([data-mode="dark"]) .nrs-intro-lightning-overlay {
+    background: rgba(139, 105, 20, 0.04);
+  }
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   REDUCED MOTION — extend to light mode heading animations
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-mode="light"][data-theme="gold"] h1,
+  html[data-mode="light"][data-theme="gold"] .nrs-heading,
+  html[data-mode="light"][data-theme="diamond"] h1,
+  html[data-mode="light"][data-theme="diamond"] h2,
+  html[data-mode="light"][data-theme="diamond"] .nrs-heading,
+  html[data-mode="light"][data-theme="fire"] h1,
+  html[data-mode="light"][data-theme="fire"] .nrs-heading,
+  html[data-mode="light"][data-theme="platinum"] h1,
+  html[data-mode="light"][data-theme="platinum"] .nrs-heading {
+    animation: none !important;
+  }
+
+  html[data-mode="light"][data-theme="diamond"] h1,
+  html[data-mode="light"][data-theme="diamond"] h2,
+  html[data-mode="light"][data-theme="diamond"] .nrs-heading {
+    background: none;
+    color: var(--nrs-text);
+  }
+}

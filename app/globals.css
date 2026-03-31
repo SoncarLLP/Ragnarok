@@ -30,6 +30,19 @@
     opacity 0.6s ease !important;
 }
 
+/* ── Light / dark mode transition class ──────────────────────────────────── */
+/* Applied briefly by ThemeProvider when the user toggles light/dark mode.    */
+/* Overrides the 0.6s product theme transitions with a snappier 0.3s.         */
+.nrs-mode-transitioning,
+.nrs-mode-transitioning * {
+  transition:
+    background-color 0.3s ease,
+    border-color 0.3s ease,
+    color 0.3s ease,
+    box-shadow 0.3s ease,
+    opacity 0.3s ease !important;
+}
+
 /* ── CSS font variables ──────────────────────────────────────────────────── */
 :root {
   --font-heading: 'Cinzel', 'Trajan Pro', serif;
