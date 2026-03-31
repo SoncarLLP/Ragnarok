@@ -9,6 +9,7 @@ import WarningsLog from "./WarningsLog";
 import BlockAuthTab from "./BlockAuthTab";
 import PinnedPostsTab from "./PinnedPostsTab";
 import MessagesTab from "./MessagesTab";
+import PromotionHistoryTab from "./PromotionHistoryTab";
 import type { BlockAuthRecord, MemberOption } from "./BlockAuthTab";
 import type { PinnedPostRecord } from "./PinnedPostsTab";
 
@@ -30,6 +31,8 @@ export type MemberRecord = {
   full_name: string | null; username: string | null;
   role: "member" | "admin" | "super_admin"; status: "active" | "banned" | "suspended";
   created_at: string;
+  tier?: string | null;
+  moderation_strikes?: number | null;
 };
 export type WarningRecord = {
   id: string; message: string; created_at: string; read_at: string | null;
@@ -62,6 +65,7 @@ const SUPER_ADMIN_TABS = [
   ...BASE_TABS,
   { key: "messages", label: "Messages" },
   { key: "block_auth", label: "Block Auth" },
+  { key: "promotion_history", label: "Promotion Log" },
 ];
 
 export default function AdminTabs({
@@ -147,6 +151,9 @@ export default function AdminTabs({
           members={allMemberOptions}
           admins={adminOptions}
         />
+      )}
+      {active === "promotion_history" && currentUserRole === "super_admin" && (
+        <PromotionHistoryTab />
       )}
     </div>
   );

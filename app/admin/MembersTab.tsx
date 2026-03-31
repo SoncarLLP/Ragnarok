@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import type { MemberRecord } from "./AdminTabs";
+import TierPromoteModal from "./TierPromoteModal";
+import { getTierColor } from "@/lib/loyalty";
 
 function fmtMemberId(id: number | null) {
   return id != null ? String(id).padStart(11, "0") : "—";
@@ -21,6 +23,7 @@ export default function MembersTab({
   const [warnMsg, setWarnMsg] = useState("");
   const [warnLoading, setWarnLoading] = useState(false);
   const [warnError, setWarnError] = useState("");
+  const [tierModal, setTierModal] = useState<{ id: string; name: string; currentTier: string } | null>(null);
 
   const filtered = list.filter((m) => {
     const q = filter.toLowerCase();
@@ -79,6 +82,12 @@ export default function MembersTab({
     setWarnLoading(false);
   }
 
+  function handleTierPromotion(userId: string, newTier: string) {
+    setList((prev) =>
+      prev.map((m) => m.id === userId ? { ...m, tier: newTier } : m)
+    );
+  }
+
   const roleColor = (role: string) =>
     role === "super_admin"
       ? "text-amber-300"
@@ -99,13 +108,15 @@ export default function MembersTab({
       </div>
 
       <div className="overflow-x-auto rounded-xl border border-white/10">
-        <table className="w-full text-sm min-w-[680px]">
+        <table className="w-full text-sm min-w-[820px]">
           <thead>
             <tr className="border-b border-white/10 text-xs text-neutral-500 uppercase tracking-wide">
               <th className="px-4 py-3 text-left">Member ID</th>
               <th className="px-4 py-3 text-left">Name / Username</th>
               <th className="px-4 py-3 text-left">Email</th>
               <th className="px-4 py-3 text-left">Role</th>
+              <th className="px-4 py-3 text-left">Tier</th>
+              <th className="px-4 py-3 text-left">Strikes</th>
               <th className="px-4 py-3 text-left">Status</th>
               <th className="px-4 py-3 text-left">Joined</th>
               <th className="px-4 py-3 text-left">Actions</th>
@@ -139,6 +150,36 @@ export default function MembersTab({
                   ) : (
                     <span className={`text-xs font-medium ${roleColor(m.role)}`}>{m.role}</span>
                   )}
+                </td>
+                <td className="px-4 py-3">
+                  <div className="flex items-center gap-1.5">
+                    <span className={`text-xs font-medium ${getTierColor(m.tier ?? "Bronze 1")}`}>
+                      {m.tier ?? "Bronze 1"}
+                    </span>
+                    {currentUserRole === "super_admin" && (
+                      <button
+                        onClick={() => setTierModal({
+                          id: m.id,
+                          name: m.full_name || m.username || m.email,
+                          currentTier: m.tier ?? "Bronze 1",
+                        })}
+                        className="text-xs px-1.5 py-0.5 rounded bg-amber-500/10 text-amber-400/70 hover:bg-amber-500/20 hover:text-amber-300 transition"
+                        title="Promote tier"
+                      >
+                        ✦
+                      </button>
+                    )}
+                  </div>
+                </td>
+                <td className="px-4 py-3">
+                  <span className={`text-xs font-mono ${
+                    (m.moderation_strikes ?? 0) >= 3 ? "text-rose-400" :
+                    (m.moderation_strikes ?? 0) >= 2 ? "text-amber-400" :
+                    "text-neutral-500"
+                  }`}>
+                    {m.moderation_strikes ?? 0}
+                    {(m.moderation_strikes ?? 0) >= 3 && " ⚠️"}
+                  </span>
                 </td>
                 <td className="px-4 py-3">
                   <span
@@ -231,6 +272,15 @@ export default function MembersTab({
             </div>
           </div>
         </div>
+      )}
+
+      {/* Tier Promote Modal */}
+      {tierModal && (
+        <TierPromoteModal
+          member={tierModal}
+          onClose={() => setTierModal(null)}
+          onPromotion={handleTierPromotion}
+        />
       )}
     </section>
   );

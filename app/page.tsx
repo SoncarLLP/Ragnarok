@@ -8,6 +8,7 @@ import ParticleCanvas from "@/components/ParticleCanvas";
 import RunicDivider from "@/components/RunicDivider";
 import type { HomepageContent, GlobalContent, AnnouncementBar } from "@/lib/site-management";
 import { defaultHomepageContent } from "@/lib/site-management";
+import { getProductCardAccent, getProductCardGlow } from "@/lib/product-card-theme";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -53,10 +54,10 @@ export default async function HomePage({ searchParams }: SearchProps) {
     globalContent = (gbRow?.content ?? null) as GlobalContent | null;
   }
 
-  // Fetch products
+  // Fetch products (include theme for card colouring)
   const { data: dbProducts } = await admin
     .from("products")
-    .select("id, slug, name, description_html, price_pence, primary_image_url, is_featured, visibility, sort_order")
+    .select("id, slug, name, description_html, price_pence, primary_image_url, is_featured, visibility, sort_order, theme")
     .eq("visibility", "published")
     .order("sort_order", { ascending: true });
 
@@ -256,29 +257,44 @@ export default async function HomePage({ searchParams }: SearchProps) {
             Featured
           </h2>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
-            {featuredProducts.map((p) => (
-              <Link key={p.id} href={`/product/${p.slug}`} className="nrs-card overflow-hidden group">
-                {p.primary_image_url && (
-                  <div className="grid place-items-center p-3"
-                    style={{ background: "var(--nrs-bg-2)" }}>
-                    <Image
-                      src={p.primary_image_url} alt={p.name}
-                      width={300} height={300}
-                      className="h-48 w-full object-contain transition-transform duration-500 group-hover:scale-105"
-                      loading="lazy"
-                    />
+            {featuredProducts.map((p) => {
+              const pAccent = getProductCardAccent(p.slug, p.theme);
+              const pGlow   = getProductCardGlow(p.slug, p.theme);
+              return (
+                <Link
+                  key={p.id}
+                  href={`/product/${p.slug}`}
+                  className="nrs-card overflow-hidden group"
+                  style={{
+                    backgroundColor: `color-mix(in srgb, ${pAccent} 7%, var(--nrs-card, #1a1a2e))`,
+                    border: `1px solid ${pAccent}28`,
+                    transition: "box-shadow 0.3s, border-color 0.3s",
+                  }}
+                  onMouseEnter={undefined}
+                  data-prd-accent={pAccent}
+                >
+                  {p.primary_image_url && (
+                    <div className="grid place-items-center p-3 relative overflow-hidden"
+                      style={{ background: `radial-gradient(ellipse 80% 70% at 50% 50%, ${pGlow}, var(--nrs-bg-2))` }}>
+                      <Image
+                        src={p.primary_image_url} alt={p.name}
+                        width={300} height={300}
+                        className="h-48 w-full object-contain transition-transform duration-500 group-hover:scale-105 relative z-10"
+                        loading="lazy"
+                      />
+                    </div>
+                  )}
+                  <div className="p-4">
+                    <p className="font-semibold text-sm" style={{ color: pAccent, fontFamily: "var(--font-heading)", letterSpacing: "0.04em" }}>
+                      {p.name}
+                    </p>
+                    <p className="text-sm mt-1 font-medium" style={{ color: pAccent, opacity: 0.85 }}>
+                      £{(p.price_pence / 100).toFixed(2)}
+                    </p>
                   </div>
-                )}
-                <div className="p-4">
-                  <p className="font-semibold text-sm" style={{ color: "var(--nrs-text)", fontFamily: "var(--font-heading)", letterSpacing: "0.04em" }}>
-                    {p.name}
-                  </p>
-                  <p className="text-sm mt-1 font-medium" style={{ color: "var(--nrs-accent)" }}>
-                    £{(p.price_pence / 100).toFixed(2)}
-                  </p>
-                </div>
-              </Link>
-            ))}
+                </Link>
+              );
+            })}
           </div>
         </section>
       )}
@@ -297,59 +313,71 @@ export default async function HomePage({ searchParams }: SearchProps) {
         </div>
 
         <div className="mt-2 grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {allProducts.map((p) => (
-            <article key={p.id ?? p.slug} className="nrs-card overflow-hidden group nrs-reveal">
-              <div className="grid place-items-center p-4 relative overflow-hidden"
-                style={{ background: "var(--nrs-bg-2)" }}>
-                {/* Subtle glow behind product */}
-                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                  style={{ background: "radial-gradient(ellipse 60% 50% at 50% 50%, var(--nrs-accent-dim), transparent)" }}
-                  aria-hidden="true"
-                />
-                <Link href={`/product/${p.slug}`} className="block w-full relative z-10">
-                  <Image
-                    src={p.primary_image_url ?? p.image ?? "/images/products/placeholder.jpg"}
-                    alt={p.name}
-                    width={600}
-                    height={800}
-                    className="h-80 w-full object-contain transition-transform duration-500 group-hover:scale-104"
-                    loading="lazy"
+          {allProducts.map((p) => {
+            const pAccent = getProductCardAccent(p.slug, p.theme);
+            const pGlow   = getProductCardGlow(p.slug, p.theme);
+            return (
+              <article
+                key={p.id ?? p.slug}
+                className="nrs-card overflow-hidden group nrs-reveal"
+                style={{
+                  backgroundColor: `color-mix(in srgb, ${pAccent} 7%, var(--nrs-card, #1a1a2e))`,
+                  border: `1px solid ${pAccent}28`,
+                }}
+              >
+                <div className="grid place-items-center p-4 relative overflow-hidden"
+                  style={{ background: `radial-gradient(ellipse 80% 70% at 50% 50%, ${pGlow}, var(--nrs-bg-2))` }}>
+                  {/* Product-themed glow on hover */}
+                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                    style={{ background: `radial-gradient(ellipse 60% 50% at 50% 50%, ${pAccent}22, transparent)` }}
+                    aria-hidden="true"
                   />
-                </Link>
-              </div>
-
-              <div className="p-5">
-                {/* Norse knotwork top border */}
-                <div className="mb-3 h-px w-full"
-                  style={{ background: "linear-gradient(90deg, transparent, var(--nrs-accent-border), transparent)" }}
-                  aria-hidden="true"
-                />
-
-                <Link href={`/product/${p.slug}`}
-                  className="text-lg font-semibold hover:underline decoration-[var(--nrs-accent)] underline-offset-4 block"
-                  style={{ fontFamily: "var(--font-heading)", letterSpacing: "0.03em", color: "var(--nrs-text)" }}>
-                  {p.name}
-                </Link>
-                <div
-                  className="mt-2 text-sm line-clamp-2"
-                  style={{ color: "var(--nrs-text-muted)", fontFamily: "var(--font-ui)" }}
-                  dangerouslySetInnerHTML={{ __html: p.description_html ?? p.blurb ?? "" }}
-                />
-
-                <div className="mt-5 flex items-center justify-between">
-                  <span className="font-bold text-lg" style={{ color: "var(--nrs-text)" }}>
-                    £{((p.price_pence ?? (p.price * 100)) / 100).toFixed(2)}
-                  </span>
-                  <Link
-                    href={`/cart?add=${p.slug}`}
-                    className="nrs-btn nrs-btn-traced text-xs py-2 px-4 uppercase tracking-widest font-bold"
-                  >
-                    Acquire
+                  <Link href={`/product/${p.slug}`} className="block w-full relative z-10">
+                    <Image
+                      src={p.primary_image_url ?? p.image ?? "/images/products/placeholder.jpg"}
+                      alt={p.name}
+                      width={600}
+                      height={800}
+                      className="h-80 w-full object-contain transition-transform duration-500 group-hover:scale-104"
+                      loading="lazy"
+                    />
                   </Link>
                 </div>
-              </div>
-            </article>
-          ))}
+
+                <div className="p-5">
+                  {/* Product-accented top border */}
+                  <div className="mb-3 h-px w-full"
+                    style={{ background: `linear-gradient(90deg, transparent, ${pAccent}60, transparent)` }}
+                    aria-hidden="true"
+                  />
+
+                  <Link href={`/product/${p.slug}`}
+                    className="text-lg font-semibold hover:underline underline-offset-4 block"
+                    style={{ fontFamily: "var(--font-heading)", letterSpacing: "0.03em", color: pAccent, textDecorationColor: pAccent }}>
+                    {p.name}
+                  </Link>
+                  <div
+                    className="mt-2 text-sm line-clamp-2"
+                    style={{ color: "var(--nrs-text-muted)", fontFamily: "var(--font-ui)" }}
+                    dangerouslySetInnerHTML={{ __html: p.description_html ?? p.blurb ?? "" }}
+                  />
+
+                  <div className="mt-5 flex items-center justify-between">
+                    <span className="font-bold text-lg" style={{ color: pAccent }}>
+                      £{((p.price_pence ?? (p.price * 100)) / 100).toFixed(2)}
+                    </span>
+                    <Link
+                      href={`/cart?add=${p.slug}`}
+                      className="nrs-btn nrs-btn-traced text-xs py-2 px-4 uppercase tracking-widest font-bold"
+                      style={{ borderColor: `${pAccent}60`, color: pAccent }}
+                    >
+                      Acquire
+                    </Link>
+                  </div>
+                </div>
+              </article>
+            );
+          })}
         </div>
 
         {/* Premium delivery notice */}

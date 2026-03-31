@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { getDisplayName } from "@/lib/display-name";
+import { checkTextContent, getModerationsFromDB, logModerationEvent, applyModerationStrike } from "@/lib/content-moderation";
 
 async function requireParticipant(convId: string) {
   const supabase = await createClient();
@@ -159,6 +161,23 @@ export async function POST(
   }
   if ((message_type === "image" || message_type === "file") && !file_url) {
     return NextResponse.json({ error: "File URL required for image/file messages" }, { status: 400 });
+  }
+
+  // ── Content moderation ────────────────────────────────────────────
+  if (message_type === "text" && content?.trim()) {
+    const admin = createAdminClient();
+    const { blocked, whitelist } = await getModerationsFromDB(admin as Parameters<typeof getModerationsFromDB>[0]);
+    const modResult = checkTextContent(content.trim(), blocked, whitelist);
+    if (!modResult.allowed) {
+      await logModerationEvent(
+        admin as Parameters<typeof logModerationEvent>[0],
+        user!.id, "dm", content.trim(), modResult.reason, modResult.blockedWords
+      );
+      await applyModerationStrike(admin as Parameters<typeof applyModerationStrike>[0], user!.id);
+      return NextResponse.json({
+        error: "Your message was blocked because it contains language that violates our community guidelines.",
+      }, { status: 422 });
+    }
   }
 
   const { data: msg, error: insertErr } = await supabase

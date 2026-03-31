@@ -1,7 +1,7 @@
 import Link from "next/link";
 import NavWrapper from "@/components/NavWrapper";
 
-const LAST_UPDATED = "29 March 2026";
+const LAST_UPDATED = "31 March 2026";
 
 function Section({
   id,
@@ -305,6 +305,28 @@ export default function PoliciesPage() {
               We may also disclose your data where required by law, court order, or regulatory
               authority, or where necessary to protect the rights, safety, or property of
               SONCAR Limited, our customers, or others.
+            </P>
+
+            <H3 id="priv-content-moderation">1.5a Automated Content Scanning</H3>
+            <P>
+              All user-generated content you submit to the Ragnarök platform (including posts,
+              comments, profile biographies, usernames, and direct messages) is automatically
+              scanned by an automated moderation system before being published. This system
+              checks content against a list of prohibited words and phrases in order to enforce
+              our Community Guidelines. The scanning is performed entirely on our own servers;
+              your content is not transmitted to any third-party service for this purpose.
+            </P>
+            <P>
+              Images you upload to the platform (including profile photos and post images) are
+              automatically analysed for inappropriate content (such as explicit or violent
+              material) using a locally-running automated image classification system. This
+              analysis takes place on our servers and your images are not sent to any external
+              API or third-party service for content moderation purposes.
+            </P>
+            <P>
+              We process this data under our <strong>legitimate interests</strong> in maintaining
+              a safe and compliant community platform. Blocked content attempts and moderation
+              strike counts are retained for up to 2 years to protect the safety of our members.
             </P>
 
             <H3 id="priv-rights">1.6 Your Rights Under UK GDPR</H3>
@@ -987,6 +1009,8 @@ export default function PoliciesPage() {
               { href: "#comm-responsibility", label: "Member responsibilities" },
               { href: "#comm-official",     label: "Official Ragnarök Team posts" },
               { href: "#comm-moderation",   label: "Moderation policy" },
+              { href: "#comm-automated",    label: "Automated content moderation" },
+              { href: "#comm-strikes",      label: "Three-strike system" },
               { href: "#comm-appeals",      label: "Appeals process" },
               { href: "#comm-removal",      label: "Content removal" },
               { href: "#comm-ip",           label: "Intellectual property" },
@@ -1132,6 +1156,7 @@ export default function PoliciesPage() {
               <li>Issue formal warnings to members.</li>
               <li>Temporarily suspend or permanently ban members from the community.</li>
               <li>Flag content for escalated review.</li>
+              <li>Manually adjust a member&apos;s loyalty tier where appropriate.</li>
             </UL>
             <P>
               Moderation actions are taken at the discretion of our moderation team. We aim to
@@ -1142,6 +1167,55 @@ export default function PoliciesPage() {
               SONCAR Limited reserves the right to take moderation action without prior notice
               where content poses a risk of harm to members or third parties, or where immediate
               action is required to comply with the law.
+            </P>
+
+            <H3 id="comm-automated">5.7a Automated Content Moderation</H3>
+            <P>
+              All user-generated content submitted to the Ragnarök platform — including posts,
+              comments, profile biographies, usernames, and direct messages — is automatically
+              scanned for content that violates our Community Guidelines before it is published.
+              This scanning is performed by an automated system running on our own servers; your
+              content is not transmitted to any third-party moderation service.
+            </P>
+            <P>
+              Images uploaded to the platform (including profile photos and post images) are also
+              automatically analysed for inappropriate content by a locally-running automated
+              system. No image data is sent to any external API or third-party service for this
+              purpose.
+            </P>
+            <P>
+              Where content is blocked by the automated system, you will receive an in-app
+              message explaining that your submission was blocked. Blocked content attempts are
+              logged and may be reviewed by our moderation team.
+            </P>
+
+            <H3 id="comm-strikes">5.7b Three-Strike System</H3>
+            <P>
+              To maintain a safe community, we operate a <strong>three-strike system</strong>
+              for content violations:
+            </P>
+            <OL>
+              <li>
+                <strong>First violation:</strong> your content is blocked and you receive an
+                in-app warning explaining the issue and referencing our Community Guidelines.
+              </li>
+              <li>
+                <strong>Second violation:</strong> your content is blocked and you receive a
+                stronger in-app warning advising that a further violation will result in
+                account suspension.
+              </li>
+              <li>
+                <strong>Third violation:</strong> your content is blocked, your account is
+                automatically suspended pending review by a super admin, and you are notified
+                via in-app message. A member of our team will review the suspension within a
+                reasonable timeframe.
+              </li>
+            </OL>
+            <P>
+              Super admins may reset a member&apos;s strike count at their discretion, for example
+              following a successful appeal. Strike counts are visible to admins in the admin
+              panel. If you believe a violation was incorrectly recorded, please follow the
+              appeals process in Section 5.8.
             </P>
 
             <H3 id="comm-appeals">5.8 Appeals Process</H3>

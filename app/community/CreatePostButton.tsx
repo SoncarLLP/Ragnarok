@@ -119,6 +119,36 @@ export default function CreatePostButton({
 
     setSubmitting(true);
     setError("");
+
+    // ── Content moderation check ──────────────────────────────────────
+    const textToCheck = [content, ingredients, method].filter(Boolean).join(" ");
+    if (textToCheck.trim()) {
+      const modRes = await fetch("/api/moderation/check", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content: textToCheck, contentType: type === "recipe" ? "recipe" : "post" }),
+      });
+      const modData = await modRes.json();
+      if (!modData.allowed) {
+        setError(modData.reason ?? "Your content was blocked by our moderation system.");
+        setSubmitting(false);
+        return;
+      }
+    }
+
+    // ── Image moderation check ────────────────────────────────────────
+    if (imageFile) {
+      const imgForm = new FormData();
+      imgForm.append("image", imageFile);
+      const imgRes = await fetch("/api/moderation/image", { method: "POST", body: imgForm });
+      const imgData = await imgRes.json();
+      if (!imgData.allowed) {
+        setError(imgData.reason ?? "This image cannot be uploaded.");
+        setSubmitting(false);
+        return;
+      }
+    }
+
     const supabase = createClient();
 
     try {

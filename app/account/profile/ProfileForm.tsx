@@ -169,6 +169,35 @@ export default function ProfileForm({
       return;
     }
 
+    // ── Content moderation check on bio and username ──────────────
+    const bioToCheck = [bio, username].filter(Boolean).join(" ");
+    if (bioToCheck.trim()) {
+      const modRes = await fetch("/api/moderation/check", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content: bioToCheck, contentType: "bio" }),
+      });
+      const modData = await modRes.json();
+      if (!modData.allowed) {
+        setError(modData.reason ?? "Your profile content was blocked by our moderation system.");
+        setSaving(false);
+        return;
+      }
+    }
+
+    // ── Avatar image moderation ───────────────────────────────────
+    if (avatarFile) {
+      const imgForm = new FormData();
+      imgForm.append("image", avatarFile);
+      const imgRes = await fetch("/api/moderation/image", { method: "POST", body: imgForm });
+      const imgData = await imgRes.json();
+      if (!imgData.allowed) {
+        setError(imgData.reason ?? "This image cannot be uploaded.");
+        setSaving(false);
+        return;
+      }
+    }
+
     const supabase = createClient();
     const {
       data: { user },

@@ -27,6 +27,10 @@ ADMIN_PASSWORD=...
 REVOLUT_API_SECRET_KEY=...          # server-side secret from Revolut Business dashboard
 REVOLUT_ENV=sandbox                 # set to "prod" for production
 NEXT_PUBLIC_REVOLUT_ENV=sandbox     # must match REVOLUT_ENV (used to load correct embed script)
+
+# Image moderation (optional — site works without it, check is skipped if not set)
+# NsfwJS runs locally, no API key needed. The env var below is reserved for future use.
+# No configuration needed for NsfwJS.
 ```
 
 Also add `http://localhost:3000/auth/callback` to the **Redirect URLs** list in the Supabase dashboard (Authentication → URL Configuration).

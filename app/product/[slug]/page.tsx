@@ -10,6 +10,7 @@ import RunicDivider from "@/components/RunicDivider";
 import ProductThemeApplier from "@/components/ProductThemeApplier";
 import ProductParticleCanvas from "@/components/ProductParticleCanvas";
 import NorseKnotworkFrame from "@/components/NorseKnotworkFrame";
+import { getProductCardAccent, getProductCardGlow } from "@/lib/product-card-theme";
 
 const STATIC_SLUGS = ["freyjas-bloom", "duemmens-nectar", "loki-hell-fire"] as const;
 
@@ -86,7 +87,7 @@ export default async function ProductPage(props: Props) {
     const relatedProducts = product.related_product_ids?.length
       ? await admin
           .from("products")
-          .select("id, slug, name, primary_image_url, price_pence")
+          .select("id, slug, name, primary_image_url, price_pence, theme")
           .in("id", product.related_product_ids)
           .eq("visibility", "published")
           .limit(4)
@@ -334,23 +335,36 @@ export default async function ProductPage(props: Props) {
                 </h2>
                 <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-4">
                   {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-                  {(relatedProducts.data as any[]).map((rp) => (
-                    <Link key={rp.id} href={`/product/${rp.slug}`} className="nrs-card overflow-hidden group">
-                      {rp.primary_image_url && (
-                        <div className="p-3" style={{ background: "var(--nrs-bg-2)" }}>
-                          <Image
-                            src={rp.primary_image_url} alt={rp.name}
-                            width={200} height={200}
-                            className="w-full h-28 object-contain transition-transform duration-300 group-hover:scale-105"
-                          />
+                  {(relatedProducts.data as any[]).map((rp) => {
+                    const rpAccent = getProductCardAccent(rp.slug, rp.theme);
+                    const rpGlow   = getProductCardGlow(rp.slug, rp.theme);
+                    return (
+                      <Link
+                        key={rp.id}
+                        href={`/product/${rp.slug}`}
+                        className="nrs-card overflow-hidden group"
+                        style={{
+                          backgroundColor: `color-mix(in srgb, ${rpAccent} 7%, var(--nrs-card, #1a1a2e))`,
+                          border: `1px solid ${rpAccent}28`,
+                        }}
+                      >
+                        {rp.primary_image_url && (
+                          <div className="p-3 relative overflow-hidden"
+                            style={{ background: `radial-gradient(ellipse 80% 70% at 50% 50%, ${rpGlow}, var(--nrs-bg-2))` }}>
+                            <Image
+                              src={rp.primary_image_url} alt={rp.name}
+                              width={200} height={200}
+                              className="w-full h-28 object-contain transition-transform duration-300 group-hover:scale-105 relative z-10"
+                            />
+                          </div>
+                        )}
+                        <div className="p-3">
+                          <p className="text-sm font-medium" style={{ fontFamily: "var(--font-heading)", color: rpAccent }}>{rp.name}</p>
+                          <p className="text-xs mt-0.5" style={{ color: rpAccent, opacity: 0.8 }}>{penceToDisplay(rp.price_pence)}</p>
                         </div>
-                      )}
-                      <div className="p-3">
-                        <p className="text-sm font-medium" style={{ fontFamily: "var(--font-heading)", color: "var(--nrs-text)" }}>{rp.name}</p>
-                        <p className="text-xs mt-0.5" style={{ color: "var(--nrs-accent)" }}>{penceToDisplay(rp.price_pence)}</p>
-                      </div>
-                    </Link>
-                  ))}
+                      </Link>
+                    );
+                  })}
                 </div>
               </div>
             )}

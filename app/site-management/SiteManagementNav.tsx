@@ -23,6 +23,12 @@ const navItems = [
       { href: "/site-management/content/faq", label: "FAQ", icon: "❓" },
     ],
   },
+  {
+    section: "Safety",
+    links: [
+      { href: "/site-management/moderation", label: "Content Moderation", icon: "🛡️" },
+    ],
+  },
 ];
 
 export default function SiteManagementNav({ mobile }: { mobile?: boolean }) {

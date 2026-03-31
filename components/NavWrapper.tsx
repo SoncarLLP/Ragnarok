@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import NavSidebar from "./NavSidebar";
 import NotificationBell from "./NotificationBell";
 import DarkModeToggle from "./DarkModeToggle";
+import SearchBar from "./SearchBar";
 
 /**
  * Async server component — fetches the current user's profile and unread
@@ -50,6 +51,7 @@ export default async function NavWrapper() {
 
   return (
     <>
+      <SearchBar />
       <DarkModeToggle isSignedIn={isSignedIn} />
       {user && (
         <NotificationBell userId={user.id} initialUnreadCount={unreadCount} />

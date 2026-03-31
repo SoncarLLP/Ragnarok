@@ -39,6 +39,19 @@ export default function CommentSection({
     setSubmitting(true);
     setError("");
 
+    // ── Content moderation check ──────────────────────────────────────
+    const modRes = await fetch("/api/moderation/check", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ content: content.trim(), contentType: "comment" }),
+    });
+    const modData = await modRes.json();
+    if (!modData.allowed) {
+      setError(modData.reason ?? "Your comment was blocked by our moderation system.");
+      setSubmitting(false);
+      return;
+    }
+
     const supabase = createClient();
     const {
       data: { user },
