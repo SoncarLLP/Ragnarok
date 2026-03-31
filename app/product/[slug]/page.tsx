@@ -139,13 +139,22 @@ export default async function ProductPage(props: Props) {
                     border: "1px solid var(--nrs-accent-border)",
                     boxShadow: "var(--nrs-glow)",
                     padding: "1.5rem",
-                    /* isolation:isolate keeps mix-blend-mode contained to this box */
-                    isolation: "isolate",
                     color: "var(--nrs-accent)",
                   }}
                 >
                   {/* Norse knotwork frame — full interlaced SVG border */}
                   <NorseKnotworkFrame />
+
+                  {/* Dark radial gradient overlay — fades bg-2 at edges to transparent
+                      in the centre, masking white studio backgrounds without darkening
+                      the product image itself */}
+                  <div
+                    aria-hidden="true"
+                    style={{
+                      position: "absolute", inset: 0, zIndex: 1, pointerEvents: "none",
+                      background: "radial-gradient(ellipse at center, transparent 30%, var(--nrs-bg-2) 100%)",
+                    }}
+                  />
 
                   {displayImages.length > 0 ? (
                     <Image
@@ -154,11 +163,6 @@ export default async function ProductPage(props: Props) {
                       width={500} height={600}
                       className="object-contain w-full h-[30rem] relative z-[1]"
                       priority
-                      style={{
-                        /* multiply: white pixels blend into the dark container
-                           background and disappear; packaging artwork remains visible */
-                        mixBlendMode: "multiply",
-                      }}
                     />
                   ) : product.primary_image_url ? (
                     <Image
@@ -167,7 +171,6 @@ export default async function ProductPage(props: Props) {
                       width={500} height={600}
                       className="object-contain w-full h-[30rem] relative z-[1]"
                       priority
-                      style={{ mixBlendMode: "multiply" }}
                     />
                   ) : (
                     <div className="w-full h-[30rem] flex items-center justify-center"
@@ -182,18 +185,20 @@ export default async function ProductPage(props: Props) {
                   <div className="flex gap-2 overflow-x-auto pb-1">
                     {displayImages.map((img) => (
                       <div key={img.id}
-                        className="w-16 h-16 rounded-lg overflow-hidden shrink-0"
+                        className="w-16 h-16 rounded-lg overflow-hidden shrink-0 relative"
                         style={{
                           background: "var(--nrs-bg-2)",
                           border: "1px solid var(--nrs-border)",
-                          isolation: "isolate",
                         }}>
                         <Image
                           src={img.url} alt={img.alt_text || product.name}
                           width={64} height={64}
                           className="w-full h-full object-contain"
-                          style={{ mixBlendMode: "multiply" }}
                         />
+                        <div aria-hidden="true" style={{
+                          position: "absolute", inset: 0, pointerEvents: "none",
+                          background: "radial-gradient(ellipse at center, transparent 25%, var(--nrs-bg-2) 100%)",
+                        }}/>
                       </div>
                     ))}
                   </div>
@@ -392,17 +397,20 @@ export default async function ProductPage(props: Props) {
               background: "var(--nrs-bg-2)",
               border: "1px solid var(--nrs-accent-border)",
               boxShadow: "var(--nrs-glow)",
-              isolation: "isolate",
               color: "var(--nrs-accent)",
             }}>
             {/* Norse knotwork frame — full interlaced SVG border */}
             <NorseKnotworkFrame />
+            {/* Radial gradient overlay masks white studio background */}
+            <div aria-hidden="true" style={{
+              position: "absolute", inset: 0, zIndex: 1, pointerEvents: "none",
+              background: "radial-gradient(ellipse at center, transparent 30%, var(--nrs-bg-2) 100%)",
+            }}/>
             <Image
               src={p.image} alt={p.name}
               width={500} height={600}
               className="object-contain w-full h-[30rem] relative z-[1]"
               priority
-              style={{ mixBlendMode: "multiply" }}
             />
           </div>
           {/* Details */}
