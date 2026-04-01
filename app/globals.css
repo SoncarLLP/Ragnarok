@@ -259,6 +259,16 @@ h3 { letter-spacing: 0.02em; }
   will-change: filter, color;
 }
 
+/* ── Badge-size ∞ for the super_admin + Diamond combined role badge ──────── */
+/* Smaller and more decorative than the standalone points display version.    */
+.nrs-badge-infinity {
+  font-family:    var(--font-heading, 'Cinzel', serif);
+  font-size:      1.15em;   /* slightly larger than badge text, smaller than points display */
+  line-height:    1;
+  display:        inline-block;
+  vertical-align: middle;
+}
+
 /* ── Bronze — Static warm copper, no motion ─────────────────────────────── */
 .nrs-inf-tier-bronze .nrs-infinity-symbol {
   color:       #c9a84c;

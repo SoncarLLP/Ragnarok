@@ -35,6 +35,7 @@ export default function MemberBadge({
         }}
       >
         👑{" "}
+        <span className="nrs-badge-infinity tier-text-rainbow" aria-hidden="true">∞</span>{" "}
         <span className="tier-text-rainbow">Diamond</span>
       </span>
     );
