@@ -180,13 +180,14 @@ export default function ReactionButton({
             bottom: pickerPos.bottom,
             left: pickerPos.left,
             zIndex: 9999,
+            background: "var(--nrs-card)",
+            border: "1px solid var(--nrs-border)",
           }}
           onMouseEnter={cancelClose}
           onMouseLeave={startClose}
           role="dialog"
           aria-label="Choose a reaction"
           className="flex items-end gap-0.5 rounded-2xl shadow-2xl px-1.5 py-1.5"
-          style={{ background: "var(--nrs-card)", border: "1px solid var(--nrs-border)" }}
         >
           {EMOJIS.map((e) => (
             <button
