@@ -4,6 +4,7 @@ import { useState } from "react";
 import type { MemberRecord } from "./AdminTabs";
 import TierPromoteModal from "./TierPromoteModal";
 import { getTierColor } from "@/lib/loyalty";
+import PointsDisplay from "@/components/PointsDisplay";
 
 function fmtMemberId(id: number | null) {
   return id != null ? String(id).padStart(11, "0") : "—";
@@ -116,6 +117,7 @@ export default function MembersTab({
               <th className="px-4 py-3 text-left">Email</th>
               <th className="px-4 py-3 text-left">Role</th>
               <th className="px-4 py-3 text-left">Tier</th>
+              <th className="px-4 py-3 text-left">Points</th>
               <th className="px-4 py-3 text-left">Strikes</th>
               <th className="px-4 py-3 text-left">Status</th>
               <th className="px-4 py-3 text-left">Joined</th>
@@ -170,6 +172,13 @@ export default function MembersTab({
                       </button>
                     )}
                   </div>
+                </td>
+                <td className="px-4 py-3 text-xs font-mono text-neutral-300">
+                  <PointsDisplay
+                    points={m.cumulative_points ?? 0}
+                    role={m.role}
+                    tier={m.tier}
+                  />
                 </td>
                 <td className="px-4 py-3">
                   <span className={`text-xs font-mono ${

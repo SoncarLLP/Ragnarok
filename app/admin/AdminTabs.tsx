@@ -33,6 +33,7 @@ export type MemberRecord = {
   created_at: string;
   tier?: string | null;
   moderation_strikes?: number | null;
+  cumulative_points?: number | null;
 };
 export type WarningRecord = {
   id: string; message: string; created_at: string; read_at: string | null;

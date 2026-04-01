@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { formatTierName, getTierColor, getNextTier, getTierProgress, tierFromPoints } from "@/lib/loyalty";
 import MemberBadge from "@/components/MemberBadge";
 import TierBadge from "@/components/TierBadge";
+import PointsDisplay from "@/components/PointsDisplay";
 
 function fmtMemberId(id: number | null | undefined) {
   return id != null ? String(id).padStart(11, "0") : null;
@@ -60,7 +61,9 @@ export default async function AccountPage() {
         {/* Points */}
         <div className="rounded-xl border border-white/10 bg-white/5 p-5">
           <div className="text-sm text-neutral-400">Loyalty Points</div>
-          <div className="mt-1 text-3xl font-semibold">{points.toLocaleString()}</div>
+          <div className="mt-1 text-3xl font-semibold">
+            <PointsDisplay points={points} role={profile?.role} tier={tierName} />
+          </div>
           {nextTier ? (
             <div className="mt-3">
               <div className="flex justify-between text-xs text-neutral-500 mb-1.5">

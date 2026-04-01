@@ -241,3 +241,191 @@ h3 { letter-spacing: 0.02em; }
 .prose-norse hr {
   border-color: var(--nrs-border);
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SUPER ADMIN ∞ INFINITY SYMBOL
+   ─────────────────────────────────────────────────────────────────────────
+   Shown in place of a numerical points value for role = 'super_admin'.
+   Six tier-themed variants correspond to the six Ragnarök themes.
+   The outer wrapper (.nrs-inf-tier-*) sets the variant; the inner
+   .nrs-infinity-symbol carries the Cinzel font and animation.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.nrs-infinity-symbol {
+  font-family: var(--font-heading, 'Cinzel', serif);
+  font-size:   1.6em;       /* noticeably larger than surrounding text */
+  line-height: 1;
+  display:     inline-block;
+  will-change: filter, color;
+}
+
+/* ── Bronze — Static warm copper, no motion ─────────────────────────────── */
+.nrs-inf-tier-bronze .nrs-infinity-symbol {
+  color:       #c9a84c;
+  text-shadow: 0 0 8px rgba(201,168,76,0.32);
+}
+
+/* ── Silver — Subtle sweeping shimmer ───────────────────────────────────── */
+@keyframes nrs-inf-shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position:  200% center; }
+}
+
+.nrs-inf-tier-silver .nrs-infinity-symbol {
+  background:               linear-gradient(90deg, #a07828 0%, #d4c080 35%, #f0e8c0 50%, #d4c080 65%, #a07828 100%);
+  background-size:          200% auto;
+  -webkit-background-clip:  text;
+  background-clip:          text;
+  -webkit-text-fill-color:  transparent;
+  animation:                nrs-inf-shimmer 3s linear infinite;
+}
+
+/* ── Gold — Slow pulsing golden glow ────────────────────────────────────── */
+@keyframes nrs-inf-gold-pulse {
+  0%, 100% { text-shadow: 0 0 8px rgba(212,160,23,0.4),  0 0 18px rgba(212,160,23,0.2); }
+  50%       { text-shadow: 0 0 18px rgba(212,160,23,0.85), 0 0 36px rgba(212,160,23,0.5), 0 0 54px rgba(212,160,23,0.25); }
+}
+
+.nrs-inf-tier-gold .nrs-infinity-symbol {
+  color:     #d4a017;
+  animation: nrs-inf-gold-pulse 2.5s ease-in-out infinite;
+}
+
+/* ── Platinum — Frost crystal shimmer sweep ─────────────────────────────── */
+@keyframes nrs-inf-frost {
+  0%   { background-position: -200% center; }
+  100% { background-position:  200% center; }
+}
+
+.nrs-inf-tier-platinum .nrs-infinity-symbol {
+  background:               linear-gradient(90deg, #7eb8d4 0%, #b8dff0 30%, #ffffff 50%, #b8dff0 70%, #7eb8d4 100%);
+  background-size:          200% auto;
+  -webkit-background-clip:  text;
+  background-clip:          text;
+  -webkit-text-fill-color:  transparent;
+  filter:                   drop-shadow(0 0 6px rgba(126,184,212,0.6)) drop-shadow(0 0 12px rgba(126,184,212,0.3));
+  animation:                nrs-inf-frost 2s ease-in-out infinite;
+}
+
+/* ── Fire — Irregular flickering ember glow ─────────────────────────────── */
+@keyframes nrs-inf-flicker {
+  0%,100% { color: #e8610a; text-shadow: 0 0 8px  rgba(232,97,10,0.60), 0 0 20px rgba(232,97,10,0.35); }
+  20%     { color: #ff9020; text-shadow: 0 0 14px rgba(255,140,0,0.85), 0 0 28px rgba(232,97,10,0.60), 0 0 48px rgba(200,50,0,0.30); }
+  50%     { color: #d04808; text-shadow: 0 0 5px  rgba(200,50,0,0.50),  0 0 10px rgba(232,97,10,0.30); }
+  75%     { color: #ff8010; text-shadow: 0 0 16px rgba(255,160,0,0.75), 0 0 32px rgba(232,97,10,0.55); }
+}
+
+.nrs-inf-tier-fire .nrs-infinity-symbol {
+  animation: nrs-inf-flicker 0.9s ease-in-out infinite;
+}
+
+/* ── Diamond — Full prismatic rainbow colour shift ──────────────────────── */
+@keyframes nrs-inf-prism {
+  0%   { background-position: 0%   center; }
+  100% { background-position: 200% center; }
+}
+
+.nrs-inf-tier-diamond .nrs-infinity-symbol {
+  background: linear-gradient(90deg,
+    #a78bfa 0%,
+    #60a5fa 16%,
+    #34d399 33%,
+    #fbbf24 50%,
+    #f87171 66%,
+    #c084fc 83%,
+    #a78bfa 100%
+  );
+  background-size:          200% auto;
+  -webkit-background-clip:  text;
+  background-clip:          text;
+  -webkit-text-fill-color:  transparent;
+  filter:                   drop-shadow(0 0 8px rgba(167,139,250,0.65)) drop-shadow(0 0 18px rgba(96,165,250,0.40));
+  animation:                nrs-inf-prism 2s linear infinite;
+}
+
+/* ── Light mode adaptations ──────────────────────────────────────────────── */
+/* Darken/reduce glow so the symbol reads well on light parchment backgrounds  */
+
+html[data-mode="light"] .nrs-inf-tier-bronze .nrs-infinity-symbol {
+  color:       #8b6914;
+  text-shadow: 0 0 5px rgba(139,105,20,0.22);
+}
+@media (prefers-color-scheme: light) {
+  html:not([data-mode="dark"]) .nrs-inf-tier-bronze .nrs-infinity-symbol {
+    color:       #8b6914;
+    text-shadow: 0 0 5px rgba(139,105,20,0.22);
+  }
+}
+
+html[data-mode="light"] .nrs-inf-tier-silver .nrs-infinity-symbol {
+  background: linear-gradient(90deg, #7a4f1e 0%, #b07840 35%, #c89858 50%, #b07840 65%, #7a4f1e 100%);
+  background-size:         200% auto;
+  -webkit-background-clip: text;
+  background-clip:         text;
+  -webkit-text-fill-color: transparent;
+}
+@media (prefers-color-scheme: light) {
+  html:not([data-mode="dark"]) .nrs-inf-tier-silver .nrs-infinity-symbol {
+    background: linear-gradient(90deg, #7a4f1e 0%, #b07840 35%, #c89858 50%, #b07840 65%, #7a4f1e 100%);
+    background-size:         200% auto;
+    -webkit-background-clip: text;
+    background-clip:         text;
+    -webkit-text-fill-color: transparent;
+  }
+}
+
+html[data-mode="light"] .nrs-inf-tier-gold .nrs-infinity-symbol {
+  color: #a06010;
+}
+@media (prefers-color-scheme: light) {
+  html:not([data-mode="dark"]) .nrs-inf-tier-gold .nrs-infinity-symbol {
+    color: #a06010;
+  }
+}
+
+html[data-mode="light"] .nrs-inf-tier-platinum .nrs-infinity-symbol {
+  background: linear-gradient(90deg, #3a90b8 0%, #60aed0 30%, #2c7ea0 50%, #60aed0 70%, #3a90b8 100%);
+  background-size:         200% auto;
+  -webkit-background-clip: text;
+  background-clip:         text;
+  -webkit-text-fill-color: transparent;
+  filter:                  drop-shadow(0 0 4px rgba(58,144,184,0.35));
+}
+@media (prefers-color-scheme: light) {
+  html:not([data-mode="dark"]) .nrs-inf-tier-platinum .nrs-infinity-symbol {
+    background: linear-gradient(90deg, #3a90b8 0%, #60aed0 30%, #2c7ea0 50%, #60aed0 70%, #3a90b8 100%);
+    background-size:         200% auto;
+    -webkit-background-clip: text;
+    background-clip:         text;
+    -webkit-text-fill-color: transparent;
+    filter:                  drop-shadow(0 0 4px rgba(58,144,184,0.35));
+  }
+}
+
+html[data-mode="light"] .nrs-inf-tier-fire .nrs-infinity-symbol {
+  /* Ember looks vivid in light mode already — just reduce shadow intensity */
+  filter: none;
+}
+@keyframes nrs-inf-flicker-light {
+  0%,100% { color: #c04008; text-shadow: 0 0 6px  rgba(192,64,8,0.45),  0 0 14px rgba(192,64,8,0.25); }
+  20%     { color: #e06010; text-shadow: 0 0 10px rgba(224,96,16,0.60), 0 0 20px rgba(192,64,8,0.35); }
+  50%     { color: #a83008; text-shadow: 0 0 4px  rgba(168,48,8,0.40),  0 0 8px  rgba(192,64,8,0.20); }
+  75%     { color: #d05010; text-shadow: 0 0 12px rgba(208,80,16,0.55), 0 0 22px rgba(192,64,8,0.30); }
+}
+html[data-mode="light"] .nrs-inf-tier-fire .nrs-infinity-symbol {
+  animation: nrs-inf-flicker-light 0.9s ease-in-out infinite;
+}
+@media (prefers-color-scheme: light) {
+  html:not([data-mode="dark"]) .nrs-inf-tier-fire .nrs-infinity-symbol {
+    animation: nrs-inf-flicker-light 0.9s ease-in-out infinite;
+  }
+}
+
+html[data-mode="light"] .nrs-inf-tier-diamond .nrs-infinity-symbol {
+  filter: drop-shadow(0 0 5px rgba(167,139,250,0.45)) drop-shadow(0 0 10px rgba(96,165,250,0.28));
+}
+@media (prefers-color-scheme: light) {
+  html:not([data-mode="dark"]) .nrs-inf-tier-diamond .nrs-infinity-symbol {
+    filter: drop-shadow(0 0 5px rgba(167,139,250,0.45)) drop-shadow(0 0 10px rgba(96,165,250,0.28));
+  }
+}

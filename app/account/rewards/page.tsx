@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { formatTierName, getTierColor, getNextTier, getTierProgress, tierFromPoints, ALL_TIERS } from "@/lib/loyalty";
 import TierBadge from "@/components/TierBadge";
+import PointsDisplay from "@/components/PointsDisplay";
 
 type LoyaltyEvent = {
   id: string;
@@ -65,7 +66,9 @@ export default async function RewardsPage() {
           </div>
           <div className="text-right">
             <div className="text-xs text-neutral-500 uppercase tracking-wide mb-1">Points</div>
-            <div className="text-3xl font-semibold">{points.toLocaleString()}</div>
+            <div className="text-3xl font-semibold">
+              <PointsDisplay points={points} role={profile?.role} tier={tierName} />
+            </div>
           </div>
         </div>
 

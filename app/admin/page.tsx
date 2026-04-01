@@ -104,7 +104,7 @@ export default async function AdminPage() {
       .limit(100),
     admin
       .from("profiles")
-      .select("id, member_id, full_name, username, role, status, created_at, tier, moderation_strikes"),
+      .select("id, member_id, full_name, username, role, status, created_at, tier, moderation_strikes, cumulative_points"),
     admin.auth.admin.listUsers({ perPage: 1000 }),
     currentUserRole === "super_admin"
       ? admin
@@ -143,6 +143,7 @@ export default async function AdminPage() {
       created_at: (p?.created_at ?? u.created_at) as string,
       tier: p?.tier ?? "Bronze 1",
       moderation_strikes: p?.moderation_strikes ?? 0,
+      cumulative_points: p?.cumulative_points ?? 0,
     };
   });
   members.sort((a, b) => (a.member_id ?? 99999999999) - (b.member_id ?? 99999999999));
