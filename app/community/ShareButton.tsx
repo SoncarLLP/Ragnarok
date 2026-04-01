@@ -165,11 +165,12 @@ export default function ShareButton({
             left: popoverPos.left,
             zIndex: 9999,
             minWidth: 200,
+            background: "var(--nrs-card)",
+            border: "1px solid var(--nrs-border)",
           }}
           onMouseEnter={cancelClose}
           onMouseLeave={startClose}
           className="rounded-xl shadow-2xl overflow-hidden py-1"
-          style={{ background: "var(--nrs-card)", border: "1px solid var(--nrs-border)" }}
         >
           {/* No share access — coming soon */}
           {!isAdmin && (

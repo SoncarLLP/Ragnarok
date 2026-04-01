@@ -113,12 +113,7 @@ export default function CommentSection({
             onChange={setContent}
             placeholder="Write a comment… use @ to mention a member"
             rows={3}
-            className="w-full rounded-lg px-3 py-2.5 text-sm outline-none resize-none transition"
-            style={{
-              background: "var(--nrs-accent-dim)",
-              border: "1px solid var(--nrs-border)",
-              color: "var(--nrs-text-body)",
-            }}
+            className="nrs-textarea w-full"
           />
           {error && <p className="text-rose-400 text-xs mt-1">{error}</p>}
           <button
