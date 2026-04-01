@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import type { WarningRecord } from "./AdminTabs";
 
 function fmtMemberId(id: number | null) {
@@ -7,6 +8,7 @@ function fmtMemberId(id: number | null) {
 }
 
 export default function WarningsLog({ warnings }: { warnings: WarningRecord[] }) {
+  const [filter, setFilter] = useState("");
   if (warnings.length === 0) {
     return (
       <section>
@@ -18,10 +20,30 @@ export default function WarningsLog({ warnings }: { warnings: WarningRecord[] })
 
   return (
     <section className="space-y-4">
-      <h2 className="text-lg font-semibold">Warning History ({warnings.length})</h2>
+      <div className="flex items-center gap-3">
+        <h2 className="text-lg font-semibold">Warning History ({warnings.length})</h2>
+        <input
+          value={filter}
+          onChange={(e) => setFilter(e.target.value)}
+          placeholder="Search name or message…"
+          className="ml-auto rounded-md bg-white/5 border border-white/10 px-3 py-1.5 text-sm outline-none focus:border-white/30 w-56"
+        />
+      </div>
 
+      {(() => {
+        const filtered = filter.trim()
+          ? warnings.filter((w) => {
+              const q = filter.toLowerCase();
+              return (
+                w.recipient_name.toLowerCase().includes(q) ||
+                w.message.toLowerCase().includes(q) ||
+                w.sender_name.toLowerCase().includes(q)
+              );
+            })
+          : warnings;
+        return (
       <div className="space-y-2">
-        {warnings.map((w) => (
+        {filtered.map((w) => (
           <div
             key={w.id}
             className="rounded-lg border border-white/10 bg-white/5 px-4 py-3"
@@ -52,7 +74,12 @@ export default function WarningsLog({ warnings }: { warnings: WarningRecord[] })
             </div>
           </div>
         ))}
+        {filtered.length === 0 && (
+          <div className="text-center py-10 text-neutral-500 text-sm">No warnings match your search.</div>
+        )}
       </div>
+        );
+      })()}
     </section>
   );
 }

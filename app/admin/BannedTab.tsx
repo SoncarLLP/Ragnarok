@@ -10,6 +10,19 @@ function fmtMemberId(id: number | null) {
 export default function BannedTab({ members: initial }: { members: MemberRecord[] }) {
   const [members, setMembers] = useState(initial);
   const [loadingId, setLoadingId] = useState<string | null>(null);
+  const [filter, setFilter] = useState("");
+
+  const filtered = filter.trim()
+    ? members.filter((m) => {
+        const q = filter.toLowerCase();
+        return (
+          (m.full_name?.toLowerCase() ?? "").includes(q) ||
+          (m.username?.toLowerCase() ?? "").includes(q) ||
+          m.email.toLowerCase().includes(q) ||
+          fmtMemberId(m.member_id).includes(q)
+        );
+      })
+    : members;
 
   async function unban(userId: string) {
     setLoadingId(userId);
@@ -33,10 +46,18 @@ export default function BannedTab({ members: initial }: { members: MemberRecord[
 
   return (
     <section className="space-y-4">
-      <h2 className="text-lg font-semibold">Banned Members ({members.length})</h2>
+      <div className="flex items-center gap-3">
+        <h2 className="text-lg font-semibold">Banned Members ({members.length})</h2>
+        <input
+          value={filter}
+          onChange={(e) => setFilter(e.target.value)}
+          placeholder="Search name, email, or ID…"
+          className="ml-auto rounded-md bg-white/5 border border-white/10 px-3 py-1.5 text-sm outline-none focus:border-white/30 w-56"
+        />
+      </div>
 
       <div className="space-y-2">
-        {members.map((m) => (
+        {filtered.map((m) => (
           <div
             key={m.id}
             className="rounded-lg border border-white/10 bg-white/5 px-4 py-3 flex items-center justify-between gap-4"
@@ -68,6 +89,9 @@ export default function BannedTab({ members: initial }: { members: MemberRecord[
             </button>
           </div>
         ))}
+        {filtered.length === 0 && (
+          <div className="text-center py-10 text-neutral-500 text-sm">No banned members match your search.</div>
+        )}
       </div>
     </section>
   );

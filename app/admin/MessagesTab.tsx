@@ -44,6 +44,7 @@ export default function MessagesTab() {
   const [reportsLoading, setReportsLoading] = useState(true);
   const [auditLoading, setAuditLoading] = useState(false);
   const [auditFilter, setAuditFilter] = useState<"" | "edit" | "delete">("");
+  const [auditSearch, setAuditSearch] = useState("");
   const [resolvingId, setResolvingId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -236,8 +237,14 @@ export default function MessagesTab() {
       {/* ── Audit Log ── */}
       {activeSection === "audit" && (
         <div className="space-y-4">
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3">
             <h3 className="text-sm font-semibold text-neutral-300 flex-1">Message Audit Log</h3>
+            <input
+              value={auditSearch}
+              onChange={(e) => setAuditSearch(e.target.value)}
+              placeholder="Search sender or content…"
+              className="rounded-md bg-white/5 border border-white/10 px-3 py-1.5 text-sm outline-none focus:border-white/30 w-52"
+            />
             <div className="flex gap-1 p-1 bg-white/5 rounded-lg">
               {(["", "edit", "delete"] as const).map((f) => (
                 <button
@@ -259,7 +266,15 @@ export default function MessagesTab() {
             <p className="text-sm text-neutral-500 py-6 text-center">No audit log entries yet.</p>
           ) : (
             <div className="space-y-2">
-              {auditLogs.map((entry) => (
+              {auditLogs.filter((entry) => {
+                if (!auditSearch.trim()) return true;
+                const q = auditSearch.toLowerCase();
+                return (
+                  entry.performed_by_name.toLowerCase().includes(q) ||
+                  (entry.original_content?.toLowerCase() ?? "").includes(q) ||
+                  (entry.new_content?.toLowerCase() ?? "").includes(q)
+                );
+              }).map((entry) => (
                 <div
                   key={entry.id}
                   className="rounded-xl border border-white/8 bg-white/3 p-4 space-y-2"

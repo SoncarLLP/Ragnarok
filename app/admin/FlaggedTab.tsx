@@ -8,6 +8,18 @@ import DeleteButton from "./DeleteButton";
 export default function FlaggedTab({ flags: initialFlags }: { flags: FlagRecord[] }) {
   const [flags, setFlags] = useState(initialFlags);
   const [loadingId, setLoadingId] = useState<string | null>(null);
+  const [filter, setFilter] = useState("");
+
+  const filtered = filter.trim()
+    ? flags.filter((f) => {
+        const q = filter.toLowerCase();
+        return (
+          (f.post_content?.toLowerCase() ?? "").includes(q) ||
+          f.post_author.toLowerCase().includes(q) ||
+          (f.reason?.toLowerCase() ?? "").includes(q)
+        );
+      })
+    : flags;
 
   async function clearFlag(flagId: string, postId: string) {
     setLoadingId(flagId);
@@ -31,10 +43,18 @@ export default function FlaggedTab({ flags: initialFlags }: { flags: FlagRecord[
 
   return (
     <section className="space-y-4">
-      <h2 className="text-lg font-semibold">Flagged Posts ({flags.length})</h2>
+      <div className="flex items-center gap-3">
+        <h2 className="text-lg font-semibold">Flagged Posts ({flags.length})</h2>
+        <input
+          value={filter}
+          onChange={(e) => setFilter(e.target.value)}
+          placeholder="Search content or author…"
+          className="ml-auto rounded-md bg-white/5 border border-white/10 px-3 py-1.5 text-sm outline-none focus:border-white/30 w-56"
+        />
+      </div>
 
       <div className="space-y-2">
-        {flags.map((flag) => (
+        {filtered.map((flag) => (
           <div
             key={flag.id}
             className="rounded-lg border border-rose-500/20 bg-rose-500/5 px-4 py-3 flex items-start gap-4"
@@ -79,6 +99,9 @@ export default function FlaggedTab({ flags: initialFlags }: { flags: FlagRecord[
             </div>
           </div>
         ))}
+        {filtered.length === 0 && (
+          <div className="text-center py-10 text-neutral-500 text-sm">No flagged posts match your search.</div>
+        )}
       </div>
     </section>
   );

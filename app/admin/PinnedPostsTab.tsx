@@ -98,10 +98,23 @@ export default function PinnedPostsTab({
   currentUserRole: "admin" | "super_admin";
 }) {
   const [localPosts, setLocalPosts] = useState(posts);
+  const [filter, setFilter] = useState("");
 
   function handleUnpinned(postId: string) {
     setLocalPosts((prev) => prev.filter((p) => p.id !== postId));
   }
+
+  const filteredPosts = filter.trim()
+    ? localPosts.filter((p) => {
+        const q = filter.toLowerCase();
+        return (
+          (p.content?.toLowerCase() ?? "").includes(q) ||
+          (p.creator_name?.toLowerCase() ?? "").includes(q) ||
+          (p.creator_username?.toLowerCase() ?? "").includes(q) ||
+          p.categories.some((c) => c.toLowerCase().includes(q))
+        );
+      })
+    : localPosts;
 
   if (localPosts.length === 0) {
     return (
@@ -114,16 +127,24 @@ export default function PinnedPostsTab({
 
   return (
     <div className="space-y-3">
-      <p className="text-sm text-neutral-400 mb-4">
-        {localPosts.length} pinned post{localPosts.length !== 1 ? "s" : ""}
-        {currentUserRole === "admin" && (
-          <span className="ml-2 text-neutral-600">
-            — contact a super admin to unpin posts
-          </span>
-        )}
-      </p>
+      <div className="flex items-center gap-3">
+        <p className="text-sm text-neutral-400">
+          {localPosts.length} pinned post{localPosts.length !== 1 ? "s" : ""}
+          {currentUserRole === "admin" && (
+            <span className="ml-2 text-neutral-600">
+              — contact a super admin to unpin posts
+            </span>
+          )}
+        </p>
+        <input
+          value={filter}
+          onChange={(e) => setFilter(e.target.value)}
+          placeholder="Search pinned posts…"
+          className="ml-auto rounded-md bg-white/5 border border-white/10 px-3 py-1.5 text-sm outline-none focus:border-white/30 w-56"
+        />
+      </div>
 
-      {localPosts.map((post) => {
+      {filteredPosts.map((post) => {
         const expired =
           !post.pin_indefinite &&
           post.pinned_until &&
@@ -210,6 +231,9 @@ export default function PinnedPostsTab({
           </div>
         );
       })}
+      {filteredPosts.length === 0 && (
+        <p className="text-center py-10 text-neutral-500 text-sm">No pinned posts match your search.</p>
+      )}
     </div>
   );
 }

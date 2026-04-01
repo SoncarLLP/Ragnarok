@@ -26,7 +26,13 @@ const navItems = [
   {
     section: "Safety",
     links: [
-      { href: "/site-management/moderation", label: "Content Moderation", icon: "🛡️" },
+      { href: "/site-management/moderation",        label: "Content Moderation", icon: "🛡️" },
+    ],
+  },
+  {
+    section: "Insights",
+    links: [
+      { href: "/site-management/search-analytics",  label: "Search Analytics",   icon: "🔍" },
     ],
   },
 ];

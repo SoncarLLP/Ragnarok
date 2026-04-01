@@ -18,7 +18,7 @@ type SearchResult = {
 
 type PageProps = { searchParams: Promise<{ q?: string; type?: string; page?: string }> };
 
-const ITEMS_PER_PAGE = 10;
+const ITEMS_PER_PAGE = 20;
 
 const TYPE_LABELS: Record<string, string> = {
   all:      "All Results",
@@ -46,6 +46,35 @@ function Highlight({ text, query }: { text: string; query: string }) {
   );
 }
 
+type ProductRow = {
+  id: string; slug: string; name: string;
+  description_html: string | null; price_pence: number;
+  primary_image_url: string | null; match_rank?: number;
+};
+
+async function expandWithSynonyms(
+  admin: ReturnType<typeof createAdminClient>,
+  query: string
+): Promise<string[]> {
+  const lq = query.toLowerCase();
+  try {
+    const { data: rows } = await admin.from("search_synonyms").select("term, synonyms");
+    const expanded: string[] = [query];
+    for (const row of rows ?? []) {
+      const term = (row.term as string).toLowerCase();
+      const syns = row.synonyms as string[];
+      if (term === lq) {
+        for (const s of syns) if (!expanded.some((e) => e.toLowerCase() === s.toLowerCase())) expanded.push(s);
+      } else if (syns.some((s) => s.toLowerCase() === lq)) {
+        if (!expanded.some((e) => e.toLowerCase() === term)) expanded.push(row.term as string);
+      }
+    }
+    return expanded.slice(0, 5);
+  } catch {
+    return [query];
+  }
+}
+
 export default async function SearchPage({ searchParams }: PageProps) {
   const { q: rawQ = "", type = "all", page: pageStr = "1" } = await searchParams;
   const query   = rawQ.trim();
@@ -63,21 +92,49 @@ export default async function SearchPage({ searchParams }: PageProps) {
     userRole = profile?.role ?? "member";
   }
   const isAdmin = userRole === "admin" || userRole === "super_admin";
+  const similarityThreshold = isAdmin ? 0.10 : 0.15;
 
   const results: Record<string, SearchResult[]> = { products: [], posts: [], members: [] };
+  let didYouMean: string | null = null;
 
   if (query.length >= 2) {
-    // Products
-    if (type === "all" || type === "products") {
-      const { data: products } = await admin
-        .from("products")
-        .select("id, slug, name, description_html, price_pence, primary_image_url")
-        .eq("visibility", "published")
-        .or(`name.ilike.%${safeQ}%,description_html.ilike.%${safeQ}%`)
-        .limit(type === "products" ? ITEMS_PER_PAGE : 5)
-        .range(type === "products" ? offset : 0, type === "products" ? offset + ITEMS_PER_PAGE - 1 : 4);
+    // Expand with synonyms
+    const expandedTerms = await expandWithSynonyms(admin, safeQ);
 
-      results.products = (products ?? []).map((p) => ({
+    // ── Products ──────────────────────────────────────────────
+    if (type === "all" || type === "products") {
+      const seen = new Set<string>();
+      const productRows: ProductRow[] = [];
+
+      for (const term of expandedTerms) {
+        const { data, error } = await admin.rpc("fuzzy_search_products", {
+          query_text:           term,
+          similarity_threshold: similarityThreshold,
+          limit_count:          type === "products" ? ITEMS_PER_PAGE * 2 : 10,
+          offset_count:         0,
+        });
+
+        if (error) {
+          const { data: fallback } = await admin
+            .from("products")
+            .select("id, slug, name, description_html, price_pence, primary_image_url")
+            .eq("visibility", "published")
+            .or(`name.ilike.%${term}%,description_html.ilike.%${term}%,slug.ilike.%${term}%`)
+            .limit(type === "products" ? ITEMS_PER_PAGE : 5);
+          for (const p of fallback ?? []) {
+            if (!seen.has(p.id)) { seen.add(p.id); productRows.push({ ...p, match_rank: 0.1 }); }
+          }
+        } else {
+          for (const p of (data ?? []) as ProductRow[]) {
+            if (!seen.has(p.id)) { seen.add(p.id); productRows.push(p); }
+          }
+        }
+      }
+
+      productRows.sort((a, b) => (b.match_rank ?? 0) - (a.match_rank ?? 0));
+      const page = type === "products" ? productRows.slice(offset, offset + ITEMS_PER_PAGE) : productRows.slice(0, 5);
+
+      results.products = page.map((p) => ({
         id:      p.id,
         type:    "product",
         title:   p.name,
@@ -88,18 +145,60 @@ export default async function SearchPage({ searchParams }: PageProps) {
       }));
     }
 
-    // Posts
+    // ── Posts ─────────────────────────────────────────────────
     if (type === "all" || type === "posts") {
-      const { data: posts } = await admin
-        .from("posts")
-        .select("id, content, created_at, profiles!posts_user_id_fkey(username, full_name, display_name_preference, privacy_mode)")
-        .not("content", "is", null)
-        .ilike("content", `%${safeQ}%`)
-        .order("created_at", { ascending: false })
-        .limit(type === "posts" ? ITEMS_PER_PAGE : 5)
-        .range(type === "posts" ? offset : 0, type === "posts" ? offset + ITEMS_PER_PAGE - 1 : 4);
+      type PostRow = {
+        id: string; content: string | null; categories: string[];
+        created_at: string; type: string; user_id: string; match_rank?: number;
+        profiles?: unknown;
+      };
+      const seen = new Set<string>();
+      const postRows: PostRow[] = [];
 
-      results.posts = (posts ?? []).flatMap((p) => {
+      for (const term of expandedTerms) {
+        const { data, error } = await admin.rpc("fuzzy_search_posts", {
+          query_text:           term,
+          similarity_threshold: similarityThreshold,
+          limit_count:          type === "posts" ? ITEMS_PER_PAGE * 2 : 10,
+          offset_count:         0,
+        });
+
+        if (error) {
+          const { data: fallback } = await admin
+            .from("posts")
+            .select("id, content, created_at, type, user_id, profiles!posts_user_id_fkey(username, full_name, display_name_preference, privacy_mode)")
+            .not("content", "is", null)
+            .ilike("content", `%${term}%`)
+            .order("created_at", { ascending: false })
+            .limit(type === "posts" ? ITEMS_PER_PAGE : 5);
+          for (const p of (fallback ?? []) as PostRow[]) {
+            if (!seen.has(p.id)) { seen.add(p.id); postRows.push({ ...p, match_rank: 0.1 }); }
+          }
+        } else {
+          const ids: string[] = (data ?? []).map((p: { id: string }) => p.id);
+          if (ids.length > 0) {
+            const { data: withProfiles } = await admin
+              .from("posts")
+              .select("id, content, categories, created_at, type, user_id, profiles!posts_user_id_fkey(username, full_name, display_name_preference, privacy_mode)")
+              .in("id", ids);
+
+            const rankMap: Record<string, number> = {};
+            for (const p of data ?? []) rankMap[(p as { id: string; match_rank: number }).id] = (p as { id: string; match_rank: number }).match_rank;
+
+            for (const p of (withProfiles ?? []) as PostRow[]) {
+              if (!seen.has(p.id)) {
+                seen.add(p.id);
+                postRows.push({ ...p, match_rank: rankMap[p.id] ?? 0.1 });
+              }
+            }
+          }
+        }
+      }
+
+      postRows.sort((a, b) => (b.match_rank ?? 0) - (a.match_rank ?? 0));
+      const page = type === "posts" ? postRows.slice(offset, offset + ITEMS_PER_PAGE) : postRows.slice(0, 5);
+
+      results.posts = page.flatMap((p) => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const prof = (Array.isArray(p.profiles) ? p.profiles[0] : p.profiles) as any;
         if (!isAdmin && prof?.privacy_mode === "private") return [];
@@ -116,16 +215,44 @@ export default async function SearchPage({ searchParams }: PageProps) {
       });
     }
 
-    // Members (signed-in only)
+    // ── Members ───────────────────────────────────────────────
     if ((type === "all" || type === "members") && user) {
-      const { data: members } = await admin
-        .from("profiles")
-        .select("id, full_name, username, avatar_url, tier, privacy_mode")
-        .or(`full_name.ilike.%${safeQ}%,username.ilike.%${safeQ}%`)
-        .limit(type === "members" ? ITEMS_PER_PAGE : 5)
-        .range(type === "members" ? offset : 0, type === "members" ? offset + ITEMS_PER_PAGE - 1 : 4);
+      type MemberRow = {
+        id: string; full_name: string | null; username: string | null;
+        avatar_url: string | null; tier: string | null; privacy_mode: string | null;
+        match_rank?: number;
+      };
+      const seen = new Set<string>();
+      const memberRows: MemberRow[] = [];
 
-      results.members = (members ?? []).flatMap((m) => {
+      for (const term of expandedTerms) {
+        const { data, error } = await admin.rpc("fuzzy_search_members", {
+          query_text:           term,
+          similarity_threshold: similarityThreshold,
+          limit_count:          type === "members" ? ITEMS_PER_PAGE * 2 : 10,
+          offset_count:         0,
+        });
+
+        if (error) {
+          const { data: fallback } = await admin
+            .from("profiles")
+            .select("id, full_name, username, avatar_url, tier, privacy_mode")
+            .or(`full_name.ilike.%${term}%,username.ilike.%${term}%`)
+            .limit(type === "members" ? ITEMS_PER_PAGE : 5);
+          for (const m of (fallback ?? []) as MemberRow[]) {
+            if (!seen.has(m.id)) { seen.add(m.id); memberRows.push({ ...m, match_rank: 0.1 }); }
+          }
+        } else {
+          for (const m of (data ?? []) as MemberRow[]) {
+            if (!seen.has(m.id)) { seen.add(m.id); memberRows.push(m); }
+          }
+        }
+      }
+
+      memberRows.sort((a, b) => (b.match_rank ?? 0) - (a.match_rank ?? 0));
+      const page = type === "members" ? memberRows.slice(offset, offset + ITEMS_PER_PAGE) : memberRows.slice(0, 5);
+
+      results.members = page.flatMap((m) => {
         if (!isAdmin && m.privacy_mode === "private") return [];
         return [{
           id:      m.id,
@@ -138,6 +265,27 @@ export default async function SearchPage({ searchParams }: PageProps) {
         }];
       });
     }
+
+    // ── Did you mean (zero results) ───────────────────────────
+    const totalCount = results.products.length + results.posts.length + results.members.length;
+    if (totalCount === 0 && safeQ.length >= 3) {
+      try {
+        const { data: suggestion } = await admin.rpc("search_did_you_mean", { query_text: safeQ });
+        if (suggestion && (suggestion as string).toLowerCase() !== safeQ.toLowerCase()) {
+          didYouMean = suggestion as string;
+        }
+      } catch { /* ignore */ }
+    }
+
+    // Log the search
+    try {
+      const totalForLog = results.products.length + results.posts.length + results.members.length;
+      await admin.from("search_logs").insert({
+        query:        query,
+        result_count: totalForLog,
+        user_id:      user?.id ?? null,
+      });
+    } catch { /* ignore */ }
   }
 
   const totalCount =
@@ -226,28 +374,48 @@ export default async function SearchPage({ searchParams }: PageProps) {
           </div>
         )}
 
-        {/* Results */}
+        {/* No query */}
         {!query && (
           <div className="text-center py-16 text-sm" style={{ color: "var(--nrs-text-muted)" }}>
             Enter a search term above to find products, posts, and members.
           </div>
         )}
 
+        {/* Zero results */}
         {query && activeResults.length === 0 && (
-          <div className="text-center py-16 space-y-3">
+          <div className="text-center py-16 space-y-4">
             <p className="text-4xl">🔍</p>
             <p className="text-lg font-medium" style={{ color: "var(--nrs-text)" }}>
-              No results found
+              No results found for &ldquo;{query}&rdquo;
             </p>
+            {didYouMean && (
+              <p className="text-sm">
+                <span style={{ color: "var(--nrs-text-muted)" }}>Did you mean </span>
+                <Link
+                  href={`/search?q=${encodeURIComponent(didYouMean)}&type=${type}`}
+                  className="font-medium underline"
+                  style={{ color: "var(--nrs-accent)" }}
+                >
+                  {didYouMean}
+                </Link>
+                <span style={{ color: "var(--nrs-text-muted)" }}>?</span>
+              </p>
+            )}
             <p className="text-sm" style={{ color: "var(--nrs-text-muted)" }}>
-              Try different keywords or browse our shop.
+              Try different keywords or browse our shop and community.
             </p>
-            <Link href="/#shop" className="nrs-btn nrs-btn-primary inline-block mt-4 px-6 py-2.5 text-sm">
-              Browse Products
-            </Link>
+            <div className="flex justify-center gap-3 pt-2">
+              <Link href="/#shop" className="nrs-btn nrs-btn-primary inline-block px-6 py-2.5 text-sm">
+                Browse Products
+              </Link>
+              <Link href="/community" className="nrs-btn inline-block px-6 py-2.5 text-sm">
+                Browse Community
+              </Link>
+            </div>
           </div>
         )}
 
+        {/* Results list */}
         {activeResults.length > 0 && (
           <div className="space-y-3">
             {activeResults.map((r) => (
@@ -292,7 +460,7 @@ export default async function SearchPage({ searchParams }: PageProps) {
             ))}
 
             {/* Pagination */}
-            {(type !== "all") && activeResults.length === ITEMS_PER_PAGE && (
+            {type !== "all" && activeResults.length === ITEMS_PER_PAGE && (
               <div className="flex justify-center gap-2 pt-4">
                 {pageNum > 1 && (
                   <Link

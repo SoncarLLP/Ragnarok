@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import Link from "next/link";
 
 type SearchResult = {
   id:      string;
@@ -15,11 +16,12 @@ type SearchResult = {
 };
 
 type SearchResults = {
-  products: SearchResult[];
-  posts:    SearchResult[];
-  members:  SearchResult[];
-  total:    number;
-  query:    string;
+  products:   SearchResult[];
+  posts:      SearchResult[];
+  members:    SearchResult[];
+  total:      number;
+  query:      string;
+  didYouMean?: string;
 };
 
 const RECENT_KEY = "nrs_recent_searches_v1";
@@ -50,18 +52,29 @@ const TYPE_LABEL: Record<string, string> = {
 
 export default function SearchBar() {
   const router = useRouter();
-  const [open, setOpen]       = useState(false);
-  const [query, setQuery]     = useState("");
-  const [results, setResults] = useState<SearchResults | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [recent, setRecent]   = useState<string[]>([]);
-  const inputRef   = useRef<HTMLInputElement>(null);
-  const wrapperRef = useRef<HTMLDivElement>(null);
+  const [open, setOpen]         = useState(false);
+  const [query, setQuery]       = useState("");
+  const [results, setResults]   = useState<SearchResults | null>(null);
+  const [loading, setLoading]   = useState(false);
+  const [recent, setRecent]     = useState<string[]>([]);
+  const [popular, setPopular]   = useState<string[]>([]);
+  const inputRef    = useRef<HTMLInputElement>(null);
+  const wrapperRef  = useRef<HTMLDivElement>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Load recent searches on mount
   useEffect(() => {
     setRecent(getRecent());
+  }, []);
+
+  // Load popular searches once (lazy)
+  useEffect(() => {
+    if (popular.length > 0) return;
+    fetch("/api/search/popular")
+      .then((r) => r.json())
+      .then((d) => setPopular(d.popular ?? []))
+      .catch(() => {});
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Keyboard shortcut Ctrl+K / Cmd+K
@@ -71,9 +84,7 @@ export default function SearchBar() {
         e.preventDefault();
         setOpen(true);
       }
-      if (e.key === "Escape") {
-        setOpen(false);
-      }
+      if (e.key === "Escape") setOpen(false);
     }
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
@@ -135,7 +146,7 @@ export default function SearchBar() {
     router.push(url);
   }
 
-  function handleRecentClick(q: string) {
+  function handleSuggestionClick(q: string) {
     setQuery(q);
     search(q);
   }
@@ -151,6 +162,10 @@ export default function SearchBar() {
     if (!grouped[r.type]) grouped[r.type] = [];
     grouped[r.type].push(r);
   }
+
+  // Suggestions to show in empty state
+  const suggestions = recent.length > 0 ? recent : popular;
+  const suggestionLabel = recent.length > 0 ? "Recent searches" : "Popular searches";
 
   return (
     <>
@@ -199,9 +214,7 @@ export default function SearchBar() {
                   style={{ color: "var(--nrs-text-body)", fontFamily: "var(--font-ui)" }}
                 />
                 {loading && (
-                  <span className="text-xs" style={{ color: "var(--nrs-text-muted)" }}>
-                    ···
-                  </span>
+                  <span className="text-xs" style={{ color: "var(--nrs-text-muted)" }}>···</span>
                 )}
                 <kbd className="hidden sm:inline-flex items-center gap-1 text-xs px-1.5 py-0.5 rounded border"
                   style={{ color: "var(--nrs-text-muted)", borderColor: "var(--nrs-border-subtle, rgba(255,255,255,0.1))", fontFamily: "monospace", fontSize: "10px" }}>
@@ -210,7 +223,7 @@ export default function SearchBar() {
               </div>
             </form>
 
-            {/* Dropdown results */}
+            {/* Dropdown */}
             <div className="mt-2 rounded-xl border overflow-hidden"
               style={{
                 background:  "var(--nrs-bg-2, #1a1a2e)",
@@ -218,25 +231,32 @@ export default function SearchBar() {
                 boxShadow:   "0 20px 60px rgba(0,0,0,0.5)",
               }}>
 
-              {/* Empty query — show recent searches */}
+              {/* Empty query — show recent or popular searches */}
               {!query.trim() && (
                 <div className="p-3 space-y-1">
-                  {recent.length > 0 ? (
+                  {suggestions.length > 0 ? (
                     <>
                       <p className="text-xs px-2 py-1 uppercase tracking-widest" style={{ color: "var(--nrs-text-muted)" }}>
-                        Recent searches
+                        {suggestionLabel}
                       </p>
-                      {recent.map((r) => (
+                      {suggestions.map((r) => (
                         <button
                           key={r}
-                          onClick={() => handleRecentClick(r)}
+                          onClick={() => handleSuggestionClick(r)}
                           className="flex items-center gap-2 w-full px-2 py-1.5 rounded-lg text-sm text-left transition hover:bg-white/5"
                           style={{ color: "var(--nrs-text-body)" }}
                         >
-                          <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: "var(--nrs-text-muted)", flexShrink: 0 }}>
-                            <path d="M12 2a10 10 0 1 0 10 10H12z"/>
-                            <polyline points="12 6 12 12 16 14"/>
-                          </svg>
+                          {recent.length > 0 ? (
+                            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: "var(--nrs-text-muted)", flexShrink: 0 }}>
+                              <path d="M12 2a10 10 0 1 0 10 10H12z"/>
+                              <polyline points="12 6 12 12 16 14"/>
+                            </svg>
+                          ) : (
+                            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: "var(--nrs-text-muted)", flexShrink: 0 }}>
+                              <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
+                              <polyline points="17 6 23 6 23 12"/>
+                            </svg>
+                          )}
                           {r}
                         </button>
                       ))}
@@ -249,13 +269,47 @@ export default function SearchBar() {
                 </div>
               )}
 
-              {/* Query entered — show results */}
-              {query.trim() && !loading && !hasResults && (
-                <div className="py-8 text-center text-sm" style={{ color: "var(--nrs-text-muted)" }}>
-                  No results for &ldquo;{query}&rdquo;
+              {/* Zero results */}
+              {query.trim() && !loading && results && !hasResults && (
+                <div className="py-6 px-4 space-y-3">
+                  <p className="text-sm text-center" style={{ color: "var(--nrs-text-muted)" }}>
+                    No results for &ldquo;{query}&rdquo;
+                  </p>
+                  {results.didYouMean && (
+                    <p className="text-sm text-center">
+                      <span style={{ color: "var(--nrs-text-muted)" }}>Did you mean </span>
+                      <button
+                        onClick={() => handleSuggestionClick(results.didYouMean!)}
+                        className="font-medium underline"
+                        style={{ color: "var(--nrs-accent)" }}
+                      >
+                        {results.didYouMean}
+                      </button>
+                      <span style={{ color: "var(--nrs-text-muted)" }}>?</span>
+                    </p>
+                  )}
+                  <div className="flex justify-center gap-2 pt-1">
+                    <Link
+                      href="/#shop"
+                      onClick={() => setOpen(false)}
+                      className="text-xs px-3 py-1.5 rounded-lg"
+                      style={{ background: "var(--nrs-accent-dim)", color: "var(--nrs-accent)" }}
+                    >
+                      Browse Products
+                    </Link>
+                    <Link
+                      href="/community"
+                      onClick={() => setOpen(false)}
+                      className="text-xs px-3 py-1.5 rounded-lg"
+                      style={{ background: "var(--nrs-bg, rgba(255,255,255,0.05))", color: "var(--nrs-text-muted)" }}
+                    >
+                      Browse Community
+                    </Link>
+                  </div>
                 </div>
               )}
 
+              {/* Results */}
               {query.trim() && hasResults && (
                 <div className="divide-y" style={{ borderColor: "var(--nrs-border, rgba(255,255,255,0.07))" }}>
                   {Object.entries(grouped).map(([type, items]) => (
@@ -302,7 +356,7 @@ export default function SearchBar() {
                     </div>
                   ))}
 
-                  {/* "See all results" link */}
+                  {/* See all results */}
                   <button
                     onClick={() => {
                       saveRecent(query.trim());
@@ -324,7 +378,7 @@ export default function SearchBar() {
   );
 }
 
-/** Simple highlight: wraps matched substring in a span. */
+/** Simple highlight: wraps matched substring in a <mark>. */
 function highlightMatch(text: string, query: string): React.ReactNode {
   if (!query) return text;
   const idx = text.toLowerCase().indexOf(query.toLowerCase());
