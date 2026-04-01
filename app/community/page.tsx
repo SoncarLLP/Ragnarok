@@ -100,23 +100,23 @@ export default async function CommunityPage(props: unknown) {
   ];
 
   return (
-    <main className="min-h-screen bg-neutral-950 text-neutral-100">
+    <main className="min-h-screen" style={{ background: "var(--nrs-bg)", color: "var(--nrs-text-body)" }}>
       {/* Header */}
-      <header className="sticky top-0 z-40 border-b border-white/10 bg-neutral-950/80 backdrop-blur">
+      <header className="nrs-header sticky top-0 z-40">
         <div className="mx-auto max-w-7xl px-4 py-3 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <Link href="/" className="font-semibold tracking-wide">
+            <Link href="/" className="font-semibold tracking-wide" style={{ fontFamily: "var(--font-heading)", color: "var(--nrs-accent)" }}>
               Ragnarök
             </Link>
-            <span className="text-neutral-600">/</span>
-            <span className="text-neutral-300 text-sm">Community</span>
+            <span style={{ color: "var(--nrs-border)" }}>/</span>
+            <span className="text-sm" style={{ color: "var(--nrs-text-muted)" }}>Community</span>
           </div>
           <div className="flex items-center gap-3">
             {user ? (
               <>
                 <Link
                   href="/account"
-                  className="text-sm text-neutral-400 hover:text-white hidden sm:block"
+                  className="nrs-nav-link hidden sm:block"
                 >
                   My Account
                 </Link>
@@ -125,7 +125,7 @@ export default async function CommunityPage(props: unknown) {
             ) : (
               <Link
                 href="/auth/login"
-                className="text-sm px-3 py-1.5 rounded bg-white/10 hover:bg-white/20"
+                className="nrs-btn text-sm"
               >
                 Sign in to post
               </Link>
@@ -138,7 +138,7 @@ export default async function CommunityPage(props: unknown) {
       <div className="mx-auto max-w-7xl px-4 py-8">
         <div className="mb-6">
           <h1 className="text-2xl font-semibold">Community</h1>
-          <p className="mt-1 text-sm text-neutral-400">
+          <p className="mt-1 text-sm" style={{ color: "var(--nrs-text-muted)" }}>
             Training tips, recipes, progress and more from the Ragnarök community
           </p>
         </div>
@@ -152,7 +152,7 @@ export default async function CommunityPage(props: unknown) {
         )}
 
         {sorted.length === 0 ? (
-          <div className="mt-16 text-center text-neutral-400">
+          <div className="mt-16 text-center" style={{ color: "var(--nrs-text-muted)" }}>
             <p>No posts yet{category ? ` in "${category}"` : ""}.</p>
             {user ? (
               <p className="mt-2 text-sm">Be the first — click + New Post above!</p>

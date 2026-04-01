@@ -31,36 +31,36 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="min-h-screen bg-neutral-950 text-neutral-100 flex items-center justify-center px-4">
+    <main className="min-h-screen flex items-center justify-center px-4" style={{ background: "var(--nrs-bg)", color: "var(--nrs-text-body)" }}>
       <div className="w-full max-w-sm">
-        <Link href="/" className="block text-center font-semibold tracking-wide text-lg mb-8">
+        <Link href="/" className="block text-center font-semibold tracking-wide text-lg mb-8" style={{ fontFamily: "var(--font-heading)", color: "var(--nrs-accent)" }}>
           Ragnarök
         </Link>
 
         <h1 className="text-2xl font-semibold text-center">Sign in</h1>
-        <p className="mt-2 text-neutral-400 text-sm text-center">Welcome back</p>
+        <p className="mt-2 text-sm text-center" style={{ color: "var(--nrs-text-muted)" }}>Welcome back</p>
 
         <form onSubmit={handleSubmit} className="mt-8 space-y-4">
           <div>
-            <label className="block text-sm text-neutral-300 mb-1">Email</label>
+            <label className="block text-sm mb-1" style={{ color: "var(--nrs-text-muted)" }}>Email</label>
             <input
               type="email"
               required
               autoComplete="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full rounded-md bg-neutral-900 border border-white/10 px-3 py-2.5 text-sm outline-none focus:border-white/30"
+              className="nrs-input"
             />
           </div>
           <div>
-            <label className="block text-sm text-neutral-300 mb-1">Password</label>
+            <label className="block text-sm mb-1" style={{ color: "var(--nrs-text-muted)" }}>Password</label>
             <input
               type="password"
               required
               autoComplete="current-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full rounded-md bg-neutral-900 border border-white/10 px-3 py-2.5 text-sm outline-none focus:border-white/30"
+              className="nrs-input"
             />
           </div>
 
@@ -69,15 +69,15 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-2.5 rounded-md bg-white/10 hover:bg-white/20 disabled:opacity-60 text-sm font-medium transition"
+            className="nrs-btn nrs-btn-primary w-full py-2.5 text-sm font-medium disabled:opacity-60"
           >
             {loading ? "Signing in…" : "Sign in"}
           </button>
         </form>
 
-        <p className="mt-6 text-center text-sm text-neutral-400">
+        <p className="mt-6 text-center text-sm" style={{ color: "var(--nrs-text-muted)" }}>
           Don&apos;t have an account?{" "}
-          <Link href="/auth/signup" className="text-white hover:underline">
+          <Link href="/auth/signup" className="hover:underline" style={{ color: "var(--nrs-accent)" }}>
             Create one
           </Link>
         </p>

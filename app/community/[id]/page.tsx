@@ -9,6 +9,7 @@ import FollowButton from "../FollowButton";
 import MentionText from "../MentionText";
 import CommentSection from "./CommentSection";
 import MemberBadge from "@/components/MemberBadge";
+import NavWrapper from "@/components/NavWrapper";
 import type { CommentData } from "@/lib/community";
 import { getDisplayName } from "@/lib/display-name";
 
@@ -142,19 +143,20 @@ export default async function PostPage(props: unknown) {
   const authorName = getDisplayName(post.author);
 
   return (
-    <main className="min-h-screen bg-neutral-950 text-neutral-100">
+    <main className="min-h-screen" style={{ background: "var(--nrs-bg)", color: "var(--nrs-text-body)" }}>
+      {/* Header with dark mode toggle */}
+      <header className="nrs-header sticky top-0 z-40">
+        <div className="mx-auto max-w-2xl px-4 py-3 flex items-center justify-between">
+          <Link href="/community" className="nrs-nav-link text-sm">← Community</Link>
+          <NavWrapper />
+        </div>
+      </header>
       <div className="mx-auto max-w-2xl px-4 py-10">
-        <Link
-          href="/community"
-          className="inline-flex items-center gap-1 text-sm text-neutral-400 hover:text-white mb-6"
-        >
-          ← Community
-        </Link>
 
         <article className={`rounded-xl overflow-hidden ${
           isOfficialPost
             ? "border border-amber-500/25 bg-gradient-to-b from-slate-800/70 to-slate-900/80 shadow-lg shadow-black/30"
-            : "border border-white/10 bg-white/5"
+            : "nrs-card"
         }`}>
 
           {/* Pinned banner — official posts only */}
@@ -262,7 +264,7 @@ export default async function PostPage(props: unknown) {
             )}
 
             {post.content && (
-              <p className="text-neutral-200 leading-relaxed whitespace-pre-wrap">
+              <p className="leading-relaxed whitespace-pre-wrap" style={{ color: "var(--nrs-text-body)" }}>
                 <MentionText text={post.content} />
               </p>
             )}
@@ -274,7 +276,7 @@ export default async function PostPage(props: unknown) {
                     <h2 className="text-xs font-semibold text-amber-400 uppercase tracking-widest mb-2">
                       Ingredients
                     </h2>
-                    <p className="text-neutral-300 text-sm whitespace-pre-wrap leading-relaxed">
+                    <p className="text-sm whitespace-pre-wrap leading-relaxed" style={{ color: "var(--nrs-text-muted)" }}>
                       <MentionText text={post.ingredients} />
                     </p>
                   </div>
@@ -284,7 +286,7 @@ export default async function PostPage(props: unknown) {
                     <h2 className="text-xs font-semibold text-amber-400 uppercase tracking-widest mb-2">
                       Method
                     </h2>
-                    <p className="text-neutral-300 text-sm whitespace-pre-wrap leading-relaxed">
+                    <p className="text-sm whitespace-pre-wrap leading-relaxed" style={{ color: "var(--nrs-text-muted)" }}>
                       <MentionText text={post.method} />
                     </p>
                   </div>
@@ -294,7 +296,7 @@ export default async function PostPage(props: unknown) {
           </div>
 
           {/* Reactions + Share */}
-          <div className="px-6 py-4 border-t border-white/10 flex items-center gap-4">
+          <div className="px-6 py-4 flex items-center gap-4" style={{ borderTop: "1px solid var(--nrs-border)" }}>
             <ReactionButton
               postId={post.id}
               initialCount={post.reaction_count}

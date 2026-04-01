@@ -3,6 +3,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import SiteManagementNav from "./SiteManagementNav";
+import DarkModeToggle from "@/components/DarkModeToggle";
 
 export const metadata = { title: "Site Management · Ragnarök" };
 
@@ -24,7 +25,7 @@ export default async function SiteManagementLayout({
 
   if (profile?.role !== "super_admin") {
     return (
-      <main className="min-h-screen bg-neutral-950 text-neutral-100 flex items-center justify-center px-4">
+      <main className="min-h-screen flex items-center justify-center px-4" style={{ background: "var(--nrs-bg)", color: "var(--nrs-text-body)" }}>
         <div className="text-center max-w-sm">
           <p className="text-lg font-semibold mb-2">Access Denied</p>
           <p className="text-neutral-400 text-sm">
@@ -39,9 +40,9 @@ export default async function SiteManagementLayout({
   }
 
   return (
-    <div className="min-h-screen bg-neutral-950 text-neutral-100">
+    <div className="min-h-screen" style={{ background: "var(--nrs-bg)", color: "var(--nrs-text-body)" }}>
       {/* Header */}
-      <header className="sticky top-0 z-40 border-b border-white/10 bg-neutral-950/90 backdrop-blur">
+      <header className="nrs-header sticky top-0 z-40">
         <div className="mx-auto max-w-7xl px-4 py-3 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <Link href="/" className="font-semibold tracking-wide text-sm">
@@ -54,22 +55,23 @@ export default async function SiteManagementLayout({
             </span>
           </div>
           <div className="flex items-center gap-3 text-sm">
-            <span className="text-neutral-500 hidden sm:block">
+            <span className="hidden sm:block" style={{ color: "var(--nrs-text-muted)" }}>
               {profile.full_name ?? user.email}
             </span>
             <Link
               href="/"
               target="_blank"
-              className="px-3 py-1.5 rounded bg-white/8 hover:bg-white/15 text-neutral-300 hover:text-white text-xs transition"
+              className="nrs-btn text-xs py-1.5"
             >
               View live site ↗
             </Link>
             <Link
               href="/admin"
-              className="px-3 py-1.5 rounded bg-white/8 hover:bg-white/15 text-neutral-300 hover:text-white text-xs transition"
+              className="nrs-btn text-xs py-1.5"
             >
               Admin Panel
             </Link>
+            <DarkModeToggle isSignedIn={true} />
           </div>
         </div>
       </header>

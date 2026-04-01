@@ -11,11 +11,11 @@ export default async function FAQPage() {
   const faqContent = (data?.content ?? { items: [] }) as FAQContent;
 
   return (
-    <main className="bg-neutral-950 text-neutral-100 min-h-screen">
-      <header className="sticky top-0 z-40 border-b border-white/10 bg-neutral-950/80 backdrop-blur">
+    <main className="min-h-screen" style={{ background: "var(--nrs-bg)", color: "var(--nrs-text-body)" }}>
+      <header className="nrs-header sticky top-0 z-40">
         <div className="mx-auto max-w-7xl px-4 py-3 flex items-center justify-between">
-          <Link href="/" className="font-semibold tracking-wide">Ragnarök</Link>
-          <nav className="flex items-center gap-4 text-sm text-neutral-300">
+          <Link href="/" className="font-semibold tracking-wide" style={{ fontFamily: "var(--font-heading)", color: "var(--nrs-accent)" }}>Ragnarök</Link>
+          <nav className="flex items-center gap-4 text-sm" style={{ color: "var(--nrs-text-muted)" }}>
             <Link href="/#shop" className="hidden md:block hover:text-white">Shop</Link>
             <Link href="/community" className="hidden md:block hover:text-white">Community</Link>
             <Link href="/policies" className="hidden md:block hover:text-white">Policies</Link>
@@ -30,7 +30,7 @@ export default async function FAQPage() {
       <section className="mx-auto max-w-2xl px-4 py-14 space-y-6">
         <div>
           <h1 className="text-3xl font-semibold">Frequently Asked Questions</h1>
-          <p className="text-neutral-400 mt-2 text-sm">
+          <p className="mt-2 text-sm" style={{ color: "var(--nrs-text-muted)" }}>
             Can&apos;t find an answer?{" "}
             <Link href="/policies" className="text-amber-300 hover:underline">Visit our policies page</Link> or contact us.
           </p>

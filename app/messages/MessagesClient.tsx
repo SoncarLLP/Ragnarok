@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 import ConversationList from "./ConversationList";
 import ConversationView from "./ConversationView";
 import NewConversationModal from "./NewConversationModal";
+import DarkModeToggle from "@/components/DarkModeToggle";
 
 export type CurrentUser = {
   id: string;
@@ -123,16 +124,16 @@ export default function MessagesClient({
   const totalUnread = conversations.reduce((sum, c) => sum + c.unread_count, 0);
 
   return (
-    <div className="h-screen flex flex-col bg-neutral-950 text-neutral-100 overflow-hidden">
+    <div className="h-screen flex flex-col overflow-hidden" style={{ background: "var(--nrs-bg)", color: "var(--nrs-text-body)" }}>
       {/* Header */}
-      <header className="shrink-0 border-b border-white/10 bg-neutral-950/90 backdrop-blur z-10">
+      <header className="nrs-header shrink-0 z-10">
         <div className="px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Link href="/" className="font-semibold tracking-wide text-sm">
+            <Link href="/" className="font-semibold tracking-wide text-sm" style={{ fontFamily: "var(--font-heading)", color: "var(--nrs-accent)" }}>
               Ragnarök
             </Link>
-            <span className="text-white/20">/</span>
-            <span className="text-sm text-neutral-300">Messages</span>
+            <span style={{ color: "var(--nrs-border)" }}>/</span>
+            <span className="text-sm" style={{ color: "var(--nrs-text-muted)" }}>Messages</span>
             {totalUnread > 0 && (
               <span className="min-w-[1.25rem] h-5 px-1 rounded-full bg-red-500 text-white text-xs font-bold flex items-center justify-center">
                 {totalUnread > 99 ? "99+" : totalUnread}
@@ -164,10 +165,11 @@ export default function MessagesClient({
             )}
             <Link
               href="/account"
-              className="text-sm text-neutral-400 hover:text-white transition px-2"
+              className="nrs-nav-link px-2"
             >
               Account
             </Link>
+            <DarkModeToggle isSignedIn={true} />
           </div>
         </div>
       </header>
@@ -176,10 +178,8 @@ export default function MessagesClient({
       <div className="flex-1 flex overflow-hidden">
         {/* Left panel — conversation list */}
         <div
-          className={`
-            shrink-0 w-full md:w-80 border-r border-white/10 flex flex-col overflow-hidden
-            ${mobileView === "list" ? "flex" : "hidden md:flex"}
-          `}
+          className={`shrink-0 w-full md:w-80 flex flex-col overflow-hidden ${mobileView === "list" ? "flex" : "hidden md:flex"}`}
+          style={{ borderRight: "1px solid var(--nrs-border)" }}
         >
           <ConversationList
             conversations={conversations}
@@ -210,7 +210,7 @@ export default function MessagesClient({
               }}
             />
           ) : (
-            <div className="flex-1 flex items-center justify-center text-neutral-500 text-sm">
+            <div className="flex-1 flex items-center justify-center text-sm" style={{ color: "var(--nrs-text-muted)" }}>
               <div className="text-center">
                 <div className="text-4xl mb-3">💬</div>
                 <p>Select a conversation to start messaging</p>

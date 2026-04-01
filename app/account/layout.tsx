@@ -6,6 +6,7 @@ import AccountNav from "./AccountNav";
 import LogoutButton from "./LogoutButton";
 import NavSidebar from "@/components/NavSidebar";
 import NotificationBell from "@/components/NotificationBell";
+import DarkModeToggle from "@/components/DarkModeToggle";
 import MemberBadge from "@/components/MemberBadge";
 
 export default async function AccountLayout({ children }: { children: React.ReactNode }) {
@@ -71,6 +72,7 @@ export default async function AccountLayout({ children }: { children: React.Reac
               <MemberBadge role={profile?.role} tier={profile?.tier} />
             </span>
             <NotificationBell userId={user.id} initialUnreadCount={totalUnread} />
+            <DarkModeToggle isSignedIn={true} />
             <LogoutButton />
             <NavSidebar
               role={profile?.role}

@@ -27,7 +27,7 @@ export default function CartPage() {
   const subtotal = items.reduce((s, i) => s + i.price * i.qty, 0);
 
   return (
-    <main className="bg-neutral-950 text-neutral-100 min-h-screen">
+    <main className="min-h-screen" style={{ background: "var(--nrs-bg)", color: "var(--nrs-text-body)" }}>
       <section className="mx-auto max-w-4xl px-4 py-12">
         <h1 className="text-3xl font-semibold">Your Cart</h1>
 

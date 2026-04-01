@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { products } from "@/lib/products";
 import AdminTabs from "./AdminTabs";
+import DarkModeToggle from "@/components/DarkModeToggle";
 import type { FlagRecord, MemberRecord, WarningRecord } from "./AdminTabs";
 import type { BlockAuthRecord, MemberOption } from "./BlockAuthTab";
 import type { PinnedPostRecord } from "./PinnedPostsTab";
@@ -11,8 +12,8 @@ import { getDisplayName } from "@/lib/display-name";
 export default async function AdminPage() {
   if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
     return (
-      <main className="min-h-screen bg-neutral-950 text-neutral-100 flex items-center justify-center">
-        <p className="text-neutral-400">SUPABASE_SERVICE_ROLE_KEY not configured.</p>
+      <main className="min-h-screen flex items-center justify-center" style={{ background: "var(--nrs-bg)", color: "var(--nrs-text-body)" }}>
+        <p style={{ color: "var(--nrs-text-muted)" }}>SUPABASE_SERVICE_ROLE_KEY not configured.</p>
       </main>
     );
   }
@@ -38,7 +39,7 @@ export default async function AdminPage() {
 
   if (!currentUserRole) {
     return (
-      <main className="min-h-screen bg-neutral-950 text-neutral-100 flex items-center justify-center px-4">
+      <main className="min-h-screen flex items-center justify-center px-4" style={{ background: "var(--nrs-bg)", color: "var(--nrs-text-body)" }}>
         <div className="text-center max-w-sm">
           {!user ? (
             <>
@@ -308,7 +309,7 @@ export default async function AdminPage() {
   }
 
   return (
-    <main className="min-h-screen bg-neutral-950 text-neutral-100">
+    <main className="min-h-screen" style={{ background: "var(--nrs-bg)", color: "var(--nrs-text-body)" }}>
       <div className="mx-auto max-w-5xl px-4 py-10 space-y-12">
         {/* Header */}
         <div className="flex items-center justify-between gap-3">
@@ -330,9 +331,10 @@ export default async function AdminPage() {
                 Site Management ⚙️
               </Link>
             )}
-            <Link href="/" className="text-sm px-3 py-1.5 rounded bg-white/10 hover:bg-white/20">
+            <Link href="/" className="nrs-btn text-sm">
               View site
             </Link>
+            <DarkModeToggle isSignedIn={true} />
           </div>
         </div>
 

@@ -24,10 +24,10 @@ export default async function MessagesPage({
 
   if (role !== "admin" && role !== "super_admin") {
     return (
-      <main className="min-h-screen bg-neutral-950 text-neutral-100 flex items-center justify-center px-4">
+      <main className="min-h-screen flex items-center justify-center px-4" style={{ background: "var(--nrs-bg)", color: "var(--nrs-text-body)" }}>
         <div className="text-center max-w-sm">
           <p className="text-lg font-semibold mb-2">Access Denied</p>
-          <p className="text-neutral-400 text-sm mb-5">
+          <p className="text-sm mb-5" style={{ color: "var(--nrs-text-muted)" }}>
             The messaging system is restricted to admins only.
           </p>
           <Link

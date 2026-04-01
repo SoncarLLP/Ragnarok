@@ -84,12 +84,16 @@ export default function NavSidebar({
 
       {/* ── Sidebar panel ── */}
       <div
-        style={{ visibility: open ? "visible" : "hidden" }}
+        style={{
+          visibility: open ? "visible" : "hidden",
+          background: "var(--nrs-bg-2)",
+          borderLeft: "1px solid var(--nrs-border)",
+          color: "var(--nrs-text-body)",
+        }}
         className={`
           fixed top-0 right-0 z-[101]
           h-[100dvh]
           w-[85vw] sm:w-[300px]
-          bg-neutral-900 border-l border-white/10
           flex flex-col
           shadow-2xl
           transition-transform duration-300 ease-in-out
@@ -101,18 +105,20 @@ export default function NavSidebar({
         aria-hidden={!open}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-5 border-b border-white/10 shrink-0">
+        <div className="flex items-center justify-between px-6 py-5 shrink-0" style={{ borderBottom: "1px solid var(--nrs-border)" }}>
           <Link
             href="/"
             onClick={close}
             className="font-semibold tracking-wide text-base"
+            style={{ fontFamily: "var(--font-heading)", color: "var(--nrs-accent)" }}
           >
             Ragnarök
           </Link>
           <button
             onClick={close}
             aria-label="Close navigation menu"
-            className="w-9 h-9 flex items-center justify-center rounded-md text-neutral-400 hover:text-white hover:bg-white/10 transition"
+            className="w-9 h-9 flex items-center justify-center rounded-md hover:bg-white/10 transition"
+            style={{ color: "var(--nrs-text-muted)" }}
           >
             <svg
               viewBox="0 0 24 24"
@@ -132,13 +138,13 @@ export default function NavSidebar({
 
         {/* Signed-in member strip */}
         {isSignedIn && (
-          <div className="px-5 py-3 border-b border-white/10 flex items-center gap-2 shrink-0 bg-white/[0.03]">
-            <div className="w-7 h-7 rounded-full bg-neutral-700 flex items-center justify-center text-xs font-semibold text-neutral-300 shrink-0">
+          <div className="px-5 py-3 flex items-center gap-2 shrink-0" style={{ borderBottom: "1px solid var(--nrs-border)", background: "var(--nrs-accent-dim)" }}>
+            <div className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-semibold shrink-0" style={{ background: "var(--nrs-panel)", color: "var(--nrs-text-muted)" }}>
               {displayName ? displayName.charAt(0).toUpperCase() : "?"}
             </div>
             <div className="flex flex-col gap-0.5 min-w-0">
               {displayName && (
-                <span className="text-sm font-medium text-neutral-200 truncate leading-tight">
+                <span className="text-sm font-medium truncate leading-tight" style={{ color: "var(--nrs-text)" }}>
                   {displayName}
                 </span>
               )}
@@ -173,7 +179,7 @@ export default function NavSidebar({
           <Link
             href="/account/notifications"
             onClick={close}
-            className="flex items-center gap-4 px-4 py-3.5 rounded-xl text-[15px] font-medium text-neutral-200 hover:text-white hover:bg-white/10 active:bg-white/15 transition"
+            className="nrs-nav-link flex items-center gap-4 px-4 py-3.5 rounded-xl text-[15px] font-medium hover:bg-white/10 active:bg-white/15 transition"
           >
             <span className="text-xl w-7 shrink-0 text-center">🔔</span>
             <span className="flex-1">Notifications</span>
@@ -191,12 +197,12 @@ export default function NavSidebar({
           />
           {isAdmin && (
             <>
-              <div className="my-3 border-t border-white/10" />
+              <div className="my-3" style={{ borderTop: "1px solid var(--nrs-border)" }} />
               {/* Messages link with unread badge */}
               <Link
                 href="/messages"
                 onClick={close}
-                className="flex items-center gap-4 px-4 py-3.5 rounded-xl text-[15px] font-medium text-neutral-200 hover:text-white hover:bg-white/10 active:bg-white/15 transition"
+                className="nrs-nav-link flex items-center gap-4 px-4 py-3.5 rounded-xl text-[15px] font-medium hover:bg-white/10 active:bg-white/15 transition"
               >
                 <span className="text-xl w-7 shrink-0 text-center">💬</span>
                 <span className="flex-1">Messages</span>
@@ -225,7 +231,7 @@ export default function NavSidebar({
         </nav>
 
         {/* Footer */}
-        <div className="shrink-0 px-6 py-4 border-t border-white/10 text-xs text-neutral-500">
+        <div className="shrink-0 px-6 py-4 text-xs" style={{ borderTop: "1px solid var(--nrs-border)", color: "var(--nrs-text-muted)" }}>
           © {new Date().getFullYear()} SONCAR Limited
         </div>
       </div>
@@ -248,7 +254,7 @@ function SidebarLink({
     <Link
       href={href}
       onClick={onClick}
-      className="flex items-center gap-4 px-4 py-3.5 rounded-xl text-[15px] font-medium text-neutral-200 hover:text-white hover:bg-white/10 active:bg-white/15 transition"
+      className="nrs-nav-link flex items-center gap-4 px-4 py-3.5 rounded-xl text-[15px] font-medium hover:bg-white/10 active:bg-white/15 transition"
     >
       <span className="text-xl w-7 shrink-0 text-center">{emoji}</span>
       {label}

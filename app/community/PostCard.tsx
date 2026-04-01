@@ -233,7 +233,7 @@ export default function PostCard({
 
   // ── Regular member post ───────────────────────────────────────────
   return (
-    <article className="rounded-xl border border-white/10 bg-white/5 overflow-hidden hover:border-white/20 transition">
+    <article className="nrs-card rounded-xl overflow-hidden transition">
       {/* Author */}
       <div className="px-4 pt-4 flex items-center justify-between gap-2">
         <Link href={authorHref} className="flex items-center gap-2 min-w-0">

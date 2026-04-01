@@ -1,6 +1,6 @@
 export default function BannedPage() {
   return (
-    <main className="min-h-screen bg-neutral-950 text-neutral-100 flex items-center justify-center px-4">
+    <main className="min-h-screen flex items-center justify-center px-4" style={{ background: "var(--nrs-bg)", color: "var(--nrs-text-body)" }}>
       <div className="max-w-md text-center">
         <div className="text-5xl mb-6">🚫</div>
         <h1 className="text-2xl font-semibold mb-3">Account Suspended</h1>

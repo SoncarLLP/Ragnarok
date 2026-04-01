@@ -14,10 +14,10 @@ function Section({
 }) {
   return (
     <section id={id} className="scroll-mt-24">
-      <div className="rounded-2xl border border-white/10 bg-white/5 p-6 sm:p-8">
-        <h2 className="text-2xl font-semibold mb-1">{title}</h2>
-        <p className="text-xs text-neutral-500 mb-6">Last updated: {LAST_UPDATED}</p>
-        <div className="space-y-6 text-sm text-neutral-300 leading-relaxed">{children}</div>
+      <div className="rounded-2xl p-6 sm:p-8" style={{ background: "var(--nrs-card)", border: "1px solid var(--nrs-border)" }}>
+        <h2 className="text-2xl font-semibold mb-1" style={{ color: "var(--nrs-text)" }}>{title}</h2>
+        <p className="text-xs mb-6" style={{ color: "var(--nrs-text-muted)" }}>Last updated: {LAST_UPDATED}</p>
+        <div className="space-y-6 text-sm leading-relaxed" style={{ color: "var(--nrs-text-body)" }}>{children}</div>
       </div>
     </section>
   );
@@ -25,7 +25,7 @@ function Section({
 
 function H3({ id, children }: { id?: string; children: React.ReactNode }) {
   return (
-    <h3 id={id} className="text-base font-semibold text-neutral-100 mt-6 mb-2 scroll-mt-24">
+    <h3 id={id} className="text-base font-semibold mt-6 mb-2 scroll-mt-24" style={{ color: "var(--nrs-text)" }}>
       {children}
     </h3>
   );
@@ -45,14 +45,14 @@ function OL({ children }: { children: React.ReactNode }) {
 
 function TableOfContents({ items }: { items: { href: string; label: string }[] }) {
   return (
-    <nav className="mt-2 mb-4 p-4 rounded-xl bg-white/5 border border-white/10">
-      <p className="text-xs font-semibold uppercase tracking-widest text-neutral-400 mb-3">
+    <nav className="mt-2 mb-4 p-4 rounded-xl" style={{ background: "var(--nrs-card)", border: "1px solid var(--nrs-border)" }}>
+      <p className="text-xs font-semibold uppercase tracking-widest mb-3" style={{ color: "var(--nrs-text-muted)" }}>
         Contents
       </p>
       <ol className="space-y-1.5 text-sm">
         {items.map((item) => (
           <li key={item.href}>
-            <Link href={item.href} className="text-amber-400 hover:underline">
+            <Link href={item.href} className="hover:underline" style={{ color: "var(--nrs-accent)" }}>
               {item.label}
             </Link>
           </li>
@@ -64,7 +64,7 @@ function TableOfContents({ items }: { items: { href: string; label: string }[] }
 
 function Highlight({ children }: { children: React.ReactNode }) {
   return (
-    <div className="rounded-lg border border-amber-500/20 bg-amber-500/5 px-4 py-3 text-amber-200 text-xs leading-relaxed">
+    <div className="rounded-lg px-4 py-3 text-xs leading-relaxed" style={{ border: "1px solid rgba(201,168,76,0.2)", background: "rgba(201,168,76,0.05)", color: "var(--nrs-accent)" }}>
       {children}
     </div>
   );
@@ -81,15 +81,15 @@ const sections = [
 
 export default function PoliciesPage() {
   return (
-    <main className="min-h-screen bg-neutral-950 text-neutral-100">
-      {/* Header */}
-      <header className="sticky top-0 z-40 border-b border-white/10 bg-neutral-950/80 backdrop-blur">
+    <main className="nrs-policies-page min-h-screen">
+      {/* Header — uses nrs-policies-page CSS variables, no tier theme */}
+      <header className="nrs-header sticky top-0 z-40">
         <div className="mx-auto max-w-4xl px-4 py-3 flex items-center justify-between gap-4">
-          <Link href="/" className="font-semibold tracking-wide">
+          <Link href="/" className="font-semibold tracking-wide" style={{ color: "var(--nrs-text)" }}>
             Ragnarök
           </Link>
           <div className="flex items-center gap-3">
-            <span className="text-sm text-neutral-400">Policies &amp; Legal</span>
+            <span className="text-sm" style={{ color: "var(--nrs-text-muted)" }}>Policies &amp; Legal</span>
             <NavWrapper />
           </div>
         </div>
@@ -98,8 +98,8 @@ export default function PoliciesPage() {
       <div className="mx-auto max-w-4xl px-4 py-12">
         {/* Page title */}
         <div className="mb-10 text-center">
-          <h1 className="text-3xl sm:text-4xl font-semibold">Policies &amp; Legal</h1>
-          <p className="mt-2 text-neutral-400 text-sm max-w-xl mx-auto">
+          <h1 className="text-3xl sm:text-4xl font-semibold" style={{ color: "var(--nrs-text)" }}>Policies &amp; Legal</h1>
+          <p className="mt-2 text-sm max-w-xl mx-auto" style={{ color: "var(--nrs-text-muted)" }}>
             Everything you need to know about how SONCAR Limited operates, handles your data,
             and supports your rights as a customer and member.
           </p>
@@ -111,7 +111,8 @@ export default function PoliciesPage() {
             <a
               key={s.href}
               href={s.href}
-              className="rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm hover:border-amber-400/40 hover:bg-amber-500/5 hover:text-amber-300 transition text-center"
+              className="rounded-xl px-4 py-3 text-sm transition text-center block"
+              style={{ border: "1px solid var(--nrs-border)", background: "var(--nrs-card)", color: "var(--nrs-text-body)" }}
             >
               {s.label}
             </a>
@@ -1601,8 +1602,8 @@ export default function PoliciesPage() {
         </div>
 
         {/* Footer note */}
-        <div className="mt-12 rounded-xl border border-white/10 bg-white/5 px-6 py-5 text-xs text-neutral-400 leading-relaxed">
-          <p className="font-medium text-neutral-300 mb-1">Legal disclaimer</p>
+        <div className="mt-12 rounded-xl px-6 py-5 text-xs leading-relaxed" style={{ border: "1px solid var(--nrs-border)", background: "var(--nrs-card)", color: "var(--nrs-text-muted)" }}>
+          <p className="font-medium mb-1" style={{ color: "var(--nrs-text-body)" }}>Legal disclaimer</p>
           <p>
             These policies are intended as a solid legally informed foundation based on UK law,
             including UK GDPR, the Consumer Rights Act 2015, the Consumer Contracts Regulations
@@ -1612,13 +1613,13 @@ export default function PoliciesPage() {
           </p>
           <p className="mt-3">
             If you have a question about any of our policies, please contact us at{" "}
-            <strong className="text-neutral-300">hello@soncar.co.uk</strong>. Last updated:{" "}
+            <strong style={{ color: "var(--nrs-text-body)" }}>hello@soncar.co.uk</strong>. Last updated:{" "}
             {LAST_UPDATED}.
           </p>
         </div>
 
         <div className="mt-6 text-center">
-          <Link href="/" className="text-sm text-neutral-400 hover:text-white">
+          <Link href="/" className="text-sm hover:underline" style={{ color: "var(--nrs-text-muted)" }}>
             ← Back to Ragnarök
           </Link>
         </div>

@@ -38,18 +38,18 @@ export default function SignupPage() {
 
   if (sent) {
     return (
-      <main className="min-h-screen bg-neutral-950 text-neutral-100 flex items-center justify-center px-4">
+      <main className="min-h-screen flex items-center justify-center px-4" style={{ background: "var(--nrs-bg)", color: "var(--nrs-text-body)" }}>
         <div className="w-full max-w-sm text-center">
-          <Link href="/" className="block font-semibold tracking-wide text-lg mb-8">
+          <Link href="/" className="block font-semibold tracking-wide text-lg mb-8" style={{ fontFamily: "var(--font-heading)", color: "var(--nrs-accent)" }}>
             Ragnarök
           </Link>
           <h1 className="text-2xl font-semibold">Check your email</h1>
-          <p className="mt-4 text-neutral-400 text-sm leading-relaxed">
+          <p className="mt-4 text-sm leading-relaxed" style={{ color: "var(--nrs-text-muted)" }}>
             We sent a confirmation link to{" "}
-            <span className="text-white">{email}</span>. Click it to
+            <span style={{ color: "var(--nrs-text)" }}>{email}</span>. Click it to
             activate your account and claim your 50 welcome points.
           </p>
-          <Link href="/" className="mt-8 inline-block text-xs text-neutral-500 hover:text-white">
+          <Link href="/" className="mt-8 inline-block text-xs hover:underline" style={{ color: "var(--nrs-text-muted)" }}>
             ← Back to shop
           </Link>
         </div>
@@ -58,42 +58,42 @@ export default function SignupPage() {
   }
 
   return (
-    <main className="min-h-screen bg-neutral-950 text-neutral-100 flex items-center justify-center px-4">
+    <main className="min-h-screen flex items-center justify-center px-4" style={{ background: "var(--nrs-bg)", color: "var(--nrs-text-body)" }}>
       <div className="w-full max-w-sm">
-        <Link href="/" className="block text-center font-semibold tracking-wide text-lg mb-8">
+        <Link href="/" className="block text-center font-semibold tracking-wide text-lg mb-8" style={{ fontFamily: "var(--font-heading)", color: "var(--nrs-accent)" }}>
           Ragnarök
         </Link>
 
         <h1 className="text-2xl font-semibold text-center">Create account</h1>
-        <p className="mt-2 text-neutral-400 text-sm text-center">
+        <p className="mt-2 text-sm text-center" style={{ color: "var(--nrs-text-muted)" }}>
           Join Ragnarök and earn 50 welcome points
         </p>
 
         <form onSubmit={handleSubmit} className="mt-8 space-y-4">
           <div>
-            <label className="block text-sm text-neutral-300 mb-1">Full name</label>
+            <label className="block text-sm mb-1" style={{ color: "var(--nrs-text-muted)" }}>Full name</label>
             <input
               type="text"
               required
               autoComplete="name"
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
-              className="w-full rounded-md bg-neutral-900 border border-white/10 px-3 py-2.5 text-sm outline-none focus:border-white/30"
+              className="nrs-input"
             />
           </div>
           <div>
-            <label className="block text-sm text-neutral-300 mb-1">Email</label>
+            <label className="block text-sm mb-1" style={{ color: "var(--nrs-text-muted)" }}>Email</label>
             <input
               type="email"
               required
               autoComplete="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full rounded-md bg-neutral-900 border border-white/10 px-3 py-2.5 text-sm outline-none focus:border-white/30"
+              className="nrs-input"
             />
           </div>
           <div>
-            <label className="block text-sm text-neutral-300 mb-1">Password</label>
+            <label className="block text-sm mb-1" style={{ color: "var(--nrs-text-muted)" }}>Password</label>
             <input
               type="password"
               required
@@ -101,9 +101,9 @@ export default function SignupPage() {
               autoComplete="new-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full rounded-md bg-neutral-900 border border-white/10 px-3 py-2.5 text-sm outline-none focus:border-white/30"
+              className="nrs-input"
             />
-            <p className="mt-1 text-xs text-neutral-500">Minimum 6 characters</p>
+            <p className="mt-1 text-xs" style={{ color: "var(--nrs-text-muted)" }}>Minimum 6 characters</p>
           </div>
 
           {error && <p className="text-rose-400 text-sm">{error}</p>}
@@ -111,15 +111,15 @@ export default function SignupPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-2.5 rounded-md bg-white/10 hover:bg-white/20 disabled:opacity-60 text-sm font-medium transition"
+            className="nrs-btn nrs-btn-primary w-full py-2.5 text-sm font-medium disabled:opacity-60"
           >
             {loading ? "Creating account…" : "Create account"}
           </button>
         </form>
 
-        <p className="mt-6 text-center text-sm text-neutral-400">
+        <p className="mt-6 text-center text-sm" style={{ color: "var(--nrs-text-muted)" }}>
           Already have an account?{" "}
-          <Link href="/auth/login" className="text-white hover:underline">
+          <Link href="/auth/login" className="hover:underline" style={{ color: "var(--nrs-accent)" }}>
             Sign in
           </Link>
         </p>

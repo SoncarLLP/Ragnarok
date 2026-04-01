@@ -10,6 +10,7 @@ import RunicDivider from "@/components/RunicDivider";
 import ProductThemeApplier from "@/components/ProductThemeApplier";
 import ProductParticleCanvas from "@/components/ProductParticleCanvas";
 import NorseKnotworkFrame from "@/components/NorseKnotworkFrame";
+import NavWrapper from "@/components/NavWrapper";
 import { getProductCardAccent, getProductCardGlow } from "@/lib/product-card-theme";
 
 const STATIC_SLUGS = ["freyjas-bloom", "duemmens-nectar", "loki-hell-fire"] as const;
@@ -116,6 +117,7 @@ export default async function ProductPage(props: Props) {
               <nav className="flex items-center gap-3 text-sm">
                 <Link href="/#shop" className="nrs-nav-link hidden md:block">Shop</Link>
                 <Link href="/cart" className="nrs-btn text-xs py-1.5 px-3">Cart</Link>
+                <NavWrapper />
               </nav>
             </div>
           </header>
@@ -395,13 +397,18 @@ export default async function ProductPage(props: Props) {
         </div>
 
         <header className="nrs-header sticky top-0 z-40">
-          <div className="mx-auto max-w-7xl px-4 py-3 flex items-center gap-3">
+          <div className="mx-auto max-w-7xl px-4 py-3 flex items-center justify-between">
             <Link href="/" className="flex items-center gap-2">
               <Image src="/soncar-logo-ragnarok.png" alt="Ragnarök" width={48} height={48} className="h-7 w-auto" />
               <span className="font-semibold text-sm tracking-widest" style={{ fontFamily: "var(--font-heading)", color: "var(--nrs-accent)" }}>
                 Ragnarök
               </span>
             </Link>
+            <nav className="flex items-center gap-3 text-sm">
+              <Link href="/#shop" className="nrs-nav-link hidden md:block">Shop</Link>
+              <Link href="/cart" className="nrs-btn text-xs py-1.5 px-3">Cart</Link>
+              <NavWrapper />
+            </nav>
           </div>
         </header>
         <section className="mx-auto max-w-5xl px-4 py-12 grid md:grid-cols-2 gap-12 relative z-10">
