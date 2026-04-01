@@ -290,6 +290,9 @@ $$;
 
 
 -- ── 12. Fuzzy search function for members ───────────────────
+-- Returns only id + match_rank to avoid depending on columns
+-- added by later migrations (privacy_mode, tier, bio, etc.).
+-- The caller fetches the full profile row after getting IDs.
 CREATE OR REPLACE FUNCTION public.fuzzy_search_members(
   query_text           text,
   similarity_threshold float  DEFAULT 0.15,
@@ -297,44 +300,34 @@ CREATE OR REPLACE FUNCTION public.fuzzy_search_members(
   offset_count         int    DEFAULT 0
 )
 RETURNS TABLE(
-  id                      uuid,
-  full_name               text,
-  username                text,
-  avatar_url              text,
-  tier                    text,
-  privacy_mode            text,
-  bio                     text,
-  display_name_preference text,
-  match_rank              float
+  id         uuid,
+  match_rank float
 )
 LANGUAGE sql STABLE
 SECURITY DEFINER
 SET search_path = public
 AS $$
-  SELECT id, full_name, username, avatar_url, tier, privacy_mode, bio, display_name_preference,
-         MAX(rank) AS match_rank
+  SELECT id, MAX(rank) AS match_rank
   FROM (
     -- Method 1: Full-text search
-    SELECT p.id, p.full_name, p.username, p.avatar_url, p.tier, p.privacy_mode, p.bio, p.display_name_preference,
+    SELECT p.id,
            (ts_rank(
              to_tsvector('english',
                coalesce(p.full_name, '') || ' ' ||
-               coalesce(p.username, '') || ' ' ||
-               coalesce(p.bio, '')
+               coalesce(p.username, '')
              ),
              plainto_tsquery('english', query_text)
            ) + 0.5) AS rank
     FROM profiles p
     WHERE to_tsvector('english',
             coalesce(p.full_name, '') || ' ' ||
-            coalesce(p.username, '') || ' ' ||
-            coalesce(p.bio, ''))
+            coalesce(p.username, ''))
           @@ plainto_tsquery('english', query_text)
 
     UNION ALL
 
     -- Method 2: Trigram similarity on name/username
-    SELECT p.id, p.full_name, p.username, p.avatar_url, p.tier, p.privacy_mode, p.bio, p.display_name_preference,
+    SELECT p.id,
            GREATEST(
              word_similarity(lower(query_text), lower(coalesce(p.full_name, ''))),
              word_similarity(lower(query_text), lower(coalesce(p.username, '')))
@@ -348,16 +341,14 @@ AS $$
     UNION ALL
 
     -- Method 3: ILIKE partial match
-    SELECT p.id, p.full_name, p.username, p.avatar_url, p.tier, p.privacy_mode, p.bio, p.display_name_preference,
-           0.1 AS rank
+    SELECT p.id, 0.1 AS rank
     FROM profiles p
     WHERE (
       p.full_name ILIKE '%' || query_text || '%'
       OR p.username   ILIKE '%' || query_text || '%'
-      OR p.bio        ILIKE '%' || query_text || '%'
     )
   ) all_matches
-  GROUP BY id, full_name, username, avatar_url, tier, privacy_mode, bio, display_name_preference
+  GROUP BY id
   ORDER BY match_rank DESC
   LIMIT limit_count
   OFFSET offset_count;

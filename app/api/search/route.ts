@@ -165,7 +165,9 @@ export async function GET(req: Request) {
       avatar_url: string | null; tier: string | null; privacy_mode: string | null;
       bio?: string | null; display_name_preference?: string | null; match_rank?: number;
     };
-    const memberRows: MemberRow[] = [];
+    // rankMap holds id → match_rank from RPC; full profile data fetched separately
+    const rankMap: Record<string, number> = {};
+    const orderedIds: string[] = [];
 
     for (const term of expandedTerms) {
       const { data, error } = await admin.rpc("fuzzy_search_members", {
@@ -176,18 +178,39 @@ export async function GET(req: Request) {
       });
 
       if (error) {
+        // Fallback: ILIKE directly against profiles
         const { data: fallback } = await admin
           .from("profiles")
           .select("id, full_name, username, avatar_url, tier, privacy_mode, display_name_preference")
           .or(`full_name.ilike.%${term}%,username.ilike.%${term}%`)
           .limit(limit);
         for (const m of (fallback ?? []) as MemberRow[]) {
-          if (!seen.has(m.id)) { seen.add(m.id); memberRows.push({ ...m, match_rank: 0.1 }); }
+          if (!seen.has(m.id)) {
+            seen.add(m.id);
+            orderedIds.push(m.id);
+            rankMap[m.id] = 0.1;
+          }
         }
       } else {
-        for (const m of (data ?? []) as MemberRow[]) {
-          if (!seen.has(m.id)) { seen.add(m.id); memberRows.push(m); }
+        for (const row of (data ?? []) as { id: string; match_rank: number }[]) {
+          if (!seen.has(row.id)) {
+            seen.add(row.id);
+            orderedIds.push(row.id);
+            rankMap[row.id] = row.match_rank;
+          }
         }
+      }
+    }
+
+    // Fetch full profile data for all matched IDs
+    const memberRows: MemberRow[] = [];
+    if (orderedIds.length > 0) {
+      const { data: profiles } = await admin
+        .from("profiles")
+        .select("id, full_name, username, avatar_url, tier, privacy_mode, display_name_preference")
+        .in("id", orderedIds);
+      for (const m of (profiles ?? []) as MemberRow[]) {
+        memberRows.push({ ...m, match_rank: rankMap[m.id] ?? 0.1 });
       }
     }
 
