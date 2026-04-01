@@ -39,11 +39,15 @@ interface EffectConfig {
 }
 
 const EFFECT_CONFIGS: Record<ParticleEffectType, EffectConfig | null> = {
-  petals:   { color: [212, 152, 172], count: 20, speed: 0.22 },
-  droplets: { color: [212, 152,  10], count: 18, speed: 0.28 },
-  embers:   { color: [232,  80,  16], count: 28, speed: 0.48 },
-  sparks:   { color: [255, 180,  60], count: 24, speed: 0.6  },
-  none:     null,
+  petals:     { color: [212, 152, 172], count: 20, speed: 0.22 },
+  droplets:   { color: [212, 152,  10], count: 18, speed: 0.28 },
+  embers:     { color: [232,  80,  16], count: 28, speed: 0.48 },
+  sparks:     { color: [255, 180,  60], count: 24, speed: 0.6  },
+  snowflakes: { color: [200, 230, 255], count: 22, speed: 0.18 },
+  leaves:     { color: [ 80, 160,  60], count: 18, speed: 0.20 },
+  stars:      { color: [200, 180, 255], count: 26, speed: 0.15 },
+  dust:       { color: [200, 195, 185], count: 30, speed: 0.10 },
+  none:       null,
 };
 
 function createParticle(

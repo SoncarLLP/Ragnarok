@@ -255,6 +255,8 @@ export default function ProductEditor({
     { key: "history",  label: "Version history" },
   ] as const;
 
+  const designStudioHref = `/site-management/products/${product.id}/design`;
+
   return (
     <div className="space-y-5 pb-16">
       {/* Back + title */}
@@ -282,7 +284,7 @@ export default function ProductEditor({
       />
 
       {/* Tabs */}
-      <div className="flex gap-1 border-b border-white/10 pb-0">
+      <div className="flex gap-1 border-b border-white/10 pb-0 flex-wrap">
         {tabs.map((tab) => (
           <button
             key={tab.key}
@@ -297,6 +299,15 @@ export default function ProductEditor({
             {tab.label}
           </button>
         ))}
+        {/* Design Studio external link tab */}
+        <Link
+          href={designStudioHref}
+          className="px-4 py-2 text-sm font-medium rounded-t-lg transition border-b-2 -mb-px border-transparent hover:border-amber-400/40"
+          style={{ color: "#e8a878" }}
+          title="Open full Design Studio"
+        >
+          ✦ Design Studio ↗
+        </Link>
       </div>
 
       {/* ── Tab: Core details ── */}
@@ -782,14 +793,14 @@ function ThemeTab({
                 <div className="flex items-center gap-2">
                   <input
                     type="color"
-                    value={effective?.[key] ?? "#000000"}
+                    value={(effective?.[key] as string | undefined) ?? "#000000"}
                     onChange={(e) => update(key, e.target.value)}
                     className="w-9 h-9 rounded cursor-pointer border border-white/15 bg-transparent"
                     style={{ padding: "2px" }}
                   />
                   <input
                     type="text"
-                    value={effective?.[key] ?? ""}
+                    value={(effective?.[key] as string | undefined) ?? ""}
                     onChange={(e) => update(key, e.target.value)}
                     placeholder="#rrggbb"
                     className="flex-1 rounded-lg border border-white/15 bg-white/5 px-2.5 py-1.5 text-xs text-neutral-100 font-mono focus:outline-none focus:border-white/30"
@@ -798,7 +809,7 @@ function ThemeTab({
               ) : (
                 <input
                   type="text"
-                  value={effective?.[key] ?? ""}
+                  value={(effective?.[key] as string | undefined) ?? ""}
                   onChange={(e) => update(key, e.target.value)}
                   placeholder={key === "marbleSpeed" ? "14s" : "rgba(r,g,b,a)"}
                   className="w-full rounded-lg border border-white/15 bg-white/5 px-2.5 py-1.5 text-xs text-neutral-100 font-mono focus:outline-none focus:border-white/30"

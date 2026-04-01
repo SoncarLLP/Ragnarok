@@ -127,6 +127,18 @@ export default function ProductsClient({ products, draftIds }: Props) {
                     Preview ↗
                   </Link>
                   <Link
+                    href={`/site-management/products/${p.id}/design`}
+                    className="text-xs px-3 py-1.5 rounded-lg border transition font-medium"
+                    style={{
+                      background: "linear-gradient(135deg, rgba(201,132,156,0.1), rgba(212,152,10,0.1))",
+                      borderColor: "rgba(200,150,100,0.2)",
+                      color: "#e8a878",
+                    }}
+                    title="Open Design Studio"
+                  >
+                    ✦ Design
+                  </Link>
+                  <Link
                     href={`/site-management/products/${p.id}`}
                     className="text-xs px-3 py-1.5 rounded-lg bg-white/8 hover:bg-white/15 text-neutral-300 hover:text-white transition"
                   >
