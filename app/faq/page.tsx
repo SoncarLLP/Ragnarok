@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { createAdminClient } from "@/lib/supabase/admin";
 import NavWrapper from "@/components/NavWrapper";
+import BackToTop from "@/components/BackToTop";
 import type { FAQContent } from "@/lib/site-management";
 
 export const dynamic = "force-dynamic";
@@ -57,6 +58,7 @@ export default async function FAQPage() {
           </div>
         )}
       </section>
+      <BackToTop />
     </main>
   );
 }

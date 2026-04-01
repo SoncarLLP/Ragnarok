@@ -168,11 +168,12 @@ export default function ShareButton({
           }}
           onMouseEnter={cancelClose}
           onMouseLeave={startClose}
-          className="bg-neutral-800 border border-white/15 rounded-xl shadow-2xl overflow-hidden py-1"
+          className="rounded-xl shadow-2xl overflow-hidden py-1"
+          style={{ background: "var(--nrs-card)", border: "1px solid var(--nrs-border)" }}
         >
           {/* No share access — coming soon */}
           {!isAdmin && (
-            <div className="px-4 py-3 text-xs text-neutral-400 text-center">
+            <div className="px-4 py-3 text-xs text-center" style={{ color: "var(--nrs-text-muted)" }}>
               Social sharing coming soon
             </div>
           )}
@@ -184,7 +185,8 @@ export default function ShareButton({
                 key={p.key}
                 type="button"
                 onClick={() => handlePlatform(p)}
-                className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-left hover:bg-white/8 transition text-neutral-200"
+                className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-left hover:bg-white/8 transition"
+                style={{ color: "var(--nrs-text-body)" }}
               >
                 <span className="text-base leading-none">{p.icon}</span>
                 {p.label}

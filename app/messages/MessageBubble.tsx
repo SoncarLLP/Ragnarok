@@ -217,7 +217,7 @@ export default function MessageBubble({
       </div>
 
       {/* Hover actions */}
-      <div className="absolute right-4 top-1 hidden group-hover:flex items-center gap-0.5 bg-neutral-800 border border-white/10 rounded-lg shadow-lg p-0.5">
+      <div className="absolute right-4 top-1 hidden group-hover:flex items-center gap-0.5 rounded-lg shadow-lg p-0.5" style={{ background: "var(--nrs-card)", border: "1px solid var(--nrs-border)" }}>
         {/* Reaction picker */}
         <div
           className="relative"
@@ -234,7 +234,8 @@ export default function MessageBubble({
           </button>
           {showPicker && (
             <div
-              className="absolute bottom-full right-0 mb-1 flex gap-0.5 bg-neutral-800 border border-white/15 rounded-2xl shadow-2xl px-1.5 py-1.5 z-50"
+              className="absolute bottom-full right-0 mb-1 flex gap-0.5 rounded-2xl shadow-2xl px-1.5 py-1.5 z-50"
+              style={{ background: "var(--nrs-card)", border: "1px solid var(--nrs-border)" }}
               onMouseEnter={cancelClose}
               onMouseLeave={startClose}
             >

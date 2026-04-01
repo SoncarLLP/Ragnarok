@@ -4,6 +4,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { products } from "@/lib/products";
 import AdminTabs from "./AdminTabs";
 import DarkModeToggle from "@/components/DarkModeToggle";
+import BackToTop from "@/components/BackToTop";
 import type { FlagRecord, MemberRecord, WarningRecord } from "./AdminTabs";
 import type { BlockAuthRecord, MemberOption } from "./BlockAuthTab";
 import type { PinnedPostRecord } from "./PinnedPostsTab";
@@ -391,6 +392,7 @@ export default async function AdminPage() {
           />
         </section>
       </div>
+      <BackToTop />
     </main>
   );
 }

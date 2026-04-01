@@ -195,15 +195,16 @@ h3 { letter-spacing: 0.02em; }
 .input-field {
   width:         100%;
   border-radius: 0.5rem;
-  border:        1px solid rgba(255,255,255,0.15);
-  background:    rgba(255,255,255,0.05);
+  border:        1px solid var(--nrs-border);
+  background:    var(--nrs-accent-dim);
   padding:       0.5rem 0.75rem;
   font-size:     0.875rem;
-  color:         #f5f5f5;
+  color:         var(--nrs-text-body);
 }
 .input-field:focus {
   outline:      none;
-  border-color: rgba(255,255,255,0.30);
+  border-color: var(--nrs-accent);
+  box-shadow:   0 0 0 2px var(--nrs-accent-dim);
 }
 
 /* Rainbow gradient text (Diamond tier label) */
@@ -528,4 +529,176 @@ html[data-mode="light"] .nrs-policies-page .font-mono { color: #2a1a08; }
   html:not([data-mode="dark"]) .nrs-policies-page td { color: #1a1208; }
 
   html:not([data-mode="dark"]) .nrs-policies-page .font-mono { color: #2a1a08; }
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   LIGHT MODE — GLOBAL TAILWIND CLASS OVERRIDES
+   Overrides Tailwind's dark-mode-optimised hardcoded colours so they render
+   correctly on all light-mode parchment/cream backgrounds.
+   Mirrors both html[data-mode="light"] (explicit) and
+   @media(prefers-color-scheme:light) (system auto-detect).
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Subtle card / panel backgrounds (bg-white/X → dark tint on light bg) ── */
+html[data-mode="light"] .bg-white\/3  { background-color: rgba(0,0,0,0.02); }
+html[data-mode="light"] .bg-white\/5  { background-color: rgba(0,0,0,0.03); }
+html[data-mode="light"] .bg-white\/10 { background-color: rgba(0,0,0,0.05); }
+html[data-mode="light"] .bg-white\/15 { background-color: rgba(0,0,0,0.07); }
+html[data-mode="light"] .bg-white\/20 { background-color: rgba(0,0,0,0.09); }
+
+/* ── Subtle borders ──────────────────────────────────────────────────────── */
+html[data-mode="light"] .border-white\/5  { border-color: rgba(0,0,0,0.06); }
+html[data-mode="light"] .border-white\/10 { border-color: rgba(0,0,0,0.10); }
+html[data-mode="light"] .border-white\/15 { border-color: rgba(0,0,0,0.12); }
+html[data-mode="light"] .border-white\/20 { border-color: rgba(0,0,0,0.14); }
+html[data-mode="light"] .border-white\/30 { border-color: rgba(0,0,0,0.18); }
+
+/* ── Divide lines ────────────────────────────────────────────────────────── */
+html[data-mode="light"] .divide-white\/5 > * + *  { border-color: rgba(0,0,0,0.06); }
+html[data-mode="light"] .divide-white\/10 > * + * { border-color: rgba(0,0,0,0.08); }
+
+/* ── Hover backgrounds ───────────────────────────────────────────────────── */
+html[data-mode="light"] .hover\:bg-white\/5:hover  { background-color: rgba(0,0,0,0.04); }
+html[data-mode="light"] .hover\:bg-white\/8:hover  { background-color: rgba(0,0,0,0.05); }
+html[data-mode="light"] .hover\:bg-white\/10:hover { background-color: rgba(0,0,0,0.06); }
+html[data-mode="light"] .hover\:bg-white\/15:hover { background-color: rgba(0,0,0,0.08); }
+html[data-mode="light"] .hover\:bg-white\/20:hover { background-color: rgba(0,0,0,0.10); }
+
+/* ── Text colours: neutral-100/200/300 are unreadable on light backgrounds ─ */
+html[data-mode="light"] .text-neutral-100 { color: var(--nrs-text-body); }
+html[data-mode="light"] .text-neutral-200 { color: var(--nrs-text-body); }
+html[data-mode="light"] .text-neutral-300 { color: var(--nrs-text-body); }
+html[data-mode="light"] .text-neutral-400 { color: var(--nrs-text-muted); }
+html[data-mode="light"] .text-neutral-500 { color: var(--nrs-text-muted); }
+html[data-mode="light"] .text-neutral-600 { color: var(--nrs-text-muted); }
+
+/* ── Hover text states ───────────────────────────────────────────────────── */
+html[data-mode="light"] .hover\:text-white:hover         { color: var(--nrs-text); }
+html[data-mode="light"] .hover\:text-neutral-200:hover   { color: var(--nrs-text-body); }
+html[data-mode="light"] .hover\:text-neutral-300:hover   { color: var(--nrs-text-body); }
+/* group-hover variants */
+html[data-mode="light"] .group:hover .group-hover\:text-white { color: var(--nrs-text); }
+
+/* ── Amber / accent: amber-300 is light yellow — unreadable on parchment ─── */
+html[data-mode="light"] .text-amber-300 { color: var(--nrs-accent); }
+html[data-mode="light"] .text-amber-400 { color: var(--nrs-accent); }
+html[data-mode="light"] .hover\:text-amber-300:hover { color: var(--nrs-accent); }
+html[data-mode="light"] .hover\:text-amber-400:hover { color: var(--nrs-accent); }
+
+/* ── Category / tag badges (amber-500/15 bg + amber-300 text) ───────────── */
+html[data-mode="light"] .bg-amber-500\/15 { background-color: rgba(139,105,20,0.12); }
+html[data-mode="light"] .bg-amber-500\/20 { background-color: rgba(139,105,20,0.15); }
+html[data-mode="light"] .bg-amber-500\/5  { background-color: rgba(139,105,20,0.05); }
+
+/* ── Rose / warning colours ─────────────────────────────────────────────── */
+html[data-mode="light"] .text-rose-100 { color: #7f1d1d; }
+html[data-mode="light"] .bg-rose-500\/5  { background-color: rgba(220,38,38,0.06); }
+html[data-mode="light"] .bg-rose-500\/10 { background-color: rgba(220,38,38,0.08); }
+html[data-mode="light"] .border-rose-500\/30 { border-color: rgba(220,38,38,0.25); }
+html[data-mode="light"] .border-rose-500\/40 { border-color: rgba(220,38,38,0.30); }
+html[data-mode="light"] .text-rose-300  { color: #b91c1c; }
+
+/* ── Emerald success ─────────────────────────────────────────────────────── */
+html[data-mode="light"] .text-emerald-400 { color: #15803d; }
+
+/* ── Violet (Diamond tier) ───────────────────────────────────────────────── */
+html[data-mode="light"] .text-violet-300 { color: #6d28d9; }
+html[data-mode="light"] .border-violet-400\/40 { border-color: rgba(109,40,217,0.30); }
+html[data-mode="light"] .bg-violet-500\/10 { background-color: rgba(109,40,217,0.08); }
+
+/* ── Slate backgrounds used in official posts ───────────────────────────── */
+html[data-mode="light"] .from-slate-800\/70 { --tw-gradient-from: rgba(51,65,85,0.15); }
+html[data-mode="light"] .to-slate-900\/80   { --tw-gradient-to:   rgba(15,23,42,0.10); }
+
+/* ── Tab components: active state border ────────────────────────────────── */
+html[data-mode="light"] .border-amber-400 { border-color: var(--nrs-accent); }
+html[data-mode="light"] .border-amber-400\/40 { border-color: rgba(139,105,20,0.35); }
+
+/* ── Form elements ───────────────────────────────────────────────────────── */
+/* Ensures any select/input/textarea with hardcoded dark bg is visible in light mode */
+html[data-mode="light"] select,
+html[data-mode="light"] textarea,
+html[data-mode="light"] input:not([type="radio"]):not([type="checkbox"]):not([type="range"]) {
+  background-color: var(--nrs-card);
+  color: var(--nrs-text-body);
+  border-color: var(--nrs-border);
+}
+
+/* ── Placeholder text ────────────────────────────────────────────────────── */
+html[data-mode="light"] ::placeholder { color: var(--nrs-text-muted); opacity: 1; }
+
+
+/* ── @media mirrors for OS system light mode auto-detection ─────────────── */
+@media (prefers-color-scheme: light) {
+  html:not([data-mode="dark"]) .bg-white\/3  { background-color: rgba(0,0,0,0.02); }
+  html:not([data-mode="dark"]) .bg-white\/5  { background-color: rgba(0,0,0,0.03); }
+  html:not([data-mode="dark"]) .bg-white\/10 { background-color: rgba(0,0,0,0.05); }
+  html:not([data-mode="dark"]) .bg-white\/15 { background-color: rgba(0,0,0,0.07); }
+  html:not([data-mode="dark"]) .bg-white\/20 { background-color: rgba(0,0,0,0.09); }
+  html:not([data-mode="dark"]) .border-white\/5  { border-color: rgba(0,0,0,0.06); }
+  html:not([data-mode="dark"]) .border-white\/10 { border-color: rgba(0,0,0,0.10); }
+  html:not([data-mode="dark"]) .border-white\/15 { border-color: rgba(0,0,0,0.12); }
+  html:not([data-mode="dark"]) .border-white\/20 { border-color: rgba(0,0,0,0.14); }
+  html:not([data-mode="dark"]) .border-white\/30 { border-color: rgba(0,0,0,0.18); }
+  html:not([data-mode="dark"]) .divide-white\/5 > * + *  { border-color: rgba(0,0,0,0.06); }
+  html:not([data-mode="dark"]) .divide-white\/10 > * + * { border-color: rgba(0,0,0,0.08); }
+  html:not([data-mode="dark"]) .hover\:bg-white\/5:hover  { background-color: rgba(0,0,0,0.04); }
+  html:not([data-mode="dark"]) .hover\:bg-white\/8:hover  { background-color: rgba(0,0,0,0.05); }
+  html:not([data-mode="dark"]) .hover\:bg-white\/10:hover { background-color: rgba(0,0,0,0.06); }
+  html:not([data-mode="dark"]) .hover\:bg-white\/15:hover { background-color: rgba(0,0,0,0.08); }
+  html:not([data-mode="dark"]) .hover\:bg-white\/20:hover { background-color: rgba(0,0,0,0.10); }
+  html:not([data-mode="dark"]) .text-neutral-100 { color: var(--nrs-text-body); }
+  html:not([data-mode="dark"]) .text-neutral-200 { color: var(--nrs-text-body); }
+  html:not([data-mode="dark"]) .text-neutral-300 { color: var(--nrs-text-body); }
+  html:not([data-mode="dark"]) .text-neutral-400 { color: var(--nrs-text-muted); }
+  html:not([data-mode="dark"]) .text-neutral-500 { color: var(--nrs-text-muted); }
+  html:not([data-mode="dark"]) .text-neutral-600 { color: var(--nrs-text-muted); }
+  html:not([data-mode="dark"]) .hover\:text-white:hover         { color: var(--nrs-text); }
+  html:not([data-mode="dark"]) .hover\:text-neutral-200:hover   { color: var(--nrs-text-body); }
+  html:not([data-mode="dark"]) .hover\:text-neutral-300:hover   { color: var(--nrs-text-body); }
+  html:not([data-mode="dark"]) .group:hover .group-hover\:text-white { color: var(--nrs-text); }
+  html:not([data-mode="dark"]) .text-amber-300 { color: var(--nrs-accent); }
+  html:not([data-mode="dark"]) .text-amber-400 { color: var(--nrs-accent); }
+  html:not([data-mode="dark"]) .hover\:text-amber-300:hover { color: var(--nrs-accent); }
+  html:not([data-mode="dark"]) .hover\:text-amber-400:hover { color: var(--nrs-accent); }
+  html:not([data-mode="dark"]) .bg-amber-500\/15 { background-color: rgba(139,105,20,0.12); }
+  html:not([data-mode="dark"]) .bg-amber-500\/20 { background-color: rgba(139,105,20,0.15); }
+  html:not([data-mode="dark"]) .bg-amber-500\/5  { background-color: rgba(139,105,20,0.05); }
+  html:not([data-mode="dark"]) .text-rose-100 { color: #7f1d1d; }
+  html:not([data-mode="dark"]) .bg-rose-500\/5  { background-color: rgba(220,38,38,0.06); }
+  html:not([data-mode="dark"]) .bg-rose-500\/10 { background-color: rgba(220,38,38,0.08); }
+  html:not([data-mode="dark"]) .border-rose-500\/30 { border-color: rgba(220,38,38,0.25); }
+  html:not([data-mode="dark"]) .border-rose-500\/40 { border-color: rgba(220,38,38,0.30); }
+  html:not([data-mode="dark"]) .text-rose-300  { color: #b91c1c; }
+  html:not([data-mode="dark"]) .text-emerald-400 { color: #15803d; }
+  html:not([data-mode="dark"]) .text-violet-300 { color: #6d28d9; }
+  html:not([data-mode="dark"]) .border-violet-400\/40 { border-color: rgba(109,40,217,0.30); }
+  html:not([data-mode="dark"]) .bg-violet-500\/10 { background-color: rgba(109,40,217,0.08); }
+  html:not([data-mode="dark"]) .from-slate-800\/70 { --tw-gradient-from: rgba(51,65,85,0.15); }
+  html:not([data-mode="dark"]) .to-slate-900\/80   { --tw-gradient-to:   rgba(15,23,42,0.10); }
+  html:not([data-mode="dark"]) .border-amber-400   { border-color: var(--nrs-accent); }
+  html:not([data-mode="dark"]) .border-amber-400\/40 { border-color: rgba(139,105,20,0.35); }
+  html:not([data-mode="dark"]) select,
+  html:not([data-mode="dark"]) textarea,
+  html:not([data-mode="dark"]) input:not([type="radio"]):not([type="checkbox"]):not([type="range"]) {
+    background-color: var(--nrs-card);
+    color: var(--nrs-text-body);
+    border-color: var(--nrs-border);
+  }
+  html:not([data-mode="dark"]) ::placeholder { color: var(--nrs-text-muted); opacity: 1; }
+}
+
+/* ── Light mode: override hardcoded dark Tailwind backgrounds ─────────────── */
+/* bg-neutral-800/900/950 are always dark; remap them to CSS vars in light mode */
+html[data-mode="light"] .bg-neutral-800,
+html[data-mode="light"] .bg-neutral-900,
+html[data-mode="light"] .bg-neutral-950 { background-color: var(--nrs-card); }
+html[data-mode="light"] .text-neutral-100 { color: var(--nrs-text); }
+
+@media (prefers-color-scheme: light) {
+  html:not([data-mode="dark"]) .bg-neutral-800,
+  html:not([data-mode="dark"]) .bg-neutral-900,
+  html:not([data-mode="dark"]) .bg-neutral-950 { background-color: var(--nrs-card); }
+  html:not([data-mode="dark"]) .text-neutral-100 { color: var(--nrs-text); }
 }

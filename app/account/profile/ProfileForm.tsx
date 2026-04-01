@@ -268,7 +268,7 @@ export default function ProfileForm({
     if (!usernameTrimmed) return null;
     if (usernameStatus === "checking") {
       return (
-        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-neutral-400">
+        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs" style={{ color: "var(--nrs-text-muted)" }}>
           checking…
         </span>
       );
@@ -301,7 +301,7 @@ export default function ProfileForm({
     <form onSubmit={handleSubmit} className="space-y-5">
       {/* Avatar */}
       <div>
-        <label className="block text-sm text-neutral-300 mb-2">Profile photo</label>
+        <label className="block text-sm mb-2" style={{ color: "var(--nrs-text-body)" }}>Profile photo</label>
         <div className="flex items-center gap-4">
           {avatarPreview ? (
             <img
@@ -310,7 +310,7 @@ export default function ProfileForm({
               className="w-16 h-16 rounded-full object-cover shrink-0"
             />
           ) : (
-            <div className="w-16 h-16 rounded-full bg-amber-700 flex items-center justify-center text-xl font-semibold shrink-0">
+            <div className="w-16 h-16 rounded-full bg-amber-700 flex items-center justify-center text-xl font-semibold shrink-0 text-white">
               {displayInitials}
             </div>
           )}
@@ -324,7 +324,8 @@ export default function ProfileForm({
           <button
             type="button"
             onClick={() => fileRef.current?.click()}
-            className="px-3 py-2 rounded-md bg-white/10 hover:bg-white/20 text-sm transition"
+            className="px-3 py-2 rounded-md text-sm transition"
+            style={{ background: "var(--nrs-btn-bg)", color: "var(--nrs-text-body)", border: "1px solid var(--nrs-btn-border)" }}
           >
             Change photo
           </button>
@@ -333,20 +334,20 @@ export default function ProfileForm({
 
       {/* Full name */}
       <div>
-        <label className="block text-sm text-neutral-300 mb-1">Full name</label>
+        <label className="block text-sm mb-1" style={{ color: "var(--nrs-text-body)" }}>Full name</label>
         <input
           type="text"
           value={fullName}
           onChange={(e) => setFullName(e.target.value)}
-          className="w-full rounded-md bg-neutral-900 border border-white/10 px-3 py-2.5 text-sm outline-none focus:border-white/30"
+          className="nrs-input w-full"
         />
       </div>
 
       {/* Username */}
       <div>
-        <label className="block text-sm text-neutral-300 mb-1">Username</label>
+        <label className="block text-sm mb-1" style={{ color: "var(--nrs-text-body)" }}>Username</label>
         <div className="relative">
-          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500 text-sm">
+          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm" style={{ color: "var(--nrs-text-muted)" }}>
             @
           </span>
           <input
@@ -354,11 +355,11 @@ export default function ProfileForm({
             value={username}
             onChange={handleUsernameChange}
             placeholder="yourname"
-            className="w-full rounded-md bg-neutral-900 border border-white/10 pl-7 pr-10 py-2.5 text-sm outline-none focus:border-white/30"
+            className="nrs-input w-full pl-7 pr-10"
           />
           <UsernameIndicator />
         </div>
-        <p className="mt-1 text-xs text-neutral-500">
+        <p className="mt-1 text-xs" style={{ color: "var(--nrs-text-muted)" }}>
           3–30 chars · lowercase letters, numbers, underscores · used in your community profile URL
         </p>
         {usernameStatus === "taken" && (
@@ -367,11 +368,11 @@ export default function ProfileForm({
       </div>
 
       {/* Display name preference */}
-      <div className="rounded-lg border border-white/10 bg-white/5 p-4">
-        <label className="block text-sm text-neutral-300 mb-1 font-medium">
+      <div className="rounded-lg p-4" style={{ border: "1px solid var(--nrs-border-subtle)", background: "var(--nrs-card)" }}>
+        <label className="block text-sm mb-1 font-medium" style={{ color: "var(--nrs-text-body)" }}>
           Display name preference
         </label>
-        <p className="text-xs text-neutral-500 mb-3">
+        <p className="text-xs mb-3" style={{ color: "var(--nrs-text-muted)" }}>
           Choose what other members see when your name appears across the site.
         </p>
         <div className="space-y-2">
@@ -385,11 +386,11 @@ export default function ProfileForm({
               className="mt-0.5 accent-amber-400"
             />
             <div>
-              <div className="text-sm text-neutral-200 group-hover:text-white transition">
-                Show username <span className="text-neutral-500">(default)</span>
+              <div className="text-sm transition" style={{ color: "var(--nrs-text-body)" }}>
+                Show username <span style={{ color: "var(--nrs-text-muted)" }}>(default)</span>
               </div>
-              <div className="text-xs text-neutral-500">
-                Others see your @username — e.g. <span className="text-neutral-300">@{username || "yourname"}</span>
+              <div className="text-xs" style={{ color: "var(--nrs-text-muted)" }}>
+                Others see your @username — e.g. <span style={{ color: "var(--nrs-text-body)" }}>@{username || "yourname"}</span>
               </div>
             </div>
           </label>
@@ -403,12 +404,12 @@ export default function ProfileForm({
               className="mt-0.5 accent-amber-400"
             />
             <div>
-              <div className="text-sm text-neutral-200 group-hover:text-white transition">
+              <div className="text-sm transition" style={{ color: "var(--nrs-text-body)" }}>
                 Show real name
               </div>
-              <div className="text-xs text-neutral-500">
+              <div className="text-xs" style={{ color: "var(--nrs-text-muted)" }}>
                 Others see your full name — e.g.{" "}
-                <span className="text-neutral-300">{fullName || "Your Name"}</span>
+                <span style={{ color: "var(--nrs-text-body)" }}>{fullName || "Your Name"}</span>
               </div>
             </div>
           </label>
@@ -417,36 +418,37 @@ export default function ProfileForm({
 
       {/* Bio */}
       <div>
-        <label className="block text-sm text-neutral-300 mb-1">Bio</label>
+        <label className="block text-sm mb-1" style={{ color: "var(--nrs-text-body)" }}>Bio</label>
         <textarea
           value={bio}
           onChange={(e) => setBio(e.target.value)}
           rows={3}
           maxLength={160}
           placeholder="Tell the community about yourself…"
-          className="w-full rounded-md bg-neutral-900 border border-white/10 px-3 py-2.5 text-sm outline-none focus:border-white/30 resize-none"
+          className="nrs-textarea w-full"
         />
-        <p className="mt-0.5 text-xs text-neutral-500">{bio.length}/160</p>
+        <p className="mt-0.5 text-xs" style={{ color: "var(--nrs-text-muted)" }}>{bio.length}/160</p>
       </div>
 
       {/* Phone */}
       <div>
-        <label className="block text-sm text-neutral-300 mb-1">Phone</label>
+        <label className="block text-sm mb-1" style={{ color: "var(--nrs-text-body)" }}>Phone</label>
         <input
           type="tel"
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
           placeholder="+44 7700 000000"
-          className="w-full rounded-md bg-neutral-900 border border-white/10 px-3 py-2.5 text-sm outline-none focus:border-white/30"
+          className="nrs-input w-full"
         />
       </div>
 
       {/* Extended profile fields */}
-      <div className="border-t border-white/10 pt-5">
+      <div className="pt-5" style={{ borderTop: "1px solid var(--nrs-border-subtle)" }}>
         <button
           type="button"
           onClick={() => setShowExtended(!showExtended)}
-          className="flex items-center gap-2 text-sm text-neutral-400 hover:text-white transition mb-1"
+          className="flex items-center gap-2 text-sm transition mb-1"
+          style={{ color: "var(--nrs-text-muted)" }}
         >
           <svg
             className={`w-4 h-4 transition-transform ${showExtended ? "rotate-90" : ""}`}
@@ -458,10 +460,10 @@ export default function ProfileForm({
           </svg>
           Extended profile
         </button>
-        <p className="text-xs text-neutral-500 mb-4">
+        <p className="text-xs mb-4" style={{ color: "var(--nrs-text-muted)" }}>
           Optional fields. All extended profile details are private by default — control who can see
           them in{" "}
-          <a href="/account/privacy" className="text-amber-400 hover:underline">
+          <a href="/account/privacy" className="hover:underline" style={{ color: "var(--nrs-accent)" }}>
             Privacy &amp; Safety
           </a>
           .
@@ -471,14 +473,14 @@ export default function ProfileForm({
           <div className="space-y-4">
             {/* Gender */}
             <div>
-              <label className="block text-sm text-neutral-300 mb-1">Gender</label>
+              <label className="block text-sm mb-1" style={{ color: "var(--nrs-text-body)" }}>Gender</label>
               <div className="flex gap-2">
                 <select
                   value={GENDER_OPTIONS.includes(gender) ? gender : "Prefer to self-describe"}
                   onChange={(e) => {
                     if (e.target.value !== "Prefer to self-describe") setGender(e.target.value);
                   }}
-                  className="rounded-md bg-neutral-900 border border-white/10 px-3 py-2.5 text-sm outline-none focus:border-white/30 flex-1"
+                  className="nrs-select flex-1"
                 >
                   <option value="">— Select —</option>
                   {GENDER_OPTIONS.map((o) => (
@@ -491,7 +493,7 @@ export default function ProfileForm({
                     value={GENDER_OPTIONS.includes(gender) ? "" : gender}
                     onChange={(e) => setGender(e.target.value)}
                     placeholder="Describe your gender"
-                    className="flex-1 rounded-md bg-neutral-900 border border-white/10 px-3 py-2.5 text-sm outline-none focus:border-white/30"
+                    className="nrs-input flex-1"
                   />
                 )}
               </div>
@@ -499,14 +501,14 @@ export default function ProfileForm({
 
             {/* Pronouns */}
             <div>
-              <label className="block text-sm text-neutral-300 mb-1">Pronouns</label>
+              <label className="block text-sm mb-1" style={{ color: "var(--nrs-text-body)" }}>Pronouns</label>
               <div className="flex gap-2">
                 <select
                   value={PRONOUNS_OPTIONS.includes(pronouns) ? pronouns : "prefer to self-describe"}
                   onChange={(e) => {
                     if (e.target.value !== "prefer to self-describe") setPronouns(e.target.value);
                   }}
-                  className="rounded-md bg-neutral-900 border border-white/10 px-3 py-2.5 text-sm outline-none focus:border-white/30 flex-1"
+                  className="nrs-select flex-1"
                 >
                   <option value="">— Select —</option>
                   {PRONOUNS_OPTIONS.map((o) => (
@@ -519,7 +521,7 @@ export default function ProfileForm({
                     value={PRONOUNS_OPTIONS.includes(pronouns) ? "" : pronouns}
                     onChange={(e) => setPronouns(e.target.value)}
                     placeholder="Your pronouns"
-                    className="flex-1 rounded-md bg-neutral-900 border border-white/10 px-3 py-2.5 text-sm outline-none focus:border-white/30"
+                    className="nrs-input flex-1"
                   />
                 )}
               </div>
@@ -527,54 +529,54 @@ export default function ProfileForm({
 
             {/* Location */}
             <div>
-              <label className="block text-sm text-neutral-300 mb-1">Location</label>
+              <label className="block text-sm mb-1" style={{ color: "var(--nrs-text-body)" }}>Location</label>
               <input
                 type="text"
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
                 placeholder="City, Country"
                 maxLength={100}
-                className="w-full rounded-md bg-neutral-900 border border-white/10 px-3 py-2.5 text-sm outline-none focus:border-white/30"
+                className="nrs-input w-full"
               />
             </div>
 
             {/* Date of birth */}
             <div>
-              <label className="block text-sm text-neutral-300 mb-1">Date of birth</label>
+              <label className="block text-sm mb-1" style={{ color: "var(--nrs-text-body)" }}>Date of birth</label>
               <input
                 type="date"
                 value={dateOfBirth}
                 onChange={(e) => setDateOfBirth(e.target.value)}
                 max={new Date().toISOString().split("T")[0]}
-                className="w-full rounded-md bg-neutral-900 border border-white/10 px-3 py-2.5 text-sm outline-none focus:border-white/30"
+                className="nrs-input w-full"
               />
-              <p className="mt-1 text-xs text-neutral-500">
+              <p className="mt-1 text-xs" style={{ color: "var(--nrs-text-muted)" }}>
                 Used to calculate your age only. Your date of birth is never displayed publicly.
               </p>
             </div>
 
             {/* Nationality */}
             <div>
-              <label className="block text-sm text-neutral-300 mb-1">Nationality</label>
+              <label className="block text-sm mb-1" style={{ color: "var(--nrs-text-body)" }}>Nationality</label>
               <input
                 type="text"
                 value={nationality}
                 onChange={(e) => setNationality(e.target.value)}
                 placeholder="e.g. British"
                 maxLength={60}
-                className="w-full rounded-md bg-neutral-900 border border-white/10 px-3 py-2.5 text-sm outline-none focus:border-white/30"
+                className="nrs-input w-full"
               />
             </div>
 
             {/* Website */}
             <div>
-              <label className="block text-sm text-neutral-300 mb-1">Website</label>
+              <label className="block text-sm mb-1" style={{ color: "var(--nrs-text-body)" }}>Website</label>
               <input
                 type="url"
                 value={website}
                 onChange={(e) => setWebsite(e.target.value)}
                 placeholder="https://yoursite.com"
-                className="w-full rounded-md bg-neutral-900 border border-white/10 px-3 py-2.5 text-sm outline-none focus:border-white/30"
+                className="nrs-input w-full"
               />
             </div>
           </div>
@@ -587,7 +589,8 @@ export default function ProfileForm({
         <button
           type="submit"
           disabled={!canSave}
-          className="px-4 py-2 rounded-md bg-white/10 hover:bg-white/20 disabled:opacity-60 disabled:cursor-not-allowed text-sm transition"
+          className="px-4 py-2 rounded-md text-sm transition disabled:opacity-60 disabled:cursor-not-allowed"
+          style={{ background: "var(--nrs-btn-bg)", color: "var(--nrs-text-body)", border: "1px solid var(--nrs-btn-border)" }}
         >
           {saving ? "Saving…" : "Save changes"}
         </button>

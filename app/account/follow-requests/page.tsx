@@ -44,17 +44,17 @@ export default async function FollowRequestsPage() {
   return (
     <div>
       <h1 className="text-2xl font-semibold mb-1">Follow Requests</h1>
-      <p className="text-sm text-neutral-400 mb-6">
+      <p className="text-sm mb-6" style={{ color: "var(--nrs-text-muted)" }}>
         Members who have requested to follow you. Approve to grant access to your followers-only
         content.
       </p>
 
       {requests.length === 0 ? (
-        <div className="rounded-xl border border-white/10 bg-white/5 p-10 text-center">
-          <p className="text-neutral-400 text-sm">No pending follow requests.</p>
-          <p className="text-xs text-neutral-600 mt-2">
+        <div className="rounded-xl p-10 text-center" style={{ border: "1px solid var(--nrs-border-subtle)", background: "var(--nrs-card)" }}>
+          <p className="text-sm" style={{ color: "var(--nrs-text-muted)" }}>No pending follow requests.</p>
+          <p className="text-xs mt-2" style={{ color: "var(--nrs-text-muted)" }}>
             Switch to Followers-only mode in{" "}
-            <a href="/account/privacy" className="text-amber-400 hover:underline">
+            <a href="/account/privacy" className="hover:underline" style={{ color: "var(--nrs-accent)" }}>
               Privacy &amp; Safety
             </a>{" "}
             to use this feature.
@@ -67,7 +67,8 @@ export default async function FollowRequestsPage() {
             return (
               <div
                 key={req.id}
-                className="rounded-xl border border-white/10 bg-white/5 p-4 flex items-center justify-between gap-4"
+                className="rounded-xl p-4 flex items-center justify-between gap-4"
+                style={{ border: "1px solid var(--nrs-border-subtle)", background: "var(--nrs-card)" }}
               >
                 <div className="flex items-center gap-3 min-w-0">
                   {req.avatar_url ? (
@@ -77,17 +78,17 @@ export default async function FollowRequestsPage() {
                       className="w-10 h-10 rounded-full object-cover shrink-0"
                     />
                   ) : (
-                    <div className="w-10 h-10 rounded-full bg-amber-700 flex items-center justify-center text-sm font-semibold shrink-0">
+                    <div className="w-10 h-10 rounded-full bg-amber-700 flex items-center justify-center text-sm font-semibold text-white shrink-0">
                       {name.slice(0, 2).toUpperCase()}
                     </div>
                   )}
                   <div className="min-w-0">
-                    <div className="text-sm font-medium">{name}</div>
+                    <div className="text-sm font-medium" style={{ color: "var(--nrs-text)" }}>{name}</div>
                     {req.username && (
-                      <div className="text-xs text-neutral-500">@{req.username}</div>
+                      <div className="text-xs" style={{ color: "var(--nrs-text-muted)" }}>@{req.username}</div>
                     )}
                     {req.bio && (
-                      <div className="text-xs text-neutral-400 mt-0.5 truncate">{req.bio}</div>
+                      <div className="text-xs mt-0.5 truncate" style={{ color: "var(--nrs-text-muted)" }}>{req.bio}</div>
                     )}
                   </div>
                 </div>

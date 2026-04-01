@@ -59,11 +59,12 @@ export default function AccountNav({
           <Link
             key={link.href}
             href={link.href}
-            className={`px-3 py-2 rounded-md text-sm transition flex items-center justify-between ${
+            className="px-3 py-2 rounded-md text-sm transition flex items-center justify-between"
+            style={
               path === link.href
-                ? "bg-white/10 text-white"
-                : "text-neutral-400 hover:text-white hover:bg-white/5"
-            }`}
+                ? { background: "var(--nrs-accent-dim)", color: "var(--nrs-text)", borderLeft: "2px solid var(--nrs-accent)" }
+                : { color: "var(--nrs-text-muted)" }
+            }
           >
             {link.label}
             {link.href === "/account/notifications" && unreadCount > 0 && (
@@ -91,11 +92,12 @@ export default function AccountNav({
           <Link
             key={link.href}
             href={link.href}
-            className={`shrink-0 px-4 py-2 rounded-full text-sm transition flex items-center gap-1.5 ${
+            className="shrink-0 px-4 py-2 rounded-full text-sm transition flex items-center gap-1.5"
+            style={
               path === link.href
-                ? "bg-white/15 text-white"
-                : "text-neutral-400 hover:text-white bg-white/5"
-            }`}
+                ? { background: "var(--nrs-accent-dim)", color: "var(--nrs-text)", border: "1px solid var(--nrs-accent-border)" }
+                : { color: "var(--nrs-text-muted)", background: "var(--nrs-panel)" }
+            }
           >
             {link.label}
             {link.href === "/account/notifications" && unreadCount > 0 && (

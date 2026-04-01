@@ -192,16 +192,17 @@ export default function NotificationsClient({
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 mb-6 border-b border-white/10">
+      <div className="flex gap-1 mb-6" style={{ borderBottom: "1px solid var(--nrs-border-subtle)" }}>
         {(["unread", "all", "archived"] as const).map((t) => (
           <button
             key={t}
             onClick={() => setTab(t)}
-            className={`px-4 py-2 text-sm font-medium capitalize transition-colors border-b-2 -mb-px ${
+            className="px-4 py-2 text-sm font-medium capitalize transition-colors border-b-2 -mb-px"
+            style={
               tab === t
-                ? "border-amber-400 text-amber-300"
-                : "border-transparent text-neutral-400 hover:text-neutral-200"
-            }`}
+                ? { borderColor: "var(--nrs-accent)", color: "var(--nrs-accent)" }
+                : { borderColor: "transparent", color: "var(--nrs-text-muted)" }
+            }
           >
             {t}
             {t === "unread" && unreadCount > 0 && (
@@ -257,10 +258,10 @@ function EmptyState({ tab }: { tab: Tab }) {
   };
   const { emoji, title, body } = messages[tab];
   return (
-    <div className="rounded-xl border border-white/10 bg-white/5 p-12 text-center">
+    <div className="rounded-xl p-12 text-center" style={{ background: "var(--nrs-card)", border: "1px solid var(--nrs-border-subtle)" }}>
       <span className="text-4xl">{emoji}</span>
-      <p className="mt-3 font-medium text-neutral-200">{title}</p>
-      <p className="mt-1 text-sm text-neutral-500">{body}</p>
+      <p className="mt-3 font-medium" style={{ color: "var(--nrs-text)" }}>{title}</p>
+      <p className="mt-1 text-sm" style={{ color: "var(--nrs-text-muted)" }}>{body}</p>
     </div>
   );
 }
@@ -288,15 +289,14 @@ function NotifCard({
 
   const card = (
     <div
-      className={`rounded-xl border p-5 transition-opacity ${
-        isPending ? "opacity-75" : "opacity-100"
-      } ${
+      className={`rounded-xl border p-5 transition-opacity ${isPending ? "opacity-75" : "opacity-100"}`}
+      style={
         isAdminNotice
-          ? "border-rose-500/40 bg-rose-500/5"
+          ? { borderColor: "rgba(244,63,94,0.4)", background: "rgba(244,63,94,0.05)" }
           : isUnread
-          ? "border-amber-400/25 bg-amber-500/5"
-          : "border-white/10 bg-white/5"
-      }`}
+          ? { borderColor: "var(--nrs-accent-border)", background: "var(--nrs-accent-dim)" }
+          : { borderColor: "var(--nrs-border-subtle)", background: "var(--nrs-card)" }
+      }
     >
       {/* Top row: icon + badge + timestamp */}
       <div className="flex items-start gap-3">
@@ -322,21 +322,18 @@ function NotifCard({
             )}
           </div>
           <p
-            className={`text-sm leading-relaxed ${
-              isAdminNotice
-                ? "text-rose-100"
-                : isUnread
-                ? "text-neutral-100 font-medium"
-                : "text-neutral-300"
-            }`}
+            className={`text-sm leading-relaxed ${isUnread ? "font-medium" : ""}`}
+            style={{
+              color: isAdminNotice ? "var(--nrs-text)" : isUnread ? "var(--nrs-text)" : "var(--nrs-text-body)",
+            }}
           >
             {notif.message}
           </p>
-          <p className="text-xs text-neutral-500 mt-1.5">
+          <p className="text-xs mt-1.5" style={{ color: "var(--nrs-text-muted)" }}>
             {timeAgo(notif.created_at)}
           </p>
         </div>
-        <span className="text-xs text-neutral-600 shrink-0 mt-0.5">
+        <span className="text-xs shrink-0 mt-0.5" style={{ color: "var(--nrs-text-muted)" }}>
           {new Date(notif.created_at).toLocaleDateString("en-GB", {
             day: "numeric",
             month: "short",
@@ -350,7 +347,8 @@ function NotifCard({
           <Link
             href={notif.link}
             onClick={() => isUnread && !isAdminNotice && onDismiss(notif.id)}
-            className="text-xs text-amber-400 hover:text-amber-300 hover:underline font-medium transition-colors"
+            className="text-xs font-medium hover:underline transition-colors"
+            style={{ color: "var(--nrs-accent)" }}
           >
             View →
           </Link>
@@ -359,7 +357,8 @@ function NotifCard({
           <button
             onClick={() => onDismiss(notif.id)}
             disabled={isPending}
-            className="text-xs text-neutral-500 hover:text-neutral-300 transition-colors"
+            className="text-xs transition-colors"
+            style={{ color: "var(--nrs-text-muted)" }}
           >
             Dismiss
           </button>
@@ -368,7 +367,8 @@ function NotifCard({
           <button
             onClick={() => onArchive(notif.id)}
             disabled={isPending}
-            className="text-xs text-neutral-500 hover:text-neutral-300 transition-colors"
+            className="text-xs transition-colors"
+            style={{ color: "var(--nrs-text-muted)" }}
           >
             {archiveLabel}
           </button>
@@ -377,7 +377,8 @@ function NotifCard({
           <button
             onClick={() => onDelete(notif.id)}
             disabled={isPending}
-            className="text-xs text-neutral-500 hover:text-red-400 transition-colors ml-auto"
+            className="text-xs transition-colors ml-auto"
+            style={{ color: "var(--nrs-text-muted)" }}
           >
             Delete
           </button>

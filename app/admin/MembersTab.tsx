@@ -104,14 +104,15 @@ export default function MembersTab({
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
           placeholder="Search name, email, or ID…"
-          className="ml-auto rounded-md bg-white/5 border border-white/10 px-3 py-1.5 text-sm outline-none focus:border-white/30 w-56"
+          className="ml-auto rounded-md px-3 py-1.5 text-sm outline-none w-56 transition"
+          style={{ background: "var(--nrs-card)", border: "1px solid var(--nrs-border)", color: "var(--nrs-text-body)" }}
         />
       </div>
 
-      <div className="overflow-x-auto rounded-xl border border-white/10">
+      <div className="overflow-x-auto rounded-xl" style={{ border: "1px solid var(--nrs-border)" }}>
         <table className="w-full text-sm min-w-[820px]">
           <thead>
-            <tr className="border-b border-white/10 text-xs text-neutral-500 uppercase tracking-wide">
+            <tr className="text-xs uppercase tracking-wide" style={{ borderBottom: "1px solid var(--nrs-border)", color: "var(--nrs-text-muted)" }}>
               <th className="px-4 py-3 text-left">Member ID</th>
               <th className="px-4 py-3 text-left">Name / Username</th>
               <th className="px-4 py-3 text-left">Email</th>
@@ -143,7 +144,7 @@ export default function MembersTab({
                       value={m.role}
                       disabled={loadingId === m.id}
                       onChange={(e) => changeRole(m.id, e.target.value)}
-                      className="bg-neutral-800 border border-white/10 rounded px-2 py-1 text-xs outline-none"
+                      className="nrs-select text-xs px-2 py-1"
                     >
                       <option value="member">member</option>
                       <option value="admin">admin</option>
@@ -251,30 +252,32 @@ export default function MembersTab({
       {/* Warning modal */}
       {warnModal && (
         <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="w-full max-w-md bg-neutral-900 rounded-2xl border border-white/10 p-6 shadow-2xl">
+          <div className="w-full max-w-md rounded-2xl p-6 shadow-2xl" style={{ background: "var(--nrs-card)", border: "1px solid var(--nrs-border)" }}>
             <h3 className="font-semibold mb-1">Send Warning</h3>
-            <p className="text-sm text-neutral-400 mb-4">
-              To: <span className="text-white">{warnModal.name}</span>
+            <p className="text-sm mb-4" style={{ color: "var(--nrs-text-muted)" }}>
+              To: <span style={{ color: "var(--nrs-text)" }}>{warnModal.name}</span>
             </p>
             <textarea
               value={warnMsg}
               onChange={(e) => setWarnMsg(e.target.value)}
               rows={4}
               placeholder="Write the warning message…"
-              className="w-full rounded-md bg-neutral-800 border border-white/10 px-3 py-2 text-sm outline-none focus:border-white/30 resize-none"
+              className="nrs-textarea"
             />
             {warnError && <p className="text-rose-400 text-xs mt-2">{warnError}</p>}
             <div className="flex gap-3 mt-4">
               <button
                 onClick={sendWarning}
                 disabled={warnLoading || !warnMsg.trim()}
-                className="flex-1 py-2 rounded-lg bg-amber-500/20 text-amber-300 hover:bg-amber-500/30 disabled:opacity-50 text-sm transition"
+                className="flex-1 py-2 rounded-lg disabled:opacity-50 text-sm font-medium transition"
+                style={{ background: "var(--nrs-accent-dim)", color: "var(--nrs-accent)", border: "1px solid var(--nrs-accent-border)" }}
               >
                 {warnLoading ? "Sending…" : "Send Warning"}
               </button>
               <button
                 onClick={() => { setWarnModal(null); setWarnMsg(""); setWarnError(""); }}
-                className="px-4 py-2 rounded-lg bg-white/5 text-neutral-400 hover:text-white text-sm transition"
+                className="px-4 py-2 rounded-lg text-sm transition"
+                style={{ background: "var(--nrs-btn-bg)", color: "var(--nrs-text-muted)", border: "1px solid var(--nrs-border-subtle)" }}
               >
                 Cancel
               </button>

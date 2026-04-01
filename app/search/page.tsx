@@ -3,6 +3,7 @@ import Image from "next/image";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import NavWrapper from "@/components/NavWrapper";
+import BackToTop from "@/components/BackToTop";
 
 export const dynamic = "force-dynamic";
 
@@ -38,7 +39,7 @@ function Highlight({ text, query }: { text: string; query: string }) {
   return (
     <>
       {text.slice(0, idx)}
-      <mark className="bg-amber-400/20 text-amber-300 rounded px-0.5">
+      <mark className="rounded px-0.5" style={{ background: "var(--nrs-accent-dim)", color: "var(--nrs-accent)" }}>
         {text.slice(idx, idx + query.length)}
       </mark>
       {text.slice(idx + query.length)}
@@ -384,11 +385,12 @@ export default async function SearchPage({ searchParams }: PageProps) {
               <Link
                 key={tab.key}
                 href={`/search?q=${encodeURIComponent(query)}&type=${tab.key}`}
-                className={`shrink-0 px-4 py-2 rounded-lg text-sm transition ${
-                  type === tab.key
-                    ? "bg-amber-500/20 text-amber-300 border border-amber-500/30"
-                    : "bg-white/5 text-neutral-400 hover:text-white hover:bg-white/8"
-                }`}
+                className="shrink-0 px-4 py-2 rounded-lg text-sm transition border"
+            style={
+              type === tab.key
+                ? { background: "var(--nrs-accent-dim)", color: "var(--nrs-accent)", borderColor: "var(--nrs-accent-border)" }
+                : { background: "var(--nrs-card)", color: "var(--nrs-text-muted)", borderColor: "var(--nrs-border-subtle)" }
+            }
               >
                 {tab.label}
                 <span className="ml-1.5 text-xs opacity-60">({tab.count})</span>
@@ -504,6 +506,7 @@ export default async function SearchPage({ searchParams }: PageProps) {
           </div>
         )}
       </div>
+      <BackToTop />
     </main>
   );
 }

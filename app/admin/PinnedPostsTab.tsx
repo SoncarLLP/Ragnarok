@@ -71,7 +71,8 @@ function UnpinButton({ postId, onUnpinned }: { postId: string; onUnpinned: () =>
         </button>
         <button
           onClick={() => setState("idle")}
-          className="text-xs px-2 py-1 rounded bg-white/5 text-neutral-500 hover:text-white transition"
+          className="text-xs px-2 py-1 rounded transition"
+          style={{ background: "var(--nrs-panel)", color: "var(--nrs-text-muted)" }}
         >
           Cancel
         </button>
@@ -83,7 +84,8 @@ function UnpinButton({ postId, onUnpinned }: { postId: string; onUnpinned: () =>
     <button
       onClick={() => setState("confirm")}
       disabled={state === "loading"}
-      className="text-xs px-3 py-1 rounded bg-white/5 text-neutral-400 hover:text-amber-300 hover:bg-amber-500/10 border border-white/10 transition disabled:opacity-50"
+      className="text-xs px-3 py-1 rounded transition disabled:opacity-50"
+      style={{ background: "var(--nrs-panel)", color: "var(--nrs-text-muted)", border: "1px solid var(--nrs-border-subtle)" }}
     >
       {state === "loading" ? "Unpinning…" : "Unpin"}
     </button>
@@ -118,7 +120,7 @@ export default function PinnedPostsTab({
 
   if (localPosts.length === 0) {
     return (
-      <div className="text-center py-16 text-neutral-500">
+      <div className="text-center py-16" style={{ color: "var(--nrs-text-muted)" }}>
         <p className="text-4xl mb-3">📌</p>
         <p>No posts are currently pinned.</p>
       </div>
@@ -128,10 +130,10 @@ export default function PinnedPostsTab({
   return (
     <div className="space-y-3">
       <div className="flex items-center gap-3">
-        <p className="text-sm text-neutral-400">
+        <p className="text-sm" style={{ color: "var(--nrs-text-muted)" }}>
           {localPosts.length} pinned post{localPosts.length !== 1 ? "s" : ""}
           {currentUserRole === "admin" && (
-            <span className="ml-2 text-neutral-600">
+            <span className="ml-2" style={{ color: "var(--nrs-text-muted)", opacity: 0.6 }}>
               — contact a super admin to unpin posts
             </span>
           )}
@@ -140,7 +142,8 @@ export default function PinnedPostsTab({
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
           placeholder="Search pinned posts…"
-          className="ml-auto rounded-md bg-white/5 border border-white/10 px-3 py-1.5 text-sm outline-none focus:border-white/30 w-56"
+          className="ml-auto rounded-md px-3 py-1.5 text-sm outline-none w-56 transition"
+          style={{ background: "var(--nrs-card)", border: "1px solid var(--nrs-border)", color: "var(--nrs-text-body)" }}
         />
       </div>
 
@@ -153,11 +156,12 @@ export default function PinnedPostsTab({
         return (
           <div
             key={post.id}
-            className={`rounded-xl border p-4 flex items-start gap-4 ${
+            className={`rounded-xl p-4 flex items-start gap-4 ${expired ? "opacity-60" : ""}`}
+            style={
               expired
-                ? "border-white/5 bg-white/3 opacity-60"
-                : "border-amber-500/20 bg-slate-800/50"
-            }`}
+                ? { border: "1px solid var(--nrs-border-subtle)", background: "var(--nrs-panel)" }
+                : { border: "1px solid var(--nrs-accent-border)", background: "var(--nrs-accent-dim)" }
+            }
           >
             {/* Pin icon */}
             <span className="text-lg shrink-0 mt-0.5">{expired ? "⏰" : "📌"}</span>
@@ -165,25 +169,28 @@ export default function PinnedPostsTab({
             {/* Content */}
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 flex-wrap mb-1">
-                <span className="text-xs px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-400/25 font-medium">
+                <span
+                  className="text-xs px-2 py-0.5 rounded-full font-medium"
+                  style={{ background: "var(--nrs-accent-dim)", color: "var(--nrs-accent)", border: "1px solid var(--nrs-accent-border)" }}
+                >
                   Ragnarök Team
                 </span>
-                <span className="text-xs text-neutral-500 capitalize">{post.type}</span>
+                <span className="text-xs capitalize" style={{ color: "var(--nrs-text-muted)" }}>{post.type}</span>
                 {post.categories.length > 0 && (
-                  <span className="text-xs text-neutral-500">
+                  <span className="text-xs" style={{ color: "var(--nrs-text-muted)" }}>
                     {post.categories.slice(0, 2).join(", ")}
                   </span>
                 )}
               </div>
 
               {post.content && (
-                <p className="text-sm text-neutral-200 line-clamp-2 mb-2">{post.content}</p>
+                <p className="text-sm line-clamp-2 mb-2" style={{ color: "var(--nrs-text-body)" }}>{post.content}</p>
               )}
               {!post.content && (
-                <p className="text-sm text-neutral-500 italic mb-2">[photo post]</p>
+                <p className="text-sm italic mb-2" style={{ color: "var(--nrs-text-muted)" }}>[photo post]</p>
               )}
 
-              <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-neutral-500">
+              <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs" style={{ color: "var(--nrs-text-muted)" }}>
                 <span>
                   Posted:{" "}
                   {new Date(post.created_at).toLocaleDateString("en-GB", {
@@ -193,20 +200,22 @@ export default function PinnedPostsTab({
                   })}
                 </span>
                 <span>
-                  Pin expires: <span className={expired ? "text-rose-400" : "text-amber-300/80"}>{pinExpiryDate(post)}</span>
+                  Pin expires:{" "}
+                  <span style={{ color: expired ? "#f87171" : "var(--nrs-accent)" }}>{pinExpiryDate(post)}</span>
                 </span>
                 <span>
-                  Remaining: <span className={expired ? "text-rose-400" : "text-neutral-300"}>{pinTimeRemaining(post)}</span>
+                  Remaining:{" "}
+                  <span style={{ color: expired ? "#f87171" : "var(--nrs-text-body)" }}>{pinTimeRemaining(post)}</span>
                 </span>
               </div>
 
               {/* Creator info — super_admin only */}
               {currentUserRole === "super_admin" && post.creator_name && (
-                <div className="mt-2 text-xs text-neutral-500">
+                <div className="mt-2 text-xs" style={{ color: "var(--nrs-text-muted)" }}>
                   Created by:{" "}
-                  <span className="text-neutral-300">{post.creator_name}</span>
+                  <span style={{ color: "var(--nrs-text-body)" }}>{post.creator_name}</span>
                   {post.creator_username && (
-                    <span className="text-neutral-600"> @{post.creator_username}</span>
+                    <span style={{ color: "var(--nrs-text-muted)", opacity: 0.7 }}> @{post.creator_username}</span>
                   )}
                 </div>
               )}
@@ -217,7 +226,8 @@ export default function PinnedPostsTab({
               <Link
                 href={`/community/${post.id}`}
                 target="_blank"
-                className="text-xs px-3 py-1 rounded bg-white/5 text-neutral-400 hover:text-white border border-white/10 transition"
+                className="text-xs px-3 py-1 rounded transition"
+                style={{ background: "var(--nrs-panel)", color: "var(--nrs-text-muted)", border: "1px solid var(--nrs-border-subtle)" }}
               >
                 View →
               </Link>
@@ -232,7 +242,7 @@ export default function PinnedPostsTab({
         );
       })}
       {filteredPosts.length === 0 && (
-        <p className="text-center py-10 text-neutral-500 text-sm">No pinned posts match your search.</p>
+        <p className="text-center py-10 text-sm" style={{ color: "var(--nrs-text-muted)" }}>No pinned posts match your search.</p>
       )}
     </div>
   );

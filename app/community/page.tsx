@@ -6,6 +6,7 @@ import CategoryFilter from "./CategoryFilter";
 import PostCard from "./PostCard";
 import CreatePostButton from "./CreatePostButton";
 import NavWrapper from "@/components/NavWrapper";
+import BackToTop from "@/components/BackToTop";
 
 export default async function CommunityPage(props: unknown) {
   // Next.js 15: searchParams is a Promise
@@ -182,6 +183,7 @@ export default async function CommunityPage(props: unknown) {
           </div>
         )}
       </div>
+      <BackToTop />
     </main>
   );
 }

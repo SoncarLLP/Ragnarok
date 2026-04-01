@@ -192,14 +192,14 @@ export default function NotificationBell({
 
       {/* Dropdown */}
       {open && (
-        <div className="absolute right-0 top-full mt-2 w-80 bg-neutral-900 border border-white/10 rounded-xl shadow-2xl z-[200] overflow-hidden">
+        <div className="absolute right-0 top-full mt-2 w-80 rounded-xl shadow-2xl z-[200] overflow-hidden" style={{ background: "var(--nrs-card)", border: "1px solid var(--nrs-border)" }}>
           {/* Header */}
-          <div className="px-4 py-3 border-b border-white/10 flex items-center justify-between">
-            <span className="text-sm font-semibold text-neutral-100">
+          <div className="px-4 py-3 flex items-center justify-between" style={{ borderBottom: "1px solid var(--nrs-border-subtle)" }}>
+            <span className="text-sm font-semibold" style={{ color: "var(--nrs-text)" }}>
               Notifications
             </span>
             {unreadCount > 0 && (
-              <span className="text-xs text-neutral-400">
+              <span className="text-xs" style={{ color: "var(--nrs-text-muted)" }}>
                 {displayCount} unread
               </span>
             )}
@@ -227,11 +227,12 @@ export default function NotificationBell({
           </div>
 
           {/* Footer */}
-          <div className="px-4 py-3 border-t border-white/10">
+          <div className="px-4 py-3" style={{ borderTop: "1px solid var(--nrs-border-subtle)" }}>
             <Link
               href="/account/notifications"
               onClick={() => setOpen(false)}
-              className="text-xs text-amber-400 hover:text-amber-300 font-medium transition-colors"
+              className="text-xs font-medium transition-colors hover:underline"
+              style={{ color: "var(--nrs-accent)" }}
             >
               See All Notifications →
             </Link>
@@ -264,13 +265,12 @@ function NotifRow({
           </span>
         )}
         <p
-          className={`text-sm leading-snug truncate ${
-            isUnread ? "text-neutral-100 font-medium" : "text-neutral-400"
-          }`}
+          className={`text-sm leading-snug truncate ${isUnread ? "font-medium" : ""}`}
+          style={{ color: isUnread ? "var(--nrs-text)" : "var(--nrs-text-muted)" }}
         >
           {notif.message}
         </p>
-        <p className="text-xs text-neutral-600 mt-0.5">
+        <p className="text-xs mt-0.5" style={{ color: "var(--nrs-text-muted)" }}>
           {timeAgo(notif.created_at)}
         </p>
       </div>

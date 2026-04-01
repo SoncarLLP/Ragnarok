@@ -49,19 +49,20 @@ export default function PromotionHistoryTab() {
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
           placeholder="Search member…"
-          className="ml-auto rounded-md bg-white/5 border border-white/10 px-3 py-1.5 text-sm outline-none focus:border-white/30 w-56"
+          className="ml-auto rounded-md px-3 py-1.5 text-sm outline-none w-56 transition"
+          style={{ background: "var(--nrs-card)", border: "1px solid var(--nrs-border)", color: "var(--nrs-text-body)" }}
         />
       </div>
 
       {loading ? (
-        <div className="text-center py-10 text-neutral-500 text-sm">Loading…</div>
+        <div className="text-center py-10 text-sm" style={{ color: "var(--nrs-text-muted)" }}>Loading…</div>
       ) : filtered.length === 0 ? (
-        <div className="text-center py-10 text-neutral-500 text-sm">No promotions recorded yet.</div>
+        <div className="text-center py-10 text-sm" style={{ color: "var(--nrs-text-muted)" }}>No promotions recorded yet.</div>
       ) : (
-        <div className="overflow-x-auto rounded-xl border border-white/10">
+        <div className="overflow-x-auto rounded-xl" style={{ border: "1px solid var(--nrs-border)" }}>
           <table className="w-full text-sm min-w-[700px]">
             <thead>
-              <tr className="border-b border-white/10 text-xs text-neutral-500 uppercase tracking-wide">
+              <tr className="text-xs uppercase tracking-wide" style={{ borderBottom: "1px solid var(--nrs-border)", color: "var(--nrs-text-muted)" }}>
                 <th className="px-4 py-3 text-left">Member</th>
                 <th className="px-4 py-3 text-left">From Tier</th>
                 <th className="px-4 py-3 text-left">To Tier</th>
@@ -69,15 +70,15 @@ export default function PromotionHistoryTab() {
                 <th className="px-4 py-3 text-left">Date & Time</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/5">
+            <tbody className="divide-y" style={{ borderColor: "var(--nrs-border-subtle)" }}>
               {filtered.map((l) => (
-                <tr key={l.id} className="hover:bg-white/3 transition">
+                <tr key={l.id} className="transition" style={{ background: "transparent" }}>
                   <td className="px-4 py-3">
-                    <div className="font-medium text-sm">{l.member_name}</div>
+                    <div className="font-medium text-sm" style={{ color: "var(--nrs-text)" }}>{l.member_name}</div>
                     {l.member_username && (
-                      <div className="text-xs text-neutral-500">@{l.member_username}</div>
+                      <div className="text-xs" style={{ color: "var(--nrs-text-muted)" }}>@{l.member_username}</div>
                     )}
-                    <div className="text-xs text-neutral-600 font-mono">
+                    <div className="text-xs font-mono" style={{ color: "var(--nrs-text-muted)" }}>
                       {fmtMemberId(l.member_member_id)}
                     </div>
                   </td>
@@ -91,8 +92,8 @@ export default function PromotionHistoryTab() {
                       {l.new_tier}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-xs text-neutral-400">{l.promoter_name}</td>
-                  <td className="px-4 py-3 text-xs text-neutral-500">
+                  <td className="px-4 py-3 text-xs" style={{ color: "var(--nrs-text-muted)" }}>{l.promoter_name}</td>
+                  <td className="px-4 py-3 text-xs" style={{ color: "var(--nrs-text-muted)" }}>
                     {new Date(l.created_at).toLocaleString("en-GB", {
                       day: "2-digit", month: "short", year: "numeric",
                       hour: "2-digit", minute: "2-digit",

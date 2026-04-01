@@ -633,6 +633,65 @@
   box-shadow:   0 0 0 2px var(--nrs-accent-dim);
 }
 
+.nrs-input::placeholder {
+  color:   var(--nrs-text-muted);
+  opacity: 1;
+}
+
+/* ── Theme-aware select / dropdown ───────────────────────────────────────── */
+.nrs-select {
+  border-radius:  0.5rem;
+  border:         1px solid var(--nrs-border);
+  background:     var(--nrs-card);
+  padding:        0.5rem 0.75rem;
+  font-size:      0.875rem;
+  color:          var(--nrs-text-body);
+  cursor:         pointer;
+  transition:     border-color 0.2s, box-shadow 0.2s;
+  appearance:     none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  padding-right: 2.25rem;
+}
+
+.nrs-select:focus {
+  outline:      none;
+  border-color: var(--nrs-accent);
+  box-shadow:   0 0 0 2px var(--nrs-accent-dim);
+}
+
+/* Option elements inherit their own browser styling — ensure legibility */
+.nrs-select option {
+  background: var(--nrs-card);
+  color:      var(--nrs-text-body);
+}
+
+/* ── Theme-aware textarea ────────────────────────────────────────────────── */
+.nrs-textarea {
+  width:         100%;
+  border-radius: 0.5rem;
+  border:        1px solid var(--nrs-border);
+  background:    var(--nrs-accent-dim);
+  padding:       0.5rem 0.75rem;
+  font-size:     0.875rem;
+  color:         var(--nrs-text-body);
+  resize:        vertical;
+  transition:    border-color 0.2s, box-shadow 0.2s;
+}
+
+.nrs-textarea:focus {
+  outline:      none;
+  border-color: var(--nrs-accent);
+  box-shadow:   0 0 0 2px var(--nrs-accent-dim);
+}
+
+.nrs-textarea::placeholder {
+  color:   var(--nrs-text-muted);
+  opacity: 1;
+}
+
 
 /* ═══════════════════════════════════════════════════════════════════════════
    PROGRESS BAR

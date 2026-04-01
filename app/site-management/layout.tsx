@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import SiteManagementNav from "./SiteManagementNav";
 import DarkModeToggle from "@/components/DarkModeToggle";
+import BackToTop from "@/components/BackToTop";
 
 export const metadata = { title: "Site Management · Ragnarök" };
 
@@ -28,10 +29,10 @@ export default async function SiteManagementLayout({
       <main className="min-h-screen flex items-center justify-center px-4" style={{ background: "var(--nrs-bg)", color: "var(--nrs-text-body)" }}>
         <div className="text-center max-w-sm">
           <p className="text-lg font-semibold mb-2">Access Denied</p>
-          <p className="text-neutral-400 text-sm">
+          <p className="text-sm" style={{ color: "var(--nrs-text-muted)" }}>
             Site Management is only accessible to super admins.
           </p>
-          <Link href="/account" className="mt-5 inline-block text-sm text-neutral-400 hover:text-white">
+          <Link href="/account" className="mt-5 inline-block text-sm transition" style={{ color: "var(--nrs-text-muted)" }}>
             ← Back to account
           </Link>
         </div>
@@ -48,9 +49,9 @@ export default async function SiteManagementLayout({
             <Link href="/" className="font-semibold tracking-wide text-sm">
               Ragnarök
             </Link>
-            <span className="text-neutral-600">/</span>
-            <span className="text-sm font-medium text-amber-300">Site Management</span>
-            <span className="text-xs px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 ml-1">
+            <span style={{ color: "var(--nrs-border)" }}>/</span>
+            <span className="text-sm font-medium" style={{ color: "var(--nrs-accent)" }}>Site Management</span>
+            <span className="text-xs px-2 py-0.5 rounded-full ml-1" style={{ background: "var(--nrs-accent-dim)", color: "var(--nrs-accent)" }}>
               👑 super_admin
             </span>
           </div>
@@ -92,6 +93,7 @@ export default async function SiteManagementLayout({
           <main className="flex-1 min-w-0">{children}</main>
         </div>
       </div>
+      <BackToTop />
     </div>
   );
 }

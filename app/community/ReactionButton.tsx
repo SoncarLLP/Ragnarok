@@ -185,7 +185,8 @@ export default function ReactionButton({
           onMouseLeave={startClose}
           role="dialog"
           aria-label="Choose a reaction"
-          className="flex items-end gap-0.5 bg-neutral-800 border border-white/15 rounded-2xl shadow-2xl px-1.5 py-1.5"
+          className="flex items-end gap-0.5 rounded-2xl shadow-2xl px-1.5 py-1.5"
+          style={{ background: "var(--nrs-card)", border: "1px solid var(--nrs-border)" }}
         >
           {EMOJIS.map((e) => (
             <button
@@ -201,8 +202,8 @@ export default function ReactionButton({
               {e}
               {hoveredEmoji === e && (
                 <span
-                  className="absolute -top-7 left-1/2 -translate-x-1/2 text-[10px] bg-neutral-900 border border-white/10 rounded px-1.5 py-0.5 whitespace-nowrap pointer-events-none"
-                  style={{ zIndex: 10000 }}
+                  className="absolute -top-7 left-1/2 -translate-x-1/2 text-[10px] rounded px-1.5 py-0.5 whitespace-nowrap pointer-events-none"
+                  style={{ zIndex: 10000, background: "var(--nrs-panel)", border: "1px solid var(--nrs-border-subtle)", color: "var(--nrs-text-body)" }}
                 >
                   {EMOJI_LABELS[e]}
                 </span>
@@ -214,7 +215,7 @@ export default function ReactionButton({
 
       {/* ── Sign-in prompt (for guests who click an emoji) ── */}
       {showLoginPrompt && (
-        <div className="absolute bottom-full left-0 mb-2 w-52 p-2.5 rounded-lg bg-neutral-800 border border-white/10 text-xs text-center shadow-xl z-50">
+        <div className="absolute bottom-full left-0 mb-2 w-52 p-2.5 rounded-lg text-xs text-center shadow-xl z-50" style={{ background: "var(--nrs-card)", border: "1px solid var(--nrs-border)", color: "var(--nrs-text-body)" }}>
           <Link href="/auth/login" className="text-amber-400 hover:underline">
             Sign in
           </Link>{" "}

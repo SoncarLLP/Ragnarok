@@ -84,19 +84,19 @@ export default function BlockAuthTab({
   return (
     <div className="space-y-8">
       {/* Grant new authorisation */}
-      <div className="rounded-xl border border-white/10 bg-white/5 p-5">
+      <div className="rounded-xl p-5" style={{ border: "1px solid var(--nrs-border-subtle)", background: "var(--nrs-card)" }}>
         <h3 className="text-sm font-semibold mb-4">Grant new block authorisation</h3>
-        <p className="text-xs text-neutral-400 mb-4">
+        <p className="text-xs mb-4" style={{ color: "var(--nrs-text-muted)" }}>
           Allow a specific member to block a specific admin. This should only be granted in
           exceptional circumstances where it has been deemed reasonable.
         </p>
         <div className="space-y-3">
           <div>
-            <label className="block text-xs text-neutral-400 mb-1">Member</label>
+            <label className="block text-xs mb-1" style={{ color: "var(--nrs-text-muted)" }}>Member</label>
             <select
               value={formMemberId}
               onChange={(e) => setFormMemberId(e.target.value)}
-              className="w-full rounded-md bg-neutral-900 border border-white/10 px-3 py-2 text-sm outline-none focus:border-white/30"
+              className="nrs-select w-full"
             >
               <option value="">— Select member —</option>
               {members.filter(m => m.role === "member").map((m) => (
@@ -105,11 +105,11 @@ export default function BlockAuthTab({
             </select>
           </div>
           <div>
-            <label className="block text-xs text-neutral-400 mb-1">Admin to be blocked</label>
+            <label className="block text-xs mb-1" style={{ color: "var(--nrs-text-muted)" }}>Admin to be blocked</label>
             <select
               value={formAdminId}
               onChange={(e) => setFormAdminId(e.target.value)}
-              className="w-full rounded-md bg-neutral-900 border border-white/10 px-3 py-2 text-sm outline-none focus:border-white/30"
+              className="nrs-select w-full"
             >
               <option value="">— Select admin —</option>
               {admins.map((a) => (
@@ -118,20 +118,21 @@ export default function BlockAuthTab({
             </select>
           </div>
           <div>
-            <label className="block text-xs text-neutral-400 mb-1">Reason (optional)</label>
+            <label className="block text-xs mb-1" style={{ color: "var(--nrs-text-muted)" }}>Reason (optional)</label>
             <input
               type="text"
               value={formReason}
               onChange={(e) => setFormReason(e.target.value)}
               placeholder="Brief justification for this authorisation"
-              className="w-full rounded-md bg-neutral-900 border border-white/10 px-3 py-2 text-sm outline-none focus:border-white/30"
+              className="nrs-input w-full"
             />
           </div>
           {error && <p className="text-rose-400 text-xs">{error}</p>}
           <button
             onClick={handleGrant}
             disabled={saving}
-            className="px-4 py-2 rounded-lg bg-amber-500/20 text-amber-300 hover:bg-amber-500/30 text-sm transition disabled:opacity-50"
+            className="px-4 py-2 rounded-lg text-sm transition disabled:opacity-50"
+            style={{ background: "var(--nrs-accent-dim)", color: "var(--nrs-accent)", border: "1px solid var(--nrs-accent-border)" }}
           >
             {saving ? "Granting…" : "Grant Authorisation"}
           </button>
@@ -142,33 +143,34 @@ export default function BlockAuthTab({
       <div>
         <h3 className="text-sm font-semibold mb-3">Active authorisations ({active.length})</h3>
         {active.length === 0 ? (
-          <p className="text-sm text-neutral-500">No active block authorisations.</p>
+          <p className="text-sm" style={{ color: "var(--nrs-text-muted)" }}>No active block authorisations.</p>
         ) : (
           <div className="space-y-2">
             {active.map((a) => (
               <div
                 key={a.id}
-                className="rounded-lg border border-white/10 bg-white/5 px-4 py-3 flex items-start justify-between gap-4"
+                className="rounded-lg px-4 py-3 flex items-start justify-between gap-4"
+                style={{ border: "1px solid var(--nrs-border-subtle)", background: "var(--nrs-card)" }}
               >
                 <div className="text-sm space-y-0.5 min-w-0">
                   <div>
-                    <span className="text-neutral-400">Member: </span>
-                    <span className="font-medium">{a.member_name}</span>
-                    {a.member_username && <span className="text-neutral-500 text-xs"> @{a.member_username}</span>}
+                    <span style={{ color: "var(--nrs-text-muted)" }}>Member: </span>
+                    <span className="font-medium" style={{ color: "var(--nrs-text)" }}>{a.member_name}</span>
+                    {a.member_username && <span className="text-xs" style={{ color: "var(--nrs-text-muted)" }}> @{a.member_username}</span>}
                   </div>
                   <div>
-                    <span className="text-neutral-400">Can block: </span>
-                    <span className="font-medium">{a.blocked_admin_name}</span>
-                    {a.blocked_admin_username && <span className="text-neutral-500 text-xs"> @{a.blocked_admin_username}</span>}
+                    <span style={{ color: "var(--nrs-text-muted)" }}>Can block: </span>
+                    <span className="font-medium" style={{ color: "var(--nrs-text)" }}>{a.blocked_admin_name}</span>
+                    {a.blocked_admin_username && <span className="text-xs" style={{ color: "var(--nrs-text-muted)" }}> @{a.blocked_admin_username}</span>}
                   </div>
                   <div>
-                    <span className="text-neutral-400">Approved by: </span>
-                    <span>{a.super_admin_name}</span>
+                    <span style={{ color: "var(--nrs-text-muted)" }}>Approved by: </span>
+                    <span style={{ color: "var(--nrs-text-body)" }}>{a.super_admin_name}</span>
                   </div>
                   {a.reason && (
-                    <div className="text-xs text-neutral-500 italic">{a.reason}</div>
+                    <div className="text-xs italic" style={{ color: "var(--nrs-text-muted)" }}>{a.reason}</div>
                   )}
-                  <div className="text-xs text-neutral-600">
+                  <div className="text-xs" style={{ color: "var(--nrs-text-muted)", opacity: 0.7 }}>
                     {new Date(a.created_at).toLocaleDateString("en-GB", {
                       day: "numeric", month: "long", year: "numeric",
                     })}
@@ -190,16 +192,17 @@ export default function BlockAuthTab({
       {/* Revoked authorisations */}
       {revoked.length > 0 && (
         <div>
-          <h3 className="text-sm font-semibold text-neutral-500 mb-3">Revoked ({revoked.length})</h3>
+          <h3 className="text-sm font-semibold mb-3" style={{ color: "var(--nrs-text-muted)" }}>Revoked ({revoked.length})</h3>
           <div className="space-y-2">
             {revoked.map((a) => (
               <div
                 key={a.id}
-                className="rounded-lg border border-white/5 bg-white/2 px-4 py-3 opacity-60 text-sm"
+                className="rounded-lg px-4 py-3 opacity-60 text-sm"
+                style={{ border: "1px solid var(--nrs-border-subtle)", background: "var(--nrs-panel)" }}
               >
-                <span className="text-neutral-400">{a.member_name}</span>
+                <span style={{ color: "var(--nrs-text-muted)" }}>{a.member_name}</span>
                 {" → "}
-                <span className="text-neutral-400">{a.blocked_admin_name}</span>
+                <span style={{ color: "var(--nrs-text-muted)" }}>{a.blocked_admin_name}</span>
                 <span className="ml-2 text-xs text-rose-500">Revoked</span>
               </div>
             ))}

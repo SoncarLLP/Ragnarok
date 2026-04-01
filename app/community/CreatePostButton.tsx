@@ -233,8 +233,8 @@ export default function CreatePostButton({
       {mounted && open && createPortal(
         <div className="fixed inset-0 z-[9999] overflow-y-auto bg-black/70 backdrop-blur-sm">
           <div className="flex min-h-full items-start justify-center p-4 pt-8 pb-16">
-          <div className="w-full max-w-lg bg-neutral-900 rounded-2xl border border-white/10 shadow-2xl overflow-hidden flex flex-col">
-            <div className="flex items-center justify-between px-5 py-4 border-b border-white/10 shrink-0">
+          <div className="w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden flex flex-col" style={{ background: "var(--nrs-card)", border: "1px solid var(--nrs-border)" }}>
+            <div className="flex items-center justify-between px-5 py-4 shrink-0" style={{ borderBottom: "1px solid var(--nrs-border-subtle)" }}>
               <h2 className="font-semibold">Create Post</h2>
               <button
                 onClick={() => { setOpen(false); reset(); }}
@@ -248,8 +248,8 @@ export default function CreatePostButton({
 
               {/* Post as — admin/super_admin only */}
               {isAdminOrAbove && (
-                <div className="rounded-lg border border-white/10 bg-white/5 p-3 space-y-2">
-                  <p className="text-xs font-medium text-neutral-400 uppercase tracking-wide">
+                <div className="rounded-lg p-3 space-y-2" style={{ border: "1px solid var(--nrs-border-subtle)", background: "var(--nrs-panel)" }}>
+                  <p className="text-xs font-medium uppercase tracking-wide" style={{ color: "var(--nrs-text-muted)" }}>
                     Post as
                   </p>
                   <div className="flex gap-2">
@@ -280,14 +280,14 @@ export default function CreatePostButton({
 
                   {/* Pin options — shown when posting as Ragnarök Team */}
                   {postingAs === "team" && (
-                    <div className="pt-2 border-t border-white/10">
-                      <label className="block text-xs text-neutral-400 mb-1.5">
+                    <div className="pt-2" style={{ borderTop: "1px solid var(--nrs-border-subtle)" }}>
+                      <label className="block text-xs mb-1.5" style={{ color: "var(--nrs-text-muted)" }}>
                         Pin this post
                       </label>
                       <select
                         value={pinOption}
                         onChange={(e) => setPinOption(e.target.value as PinValue)}
-                        className="w-full rounded-md bg-neutral-800 border border-white/10 px-3 py-2 text-sm text-neutral-200 outline-none focus:border-white/30"
+                        className="nrs-select w-full"
                       >
                         {availablePinOptions.map((o) => (
                           <option key={o.value} value={o.value}>
@@ -320,7 +320,7 @@ export default function CreatePostButton({
 
               {/* Content — MentionTextarea enables @mention picker */}
               <div>
-                <label className="block text-sm text-neutral-300 mb-1">
+                <label className="block text-sm mb-1" style={{ color: "var(--nrs-text-body)" }}>
                   {type === "recipe" ? "Recipe title / intro" : "What's on your mind?"}
                 </label>
                 <MentionTextarea
@@ -328,9 +328,9 @@ export default function CreatePostButton({
                   onChange={setContent}
                   required={type !== "photo"}
                   rows={type === "recipe" ? 3 : 4}
-                  className="w-full rounded-md bg-neutral-800 border border-white/10 px-3 py-2 text-sm outline-none focus:border-white/30 resize-none"
+                  className="nrs-textarea w-full"
                 />
-                <p className="mt-1 text-xs text-neutral-600">
+                <p className="mt-1 text-xs" style={{ color: "var(--nrs-text-muted)" }}>
                   Type @ to mention a member
                 </p>
               </div>
@@ -338,7 +338,7 @@ export default function CreatePostButton({
               {/* Photo upload */}
               {type === "photo" && (
                 <div>
-                  <label className="block text-sm text-neutral-300 mb-1">Photo</label>
+                  <label className="block text-sm mb-1" style={{ color: "var(--nrs-text-body)" }}>Photo</label>
                   <input
                     ref={fileRef}
                     type="file"
@@ -378,23 +378,23 @@ export default function CreatePostButton({
               {type === "recipe" && (
                 <>
                   <div>
-                    <label className="block text-sm text-neutral-300 mb-1">Ingredients</label>
+                    <label className="block text-sm mb-1" style={{ color: "var(--nrs-text-body)" }}>Ingredients</label>
                     <textarea
                       value={ingredients}
                       onChange={(e) => setIngredients(e.target.value)}
                       rows={4}
                       placeholder="List your ingredients, one per line…"
-                      className="w-full rounded-md bg-neutral-800 border border-white/10 px-3 py-2 text-sm outline-none focus:border-white/30 resize-none"
+                      className="nrs-textarea w-full"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm text-neutral-300 mb-1">Method</label>
+                    <label className="block text-sm mb-1" style={{ color: "var(--nrs-text-body)" }}>Method</label>
                     <textarea
                       value={method}
                       onChange={(e) => setMethod(e.target.value)}
                       rows={4}
                       placeholder="Describe the steps…"
-                      className="w-full rounded-md bg-neutral-800 border border-white/10 px-3 py-2 text-sm outline-none focus:border-white/30 resize-none"
+                      className="nrs-textarea w-full"
                     />
                   </div>
                 </>
@@ -402,8 +402,8 @@ export default function CreatePostButton({
 
               {/* Categories */}
               <div>
-                <label className="block text-sm text-neutral-300 mb-2">
-                  Categories <span className="text-neutral-500">(optional)</span>
+                <label className="block text-sm mb-2" style={{ color: "var(--nrs-text-body)" }}>
+                  Categories <span style={{ color: "var(--nrs-text-muted)" }}>(optional)</span>
                 </label>
                 <div className="flex flex-wrap gap-2 mb-2">
                   {PRESET_CATEGORIES.map((cat) => (
@@ -443,7 +443,7 @@ export default function CreatePostButton({
                     onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addCustomTag(); } }}
                     placeholder="Add a custom tag…"
                     maxLength={40}
-                    className="flex-1 rounded-md bg-neutral-800 border border-white/10 px-3 py-1.5 text-xs outline-none focus:border-white/30"
+                    className="nrs-input flex-1 text-xs"
                   />
                   <button
                     type="button"

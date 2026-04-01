@@ -21,9 +21,9 @@ function SearchBar({
   onClose: () => void;
 }) {
   return (
-    <div className="shrink-0 border-b border-white/10 bg-neutral-900 px-4 py-2">
+    <div className="shrink-0 px-4 py-2" style={{ borderBottom: "1px solid var(--nrs-border-subtle)", background: "var(--nrs-card)" }}>
       <div className="flex items-center gap-2">
-        <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 text-neutral-500 shrink-0">
+        <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4 shrink-0" style={{ color: "var(--nrs-text-muted)" }}>
           <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
         </svg>
         <input
@@ -31,9 +31,10 @@ function SearchBar({
           value={query}
           onChange={(e) => onChange(e.target.value)}
           placeholder="Search messages…"
-          className="flex-1 bg-transparent text-sm text-neutral-100 placeholder-neutral-600 focus:outline-none"
+          className="flex-1 bg-transparent text-sm focus:outline-none"
+          style={{ color: "var(--nrs-text-body)" }}
         />
-        <button onClick={onClose} className="text-neutral-500 hover:text-white transition">
+        <button onClick={onClose} className="transition" style={{ color: "var(--nrs-text-muted)" }}>
           <svg viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
             <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
           </svg>
@@ -45,16 +46,17 @@ function SearchBar({
             <button
               key={r.id}
               onClick={() => onJump(r.id)}
-              className="w-full text-left px-2 py-1.5 rounded hover:bg-white/10 transition"
+              className="w-full text-left px-2 py-1.5 rounded transition"
+              style={{ background: "transparent" }}
             >
-              <p className="text-xs font-semibold text-neutral-400">{r.sender_name}</p>
-              <p className="text-xs text-neutral-300 truncate">{r.content}</p>
+              <p className="text-xs font-semibold" style={{ color: "var(--nrs-text-muted)" }}>{r.sender_name}</p>
+              <p className="text-xs truncate" style={{ color: "var(--nrs-text-body)" }}>{r.content}</p>
             </button>
           ))}
         </div>
       )}
       {query.length >= 2 && results.length === 0 && (
-        <p className="text-xs text-neutral-600 mt-1">No results found</p>
+        <p className="text-xs mt-1" style={{ color: "var(--nrs-text-muted)" }}>No results found</p>
       )}
     </div>
   );
@@ -69,10 +71,10 @@ function ReportModal({
 }) {
   const [reason, setReason] = useState("");
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-neutral-950/80 backdrop-blur-sm px-4">
-      <div className="bg-neutral-900 border border-white/10 rounded-2xl p-6 w-full max-w-md">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm px-4">
+      <div className="rounded-2xl p-6 w-full max-w-md shadow-2xl" style={{ background: "var(--nrs-card)", border: "1px solid var(--nrs-border)" }}>
         <h3 className="text-base font-semibold mb-1">Report Conversation</h3>
-        <p className="text-sm text-neutral-400 mb-4">
+        <p className="text-sm mb-4" style={{ color: "var(--nrs-text-muted)" }}>
           Describe why you are reporting this conversation. Super admins will review it.
         </p>
         <textarea
@@ -80,12 +82,13 @@ function ReportModal({
           onChange={(e) => setReason(e.target.value)}
           placeholder="Describe the issue…"
           rows={4}
-          className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-neutral-100 placeholder-neutral-600 focus:outline-none focus:border-white/25 resize-none"
+          className="nrs-textarea w-full"
         />
         <div className="flex gap-2 mt-4 justify-end">
           <button
             onClick={onClose}
-            className="px-4 py-2 text-sm rounded-lg bg-white/5 hover:bg-white/10 transition"
+            className="px-4 py-2 text-sm rounded-lg transition"
+            style={{ background: "var(--nrs-btn-bg)", color: "var(--nrs-text-muted)", border: "1px solid var(--nrs-border-subtle)" }}
           >
             Cancel
           </button>
@@ -319,7 +322,7 @@ export default function ConversationView({
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
       {/* Conversation header */}
-      <div className="shrink-0 border-b border-white/10 bg-neutral-950/90 backdrop-blur px-4 py-3 flex items-center gap-3">
+      <div className="shrink-0 backdrop-blur px-4 py-3 flex items-center gap-3" style={{ borderBottom: "1px solid var(--nrs-border-subtle)", background: "var(--nrs-panel)" }}>
         {/* Back button (mobile) */}
         <button
           onClick={onBack}
@@ -336,7 +339,7 @@ export default function ConversationView({
             {title.charAt(0).toUpperCase()}
           </div>
         ) : (
-          <div className="w-9 h-9 rounded-full bg-neutral-700 flex items-center justify-center text-sm font-semibold text-neutral-300 shrink-0 overflow-hidden">
+          <div className="w-9 h-9 rounded-full flex items-center justify-center text-sm font-semibold shrink-0 overflow-hidden" style={{ background: "var(--nrs-panel)", color: "var(--nrs-text-body)" }}>
             {otherParticipant?.avatar_url ? (
               <img src={otherParticipant.avatar_url} alt={title} className="w-full h-full object-cover" />
             ) : (
@@ -346,8 +349,8 @@ export default function ConversationView({
         )}
 
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-semibold text-white truncate">{title}</p>
-          <p className="text-xs text-neutral-500 truncate">
+          <p className="text-sm font-semibold truncate" style={{ color: "var(--nrs-text)" }}>{title}</p>
+          <p className="text-xs truncate" style={{ color: "var(--nrs-text-muted)" }}>
             {conversation.type === "group"
               ? `${conversation.participants.length} participants`
               : otherParticipant?.role === "super_admin"
@@ -444,7 +447,8 @@ export default function ConversationView({
             <button
               onClick={loadOlderMessages}
               disabled={loadingMore}
-              className="text-xs text-neutral-400 hover:text-white px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 transition disabled:opacity-50"
+              className="text-xs px-3 py-1.5 rounded-lg transition disabled:opacity-50"
+          style={{ background: "var(--nrs-panel)", color: "var(--nrs-text-muted)", border: "1px solid var(--nrs-border-subtle)" }}
             >
               {loadingMore ? "Loading…" : "Load older messages"}
             </button>

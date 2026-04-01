@@ -113,24 +113,30 @@ export default function CommentSection({
             onChange={setContent}
             placeholder="Write a comment… use @ to mention a member"
             rows={3}
-            className="w-full rounded-lg bg-white/5 border border-white/10 px-3 py-2.5 text-sm outline-none focus:border-white/30 resize-none"
+            className="w-full rounded-lg px-3 py-2.5 text-sm outline-none resize-none transition"
+            style={{
+              background: "var(--nrs-accent-dim)",
+              border: "1px solid var(--nrs-border)",
+              color: "var(--nrs-text-body)",
+            }}
           />
           {error && <p className="text-rose-400 text-xs mt-1">{error}</p>}
           <button
             type="submit"
             disabled={submitting || !content.trim()}
-            className="mt-2 px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 disabled:opacity-50 text-sm transition"
+            className="mt-2 px-4 py-2 rounded-lg disabled:opacity-50 text-sm font-medium transition"
+            style={{ background: "var(--nrs-btn-bg)", border: "1px solid var(--nrs-btn-border)", color: "var(--nrs-text-body)" }}
           >
             {submitting ? "Posting…" : "Post comment"}
           </button>
         </form>
       ) : (
-        <div className="mb-6 p-4 rounded-lg bg-white/5 border border-white/10 text-sm text-center text-neutral-400">
-          <Link href="/auth/login" className="text-amber-400 hover:underline">
+        <div className="mb-6 p-4 rounded-lg text-sm text-center" style={{ background: "var(--nrs-card)", border: "1px solid var(--nrs-border-subtle)", color: "var(--nrs-text-muted)" }}>
+          <Link href="/auth/login" className="font-medium hover:underline" style={{ color: "var(--nrs-accent)" }}>
             Sign in
           </Link>{" "}
           or{" "}
-          <Link href="/auth/signup" className="text-amber-400 hover:underline">
+          <Link href="/auth/signup" className="font-medium hover:underline" style={{ color: "var(--nrs-accent)" }}>
             create an account
           </Link>{" "}
           to leave a comment
@@ -162,18 +168,19 @@ export default function CommentSection({
                     </div>
                   )}
                 </Link>
-                <div className="flex-1 bg-white/5 rounded-lg px-3 py-2.5">
+                <div className="flex-1 rounded-lg px-3 py-2.5" style={{ background: "var(--nrs-card)", border: "1px solid var(--nrs-border-subtle)" }}>
                   <div className="flex items-center gap-2 mb-1 flex-wrap">
                     <Link
                       href={href}
                       className="text-sm font-medium hover:underline flex items-center gap-1 flex-wrap"
+                      style={{ color: "var(--nrs-text-body)" }}
                     >
                       {name}
                       <MemberBadge role={c.profiles?.role} tier={c.profiles?.tier} />
                     </Link>
-                    <span className="text-xs text-neutral-500">{timeAgo(c.created_at)}</span>
+                    <span className="text-xs" style={{ color: "var(--nrs-text-muted)" }}>{timeAgo(c.created_at)}</span>
                   </div>
-                  <p className="text-sm text-neutral-300 whitespace-pre-wrap">
+                  <p className="text-sm whitespace-pre-wrap" style={{ color: "var(--nrs-text-body)" }}>
                     <MentionText text={c.content} />
                   </p>
                   <div className="mt-2 flex items-center gap-3">

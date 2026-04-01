@@ -9,22 +9,6 @@ type Props = {
   onPromotion: (userId: string, newTier: string) => void;
 };
 
-const TIER_STYLES: Record<string, { bg: string; text: string; border: string }> = {
-  "Bronze 1":   { bg: "bg-amber-900/20",   text: "text-amber-700",   border: "border-amber-700/40" },
-  "Bronze 2":   { bg: "bg-amber-900/20",   text: "text-amber-700",   border: "border-amber-700/40" },
-  "Bronze 3":   { bg: "bg-amber-900/20",   text: "text-amber-700",   border: "border-amber-700/40" },
-  "Silver 1":   { bg: "bg-neutral-700/20", text: "text-neutral-300", border: "border-neutral-400/40" },
-  "Silver 2":   { bg: "bg-neutral-700/20", text: "text-neutral-300", border: "border-neutral-400/40" },
-  "Silver 3":   { bg: "bg-neutral-700/20", text: "text-neutral-300", border: "border-neutral-400/40" },
-  "Gold 1":     { bg: "bg-amber-500/15",   text: "text-amber-400",   border: "border-amber-400/40" },
-  "Gold 2":     { bg: "bg-amber-500/15",   text: "text-amber-400",   border: "border-amber-400/40" },
-  "Gold 3":     { bg: "bg-amber-500/15",   text: "text-amber-400",   border: "border-amber-400/40" },
-  "Platinum 1": { bg: "bg-cyan-900/20",    text: "text-cyan-300",    border: "border-cyan-400/40" },
-  "Platinum 2": { bg: "bg-cyan-900/20",    text: "text-cyan-300",    border: "border-cyan-400/40" },
-  "Platinum 3": { bg: "bg-cyan-900/20",    text: "text-cyan-300",    border: "border-cyan-400/40" },
-  "Diamond":    { bg: "bg-violet-900/20",  text: "text-violet-400",  border: "border-violet-400/40" },
-};
-
 export default function TierPromoteModal({ member, onClose, onPromotion }: Props) {
   const [selected, setSelected] = useState(member.currentTier);
   const [loading, setLoading] = useState(false);
@@ -52,29 +36,29 @@ export default function TierPromoteModal({ member, onClose, onPromotion }: Props
 
   return (
     <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="w-full max-w-md bg-neutral-900 rounded-2xl border border-white/10 p-6 shadow-2xl">
+      <div className="w-full max-w-md rounded-2xl p-6 shadow-2xl" style={{ background: "var(--nrs-card)", border: "1px solid var(--nrs-border)" }}>
         <h3 className="font-semibold text-lg mb-1">Set Loyalty Tier</h3>
-        <p className="text-sm text-neutral-400 mb-5">
-          Member: <span className="text-white">{member.name}</span>
-          <span className="ml-2 text-xs text-neutral-500">
+        <p className="text-sm mb-5" style={{ color: "var(--nrs-text-muted)" }}>
+          Member: <span style={{ color: "var(--nrs-text)" }}>{member.name}</span>
+          <span className="ml-2 text-xs" style={{ color: "var(--nrs-text-muted)" }}>
             (current: {member.currentTier})
           </span>
         </p>
 
         <div className="grid grid-cols-2 gap-2 max-h-72 overflow-y-auto pr-1">
           {ALL_TIERS.map((t) => {
-            const style = TIER_STYLES[t.tier] ?? TIER_STYLES["Bronze 1"];
             const isSelected = selected === t.tier;
             const isCurrent = member.currentTier === t.tier;
             return (
               <button
                 key={t.tier}
                 onClick={() => setSelected(t.tier)}
-                className={`flex items-center justify-between px-3 py-2.5 rounded-lg border text-sm transition
-                  ${isSelected
-                    ? `${style.bg} ${style.text} ${style.border} ring-1 ring-current`
-                    : "bg-white/3 border-white/10 text-neutral-400 hover:bg-white/8 hover:text-white"
-                  }`}
+                className="flex items-center justify-between px-3 py-2.5 rounded-lg text-sm transition"
+                style={
+                  isSelected
+                    ? { background: "var(--nrs-accent-dim)", color: "var(--nrs-accent)", border: "1px solid var(--nrs-accent-border)", outline: "1px solid var(--nrs-accent)" }
+                    : { background: "var(--nrs-panel)", color: "var(--nrs-text-muted)", border: "1px solid var(--nrs-border-subtle)" }
+                }
               >
                 <span className="font-medium">{t.tier}</span>
                 <span className="text-xs opacity-60">
@@ -86,7 +70,7 @@ export default function TierPromoteModal({ member, onClose, onPromotion }: Props
         </div>
 
         {selected !== member.currentTier && (
-          <p className="mt-4 text-xs text-amber-300/80 bg-amber-500/10 border border-amber-500/20 rounded-lg px-3 py-2">
+          <p className="mt-4 text-xs rounded-lg px-3 py-2" style={{ color: "var(--nrs-accent)", background: "var(--nrs-accent-dim)", border: "1px solid var(--nrs-accent-border)" }}>
             This will set their tier to <strong>{selected}</strong> and update their
             cumulative points to the minimum for this tier.
             A notification will be sent to the member.
@@ -99,13 +83,15 @@ export default function TierPromoteModal({ member, onClose, onPromotion }: Props
           <button
             onClick={confirm}
             disabled={loading}
-            className="flex-1 py-2 rounded-lg bg-amber-500/20 text-amber-300 hover:bg-amber-500/30 disabled:opacity-50 text-sm font-medium transition"
+            className="flex-1 py-2 rounded-lg disabled:opacity-50 text-sm font-medium transition"
+            style={{ background: "var(--nrs-accent-dim)", color: "var(--nrs-accent)", border: "1px solid var(--nrs-accent-border)" }}
           >
             {loading ? "Updating…" : selected === member.currentTier ? "No change" : `Set to ${selected}`}
           </button>
           <button
             onClick={onClose}
-            className="px-4 py-2 rounded-lg bg-white/5 text-neutral-400 hover:text-white text-sm transition"
+            className="px-4 py-2 rounded-lg text-sm transition"
+            style={{ background: "var(--nrs-btn-bg)", color: "var(--nrs-text-muted)", border: "1px solid var(--nrs-border-subtle)" }}
           >
             Cancel
           </button>

@@ -76,9 +76,9 @@ export default function RichTextEditor({
   );
 
   return (
-    <div className="rounded-xl border border-white/15 overflow-hidden focus-within:border-white/30 transition">
+    <div className="rounded-xl overflow-hidden transition" style={{ border: "1px solid var(--nrs-border)" }}>
       {/* Toolbar */}
-      <div className="flex flex-wrap items-center gap-0.5 px-2 py-1.5 border-b border-white/10 bg-white/[0.03]">
+      <div className="flex flex-wrap items-center gap-0.5 px-2 py-1.5" style={{ borderBottom: "1px solid var(--nrs-border-subtle)", background: "var(--nrs-panel)" }}>
         <ToolBtn onClick={() => exec("bold")} title="Bold (Ctrl+B)">
           <strong>B</strong>
         </ToolBtn>
@@ -88,7 +88,7 @@ export default function RichTextEditor({
         <ToolBtn onClick={() => exec("underline")} title="Underline (Ctrl+U)">
           <u>U</u>
         </ToolBtn>
-        <div className="w-px h-4 bg-white/15 mx-1" />
+        <div className="w-px h-4 mx-1" style={{ background: "var(--nrs-border)" }} />
         <ToolBtn onClick={() => exec("formatBlock", "h2")} title="Heading 2">
           H2
         </ToolBtn>
@@ -98,14 +98,14 @@ export default function RichTextEditor({
         <ToolBtn onClick={() => exec("formatBlock", "p")} title="Paragraph">
           ¶
         </ToolBtn>
-        <div className="w-px h-4 bg-white/15 mx-1" />
+        <div className="w-px h-4 mx-1" style={{ background: "var(--nrs-border)" }} />
         <ToolBtn onClick={() => exec("insertUnorderedList")} title="Bullet list">
           • List
         </ToolBtn>
         <ToolBtn onClick={() => exec("insertOrderedList")} title="Numbered list">
           1. List
         </ToolBtn>
-        <div className="w-px h-4 bg-white/15 mx-1" />
+        <div className="w-px h-4 mx-1" style={{ background: "var(--nrs-border)" }} />
         <ToolBtn
           onClick={() => {
             const url = window.prompt("Link URL:");
@@ -118,7 +118,7 @@ export default function RichTextEditor({
         <ToolBtn onClick={() => exec("removeFormat")} title="Clear formatting">
           Tx
         </ToolBtn>
-        <div className="w-px h-4 bg-white/15 mx-1" />
+        <div className="w-px h-4 mx-1" style={{ background: "var(--nrs-border)" }} />
         <ToolBtn onClick={() => exec("undo")} title="Undo">
           ↩
         </ToolBtn>
@@ -142,7 +142,7 @@ export default function RichTextEditor({
         data-placeholder={placeholder}
         style={{ minHeight }}
         className={`
-          px-4 py-3 text-sm text-neutral-100 bg-transparent outline-none
+          px-4 py-3 text-sm bg-transparent outline-none
           prose prose-invert prose-sm max-w-none
           [&_h2]:text-base [&_h2]:font-semibold [&_h2]:mb-2 [&_h2]:mt-4
           [&_h3]:text-sm [&_h3]:font-semibold [&_h3]:mb-1.5 [&_h3]:mt-3

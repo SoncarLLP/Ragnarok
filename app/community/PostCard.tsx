@@ -153,7 +153,8 @@ export default function PostCard({
             {post.categories.map((cat) => (
               <span
                 key={cat}
-                className="text-xs px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-300"
+                className="text-xs px-2 py-0.5 rounded-full"
+              style={{ background: "var(--nrs-accent-dim)", color: "var(--nrs-accent)" }}
               >
                 {cat}
               </span>
@@ -173,9 +174,9 @@ export default function PostCard({
             />
           )}
           {post.content && (
-            <div className={`px-4 ${post.type === "photo" ? "pt-3" : ""} text-sm text-neutral-100 leading-relaxed`}>
+            <div className={`px-4 ${post.type === "photo" ? "pt-3" : ""} text-sm leading-relaxed`} style={{ color: "var(--nrs-text-body)" }}>
               {post.type === "recipe" && (
-                <div className="text-xs text-amber-400 font-medium uppercase tracking-wide mb-1">
+                <div className="text-xs font-medium uppercase tracking-wide mb-1" style={{ color: "var(--nrs-accent)" }}>
                   Recipe
                 </div>
               )}
@@ -183,8 +184,8 @@ export default function PostCard({
                 <MentionText text={post.content ?? ""} linkable={false} />
               </p>
               {post.type === "recipe" && post.ingredients && (
-                <p className="mt-2 text-xs text-neutral-400 line-clamp-2">
-                  <span className="text-neutral-300 font-medium">Ingredients: </span>
+                <p className="mt-2 text-xs line-clamp-2" style={{ color: "var(--nrs-text-muted)" }}>
+                  <span className="font-medium" style={{ color: "var(--nrs-text-body)" }}>Ingredients: </span>
                   {post.ingredients}
                 </p>
               )}
@@ -262,7 +263,8 @@ export default function PostCard({
           {post.categories.map((cat) => (
             <span
               key={cat}
-              className="text-xs px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-300"
+              className="text-xs px-2 py-0.5 rounded-full"
+              style={{ background: "var(--nrs-accent-dim)", color: "var(--nrs-accent)" }}
             >
               {cat}
             </span>
@@ -282,16 +284,16 @@ export default function PostCard({
           />
         )}
         {post.content && (
-          <div className={`px-4 ${post.type === "photo" ? "pt-3" : ""} text-sm text-neutral-200 leading-relaxed`}>
+          <div className={`px-4 ${post.type === "photo" ? "pt-3" : ""} text-sm leading-relaxed`} style={{ color: "var(--nrs-text-body)" }}>
             {post.type === "recipe" && (
-              <div className="text-xs text-amber-400 font-medium uppercase tracking-wide mb-1">
+              <div className="text-xs font-medium uppercase tracking-wide mb-1" style={{ color: "var(--nrs-accent)" }}>
                 Recipe
               </div>
             )}
             <p className="line-clamp-5"><MentionText text={post.content ?? ""} linkable={false} /></p>
             {post.type === "recipe" && post.ingredients && (
-              <p className="mt-2 text-xs text-neutral-400 line-clamp-2">
-                <span className="text-neutral-300 font-medium">Ingredients: </span>
+              <p className="mt-2 text-xs line-clamp-2" style={{ color: "var(--nrs-text-muted)" }}>
+                <span className="font-medium" style={{ color: "var(--nrs-text-body)" }}>Ingredients: </span>
                 {post.ingredients}
               </p>
             )}
@@ -300,7 +302,7 @@ export default function PostCard({
       </Link>
 
       {/* Footer */}
-      <div className="px-4 py-3 mt-3 border-t border-white/5 flex items-center gap-4">
+      <div className="px-4 py-3 mt-3 flex items-center gap-4" style={{ borderTop: "1px solid var(--nrs-border-subtle)" }}>
         <ReactionButton
           postId={post.id}
           initialCount={post.reaction_count}

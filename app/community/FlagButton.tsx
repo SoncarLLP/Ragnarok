@@ -44,7 +44,8 @@ export default function FlagButton({
           value={reason}
           onChange={(e) => setReason(e.target.value)}
           disabled={state === "loading"}
-          className="text-xs rounded bg-neutral-800 border border-white/10 text-neutral-300 px-1 py-0.5"
+          className="text-xs rounded px-1 py-0.5"
+          style={{ background: "var(--nrs-card)", border: "1px solid var(--nrs-border-subtle)", color: "var(--nrs-text-body)" }}
         >
           {REASONS.map((r) => (
             <option key={r.value} value={r.value}>

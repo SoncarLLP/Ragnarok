@@ -50,8 +50,8 @@ export default async function AccountPage() {
         </h1>
         {memberId && (
           <div className="text-right shrink-0">
-            <div className="text-xs text-neutral-500 uppercase tracking-wide">Member ID</div>
-            <div className="font-mono text-sm text-neutral-300">{memberId}</div>
+            <div className="text-xs uppercase tracking-wide" style={{ color: "var(--nrs-text-muted)" }}>Member ID</div>
+            <div className="font-mono text-sm" style={{ color: "var(--nrs-text-body)" }}>{memberId}</div>
           </div>
         )}
       </div>
@@ -59,21 +59,21 @@ export default async function AccountPage() {
       {/* Stats */}
       <div className="grid sm:grid-cols-2 gap-4">
         {/* Points */}
-        <div className="rounded-xl border border-white/10 bg-white/5 p-5">
-          <div className="text-sm text-neutral-400">Loyalty Points</div>
+        <div className="rounded-xl p-5" style={{ border: "1px solid var(--nrs-border-subtle)", background: "var(--nrs-card)" }}>
+          <div className="text-sm" style={{ color: "var(--nrs-text-muted)" }}>Loyalty Points</div>
           <div className="mt-1 text-3xl font-semibold">
             <PointsDisplay points={points} role={profile?.role} tier={tierName} />
           </div>
           {nextTier ? (
             <div className="mt-3">
-              <div className="flex justify-between text-xs text-neutral-500 mb-1.5">
+              <div className="flex justify-between text-xs mb-1.5" style={{ color: "var(--nrs-text-muted)" }}>
                 <span>{tierName}</span>
                 <span>{nextTier.needed.toLocaleString()} pts to {formatTierName(nextTier.tier)}</span>
               </div>
-              <div className="w-full bg-white/10 rounded-full h-1.5">
+              <div className="w-full rounded-full h-1.5" style={{ background: "var(--nrs-panel)" }}>
                 <div
-                  className="bg-amber-400 h-1.5 rounded-full transition-all"
-                  style={{ width: `${progress}%` }}
+                  className="h-1.5 rounded-full transition-all"
+                  style={{ width: `${progress}%`, background: "var(--nrs-accent)" }}
                 />
               </div>
             </div>
@@ -83,15 +83,16 @@ export default async function AccountPage() {
         </div>
 
         {/* Tier */}
-        <div className="rounded-xl border border-white/10 bg-white/5 p-5">
-          <div className="text-sm text-neutral-400">Current Tier</div>
+        <div className="rounded-xl p-5" style={{ border: "1px solid var(--nrs-border-subtle)", background: "var(--nrs-card)" }}>
+          <div className="text-sm" style={{ color: "var(--nrs-text-muted)" }}>Current Tier</div>
           <div className={`mt-1 text-3xl font-semibold ${tierColor}`}>{tierName}</div>
           <div className="mt-2">
             <TierBadge tier={tierName} />
           </div>
           <Link
             href="/account/rewards"
-            className="mt-3 inline-block text-xs text-neutral-500 hover:text-white"
+            className="mt-3 inline-block text-xs transition-colors hover:underline"
+            style={{ color: "var(--nrs-text-muted)" }}
           >
             View rewards →
           </Link>
@@ -102,15 +103,15 @@ export default async function AccountPage() {
       <div className="mt-8">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-semibold">Recent Orders</h2>
-          <Link href="/account/orders" className="text-sm text-neutral-400 hover:text-white">
+          <Link href="/account/orders" className="text-sm transition-colors hover:underline" style={{ color: "var(--nrs-text-muted)" }}>
             View all
           </Link>
         </div>
 
         {!recentOrders || recentOrders.length === 0 ? (
-          <div className="rounded-xl border border-white/10 bg-white/5 p-8 text-center">
-            <p className="text-neutral-400 text-sm">No orders yet.</p>
-            <Link href="/#shop" className="mt-3 inline-block text-sm text-white hover:underline">
+          <div className="rounded-xl p-8 text-center" style={{ border: "1px solid var(--nrs-border-subtle)", background: "var(--nrs-card)" }}>
+            <p className="text-sm" style={{ color: "var(--nrs-text-muted)" }}>No orders yet.</p>
+            <Link href="/#shop" className="mt-3 inline-block text-sm hover:underline" style={{ color: "var(--nrs-accent)" }}>
               Browse products →
             </Link>
           </div>
@@ -119,13 +120,14 @@ export default async function AccountPage() {
             {recentOrders.map((order) => (
               <div
                 key={order.id}
-                className="rounded-lg border border-white/10 bg-white/5 px-4 py-3 flex items-center justify-between"
+                className="rounded-lg px-4 py-3 flex items-center justify-between"
+                style={{ border: "1px solid var(--nrs-border-subtle)", background: "var(--nrs-card)" }}
               >
                 <div>
-                  <div className="text-sm font-medium">
+                  <div className="text-sm font-medium" style={{ color: "var(--nrs-text)" }}>
                     #{order.id.slice(0, 8).toUpperCase()}
                   </div>
-                  <div className="text-xs text-neutral-400 mt-0.5">
+                  <div className="text-xs mt-0.5" style={{ color: "var(--nrs-text-muted)" }}>
                     {new Date(order.created_at).toLocaleDateString("en-GB", {
                       day: "numeric",
                       month: "short",
@@ -134,17 +136,19 @@ export default async function AccountPage() {
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className="text-sm font-medium">
+                  <div className="text-sm font-medium" style={{ color: "var(--nrs-text)" }}>
                     £{(order.total_pence / 100).toFixed(2)}
                   </div>
                   <div
-                    className={`text-xs capitalize mt-0.5 ${
-                      order.status === "delivered"
-                        ? "text-emerald-400"
-                        : order.status === "shipped"
-                        ? "text-blue-400"
-                        : "text-neutral-400"
-                    }`}
+                    className="text-xs capitalize mt-0.5"
+                    style={{
+                      color:
+                        order.status === "delivered"
+                          ? "#34d399"
+                          : order.status === "shipped"
+                          ? "#60a5fa"
+                          : "var(--nrs-text-muted)",
+                    }}
                   >
                     {order.status}
                   </div>
@@ -159,19 +163,21 @@ export default async function AccountPage() {
       <div className="mt-8 grid sm:grid-cols-2 gap-4">
         <Link
           href="/account/profile"
-          className="rounded-xl border border-white/10 bg-white/5 p-5 hover:border-white/20 transition"
+          className="rounded-xl p-5 transition"
+          style={{ border: "1px solid var(--nrs-border-subtle)", background: "var(--nrs-card)" }}
         >
-          <div className="font-medium">Profile</div>
-          <div className="mt-1 text-sm text-neutral-400">
+          <div className="font-medium" style={{ color: "var(--nrs-text)" }}>Profile</div>
+          <div className="mt-1 text-sm" style={{ color: "var(--nrs-text-muted)" }}>
             Update your name and contact details
           </div>
         </Link>
         <Link
           href="/account/rewards"
-          className="rounded-xl border border-white/10 bg-white/5 p-5 hover:border-white/20 transition"
+          className="rounded-xl p-5 transition"
+          style={{ border: "1px solid var(--nrs-border-subtle)", background: "var(--nrs-card)" }}
         >
-          <div className="font-medium">Rewards</div>
-          <div className="mt-1 text-sm text-neutral-400">
+          <div className="font-medium" style={{ color: "var(--nrs-text)" }}>Rewards</div>
+          <div className="mt-1 text-sm" style={{ color: "var(--nrs-text-muted)" }}>
             View your points history and tier benefits
           </div>
         </Link>

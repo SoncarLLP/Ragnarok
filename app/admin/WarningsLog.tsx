@@ -13,7 +13,7 @@ export default function WarningsLog({ warnings }: { warnings: WarningRecord[] })
     return (
       <section>
         <h2 className="text-lg font-semibold mb-4">Warning History</h2>
-        <p className="text-neutral-500 text-sm">No warnings have been sent yet.</p>
+        <p className="text-sm" style={{ color: "var(--nrs-text-muted)" }}>No warnings have been sent yet.</p>
       </section>
     );
   }
@@ -26,7 +26,8 @@ export default function WarningsLog({ warnings }: { warnings: WarningRecord[] })
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
           placeholder="Search name or message…"
-          className="ml-auto rounded-md bg-white/5 border border-white/10 px-3 py-1.5 text-sm outline-none focus:border-white/30 w-56"
+          className="ml-auto rounded-md px-3 py-1.5 text-sm outline-none w-56 transition"
+          style={{ background: "var(--nrs-card)", border: "1px solid var(--nrs-border)", color: "var(--nrs-text-body)" }}
         />
       </div>
 
@@ -46,28 +47,30 @@ export default function WarningsLog({ warnings }: { warnings: WarningRecord[] })
         {filtered.map((w) => (
           <div
             key={w.id}
-            className="rounded-lg border border-white/10 bg-white/5 px-4 py-3"
+            className="rounded-lg px-4 py-3"
+            style={{ border: "1px solid var(--nrs-border-subtle)", background: "var(--nrs-card)" }}
           >
             <div className="flex items-start justify-between gap-4">
               <div className="min-w-0">
                 <div className="flex items-center gap-2 mb-1 flex-wrap">
-                  <span className="font-mono text-xs text-neutral-500">
+                  <span className="font-mono text-xs" style={{ color: "var(--nrs-text-muted)" }}>
                     {fmtMemberId(w.recipient_member_id)}
                   </span>
-                  <span className="text-sm font-medium">{w.recipient_name}</span>
+                  <span className="text-sm font-medium" style={{ color: "var(--nrs-text)" }}>{w.recipient_name}</span>
                   <span
-                    className={`text-xs px-1.5 py-0.5 rounded-full ${
+                    className="text-xs px-1.5 py-0.5 rounded-full"
+                    style={
                       w.read_at
-                        ? "bg-white/5 text-neutral-500"
-                        : "bg-amber-500/20 text-amber-300"
-                    }`}
+                        ? { background: "var(--nrs-panel)", color: "var(--nrs-text-muted)" }
+                        : { background: "var(--nrs-accent-dim)", color: "var(--nrs-accent)" }
+                    }
                   >
                     {w.read_at ? "Read" : "Unread"}
                   </span>
                 </div>
-                <p className="text-sm text-neutral-300">{w.message}</p>
+                <p className="text-sm" style={{ color: "var(--nrs-text-body)" }}>{w.message}</p>
               </div>
-              <div className="text-right text-xs text-neutral-500 shrink-0">
+              <div className="text-right text-xs shrink-0" style={{ color: "var(--nrs-text-muted)" }}>
                 <div>{new Date(w.created_at).toLocaleDateString("en-GB")}</div>
                 <div className="mt-0.5">by {w.sender_name}</div>
               </div>
@@ -75,7 +78,7 @@ export default function WarningsLog({ warnings }: { warnings: WarningRecord[] })
           </div>
         ))}
         {filtered.length === 0 && (
-          <div className="text-center py-10 text-neutral-500 text-sm">No warnings match your search.</div>
+          <div className="text-center py-10 text-sm" style={{ color: "var(--nrs-text-muted)" }}>No warnings match your search.</div>
         )}
       </div>
         );

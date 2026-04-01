@@ -52,20 +52,20 @@ export default async function RewardsPage() {
   return (
     <div>
       <h1 className="text-2xl font-semibold">Rewards</h1>
-      <p className="mt-1 text-sm text-neutral-400">Your loyalty tier and points history</p>
+      <p className="mt-1 text-sm" style={{ color: "var(--nrs-text-muted)" }}>Your loyalty tier and points history</p>
 
       {/* Tier + points card */}
-      <div className="mt-6 rounded-xl border border-white/10 bg-white/5 p-6">
+      <div className="mt-6 rounded-xl p-6" style={{ border: "1px solid var(--nrs-border-subtle)", background: "var(--nrs-card)" }}>
         <div className="flex items-start justify-between gap-6">
           <div>
-            <div className="text-xs text-neutral-500 uppercase tracking-wide mb-1">Tier</div>
+            <div className="text-xs uppercase tracking-wide mb-1" style={{ color: "var(--nrs-text-muted)" }}>Tier</div>
             <div className={`text-3xl font-semibold ${tierColor}`}>{tierName}</div>
             <div className="mt-2">
               <TierBadge tier={tierName} />
             </div>
           </div>
           <div className="text-right">
-            <div className="text-xs text-neutral-500 uppercase tracking-wide mb-1">Points</div>
+            <div className="text-xs uppercase tracking-wide mb-1" style={{ color: "var(--nrs-text-muted)" }}>Points</div>
             <div className="text-3xl font-semibold">
               <PointsDisplay points={points} role={profile?.role} tier={tierName} />
             </div>
@@ -78,14 +78,14 @@ export default async function RewardsPage() {
           </div>
         ) : nextTier ? (
           <div className="mt-5">
-            <div className="flex justify-between text-xs text-neutral-400 mb-2">
+            <div className="flex justify-between text-xs mb-2" style={{ color: "var(--nrs-text-muted)" }}>
               <span>{tierName}</span>
               <span>{nextTier.needed.toLocaleString()} pts to {formatTierName(nextTier.tier)}</span>
             </div>
-            <div className="w-full bg-white/10 rounded-full h-2">
+            <div className="w-full rounded-full h-2" style={{ background: "var(--nrs-panel)" }}>
               <div
-                className="bg-amber-400 h-2 rounded-full transition-all"
-                style={{ width: `${progress}%` }}
+                className="h-2 rounded-full transition-all"
+                style={{ width: `${progress}%`, background: "var(--nrs-accent)" }}
               />
             </div>
           </div>
@@ -100,18 +100,17 @@ export default async function RewardsPage() {
           return (
             <div
               key={t.tier}
-              className={`rounded-lg border p-3 text-center transition ${
+              className={`rounded-lg p-3 text-center transition ${!isUnlocked ? "opacity-35" : ""}`}
+              style={
                 isActive
                   ? t.tier === "Diamond"
-                    ? "border-violet-400/40 bg-violet-500/10"
-                    : "border-amber-400/40 bg-amber-500/10"
-                  : isUnlocked
-                  ? "border-white/15 bg-white/5"
-                  : "border-white/5 bg-white/5 opacity-35"
-              }`}
+                    ? { border: "1px solid rgba(167,139,250,0.4)", background: "rgba(139,92,246,0.10)" }
+                    : { border: "1px solid var(--nrs-accent-border)", background: "var(--nrs-accent-dim)" }
+                  : { border: "1px solid var(--nrs-border-subtle)", background: "var(--nrs-card)" }
+              }
             >
               <div className={`font-semibold text-xs ${t.color}`}>{t.tier}</div>
-              <div className="text-xs text-neutral-500 mt-0.5">
+              <div className="text-xs mt-0.5" style={{ color: "var(--nrs-text-muted)" }}>
                 {t.min === 0 ? "0" : t.min.toLocaleString()}+ pts
               </div>
             </div>
@@ -120,24 +119,24 @@ export default async function RewardsPage() {
       </div>
 
       {/* How to earn */}
-      <div className="mt-6 rounded-xl border border-white/10 bg-white/5 p-5">
+      <div className="mt-6 rounded-xl p-5" style={{ border: "1px solid var(--nrs-border-subtle)", background: "var(--nrs-card)" }}>
         <h2 className="font-semibold mb-3">How to earn points</h2>
-        <ul className="space-y-2 text-sm text-neutral-300">
+        <ul className="space-y-2 text-sm" style={{ color: "var(--nrs-text-body)" }}>
           <li className="flex justify-between">
             <span>Welcome bonus (on sign-up)</span>
-            <span className="text-amber-400 font-medium">50 pts</span>
+            <span className="font-medium" style={{ color: "var(--nrs-accent)" }}>50 pts</span>
           </li>
           <li className="flex justify-between">
             <span>Every purchase</span>
-            <span className="text-amber-400 font-medium">5 pts / £1</span>
+            <span className="font-medium" style={{ color: "var(--nrs-accent)" }}>5 pts / £1</span>
           </li>
           <li className="flex justify-between">
             <span>Post receives 250 reactions (per milestone)</span>
-            <span className="text-amber-400 font-medium">2 pts</span>
+            <span className="font-medium" style={{ color: "var(--nrs-accent)" }}>2 pts</span>
           </li>
           <li className="flex justify-between">
             <span>Comment receives 100 reactions (per milestone)</span>
-            <span className="text-amber-400 font-medium">1 pt</span>
+            <span className="font-medium" style={{ color: "var(--nrs-accent)" }}>1 pt</span>
           </li>
         </ul>
       </div>
@@ -150,13 +149,14 @@ export default async function RewardsPage() {
             {(events as LoyaltyEvent[]).map((e) => (
               <div
                 key={e.id}
-                className="flex items-center justify-between rounded-lg border border-white/10 bg-white/5 px-4 py-3"
+                className="flex items-center justify-between rounded-lg px-4 py-3"
+                style={{ border: "1px solid var(--nrs-border-subtle)", background: "var(--nrs-card)" }}
               >
                 <div>
-                  <div className="text-sm">
+                  <div className="text-sm" style={{ color: "var(--nrs-text-body)" }}>
                     {REASON_LABELS[e.reason] ?? e.reason.replace(/_/g, " ")}
                   </div>
-                  <div className="text-xs text-neutral-400 mt-0.5">
+                  <div className="text-xs mt-0.5" style={{ color: "var(--nrs-text-muted)" }}>
                     {new Date(e.created_at).toLocaleDateString("en-GB", {
                       day: "numeric",
                       month: "short",
@@ -165,9 +165,8 @@ export default async function RewardsPage() {
                   </div>
                 </div>
                 <div
-                  className={`font-medium text-sm ${
-                    e.delta > 0 ? "text-emerald-400" : "text-rose-400"
-                  }`}
+                  className="font-medium text-sm"
+                  style={{ color: e.delta > 0 ? "var(--nrs-accent)" : "#f87171" }}
                 >
                   {e.delta > 0 ? "+" : ""}
                   {e.delta} pts

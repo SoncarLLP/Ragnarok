@@ -160,7 +160,7 @@ export default function MessageInput({
   }
 
   return (
-    <div className="shrink-0 border-t border-white/10 bg-neutral-950">
+    <div className="shrink-0" style={{ borderTop: "1px solid var(--nrs-border-subtle)", background: "var(--nrs-panel)" }}>
       {/* Reply preview */}
       {replyTo && !editingMessage && (
         <div className="flex items-center gap-2 px-4 py-2 bg-white/5 border-b border-white/10">

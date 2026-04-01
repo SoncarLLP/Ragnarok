@@ -99,8 +99,8 @@ export default function NewConversationModal({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-neutral-950/80 backdrop-blur-sm px-4">
-      <div className="bg-neutral-900 border border-white/10 rounded-2xl p-6 w-full max-w-md max-h-[90vh] flex flex-col">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm px-4">
+      <div className="rounded-2xl p-6 w-full max-w-md max-h-[90vh] flex flex-col shadow-2xl" style={{ background: "var(--nrs-card)", border: "1px solid var(--nrs-border)" }}>
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-base font-semibold">New Conversation</h3>
           <button onClick={onClose} className="text-neutral-500 hover:text-white transition">

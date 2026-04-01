@@ -172,7 +172,7 @@ export default function MentionTextarea({
           // mousedown (not click) so it fires before textarea blur
           onMouseDown={(e) => e.preventDefault()}
         >
-          <div className="bg-neutral-800 border border-white/15 rounded-xl shadow-2xl overflow-hidden">
+          <div className="rounded-xl shadow-2xl overflow-hidden" style={{ background: "var(--nrs-card)", border: "1px solid var(--nrs-border)" }}>
             {members.map((m, i) => (
               <button
                 key={m.id}
@@ -195,10 +195,10 @@ export default function MentionTextarea({
                   </div>
                 )}
                 <div className="min-w-0">
-                  <div className="text-neutral-100 truncate font-medium">
+                  <div className="truncate font-medium" style={{ color: "var(--nrs-text)" }}>
                     {getDisplayName(m)}
                   </div>
-                  <div className="text-xs text-neutral-500 truncate">@{m.username}</div>
+                  <div className="text-xs truncate" style={{ color: "var(--nrs-text-muted)" }}>@{m.username}</div>
                 </div>
               </button>
             ))}

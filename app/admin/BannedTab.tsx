@@ -39,7 +39,7 @@ export default function BannedTab({ members: initial }: { members: MemberRecord[
     return (
       <section>
         <h2 className="text-lg font-semibold mb-4">Banned Members</h2>
-        <p className="text-neutral-500 text-sm">No banned members.</p>
+        <p className="text-sm" style={{ color: "var(--nrs-text-muted)" }}>No banned members.</p>
       </section>
     );
   }
@@ -52,7 +52,8 @@ export default function BannedTab({ members: initial }: { members: MemberRecord[
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
           placeholder="Search name, email, or ID…"
-          className="ml-auto rounded-md bg-white/5 border border-white/10 px-3 py-1.5 text-sm outline-none focus:border-white/30 w-56"
+          className="ml-auto rounded-md px-3 py-1.5 text-sm outline-none w-56 transition"
+          style={{ background: "var(--nrs-card)", border: "1px solid var(--nrs-border)", color: "var(--nrs-text-body)" }}
         />
       </div>
 
@@ -60,18 +61,19 @@ export default function BannedTab({ members: initial }: { members: MemberRecord[
         {filtered.map((m) => (
           <div
             key={m.id}
-            className="rounded-lg border border-white/10 bg-white/5 px-4 py-3 flex items-center justify-between gap-4"
+            className="rounded-lg px-4 py-3 flex items-center justify-between gap-4"
+            style={{ border: "1px solid var(--nrs-border-subtle)", background: "var(--nrs-card)" }}
           >
             <div className="min-w-0">
               <div className="flex items-center gap-2 mb-0.5">
-                <span className="font-mono text-xs text-neutral-500">
+                <span className="font-mono text-xs" style={{ color: "var(--nrs-text-muted)" }}>
                   {fmtMemberId(m.member_id)}
                 </span>
-                <span className="text-sm font-medium">
+                <span className="text-sm font-medium" style={{ color: "var(--nrs-text)" }}>
                   {m.full_name || m.username || m.email}
                 </span>
               </div>
-              <div className="text-xs text-neutral-500">
+              <div className="text-xs" style={{ color: "var(--nrs-text-muted)" }}>
                 {m.email}
                 {m.username && <span> · @{m.username}</span>}
                 <span>
@@ -90,7 +92,7 @@ export default function BannedTab({ members: initial }: { members: MemberRecord[
           </div>
         ))}
         {filtered.length === 0 && (
-          <div className="text-center py-10 text-neutral-500 text-sm">No banned members match your search.</div>
+          <div className="text-center py-10 text-sm" style={{ color: "var(--nrs-text-muted)" }}>No banned members match your search.</div>
         )}
       </div>
     </section>

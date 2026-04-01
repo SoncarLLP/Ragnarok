@@ -8,6 +8,7 @@ import NavSidebar from "@/components/NavSidebar";
 import NotificationBell from "@/components/NotificationBell";
 import DarkModeToggle from "@/components/DarkModeToggle";
 import MemberBadge from "@/components/MemberBadge";
+import BackToTop from "@/components/BackToTop";
 
 export default async function AccountLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient();
@@ -111,6 +112,7 @@ export default async function AccountLayout({ children }: { children: React.Reac
           <main className="flex-1 min-w-0">{children}</main>
         </div>
       </div>
+      <BackToTop />
     </div>
   );
 }

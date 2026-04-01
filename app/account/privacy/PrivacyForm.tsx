@@ -25,7 +25,12 @@ function Select<T extends string>({
     <select
       value={value}
       onChange={(e) => onChange(e.target.value as T)}
-      className="rounded-md bg-neutral-900 border border-white/10 px-3 py-2 text-sm outline-none focus:border-white/30"
+      className="rounded-md border px-3 py-2 text-sm outline-none transition"
+      style={{
+        background: "var(--nrs-card)",
+        color: "var(--nrs-text-body)",
+        borderColor: "var(--nrs-border)",
+      }}
     >
       {(Object.entries(options) as [T, string][]).map(([k, label]) => (
         <option key={k} value={k}>
@@ -46,10 +51,10 @@ function SettingRow({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex items-start justify-between gap-4 py-3 border-b border-white/5 last:border-0">
+    <div className="flex items-start justify-between gap-4 py-3 last:border-0" style={{ borderBottom: "1px solid var(--nrs-border-subtle)" }}>
       <div className="flex-1 min-w-0">
-        <div className="text-sm font-medium">{label}</div>
-        {description && <div className="text-xs text-neutral-500 mt-0.5">{description}</div>}
+        <div className="text-sm font-medium" style={{ color: "var(--nrs-text-body)" }}>{label}</div>
+        {description && <div className="text-xs mt-0.5" style={{ color: "var(--nrs-text-muted)" }}>{description}</div>}
       </div>
       <div className="shrink-0">{children}</div>
     </div>
@@ -125,11 +130,11 @@ export default function PrivacyForm({
           {(["public", "followers_only", "private"] as AccountMode[]).map((mode) => (
             <label
               key={mode}
-              className={`flex items-start gap-3 p-4 rounded-xl border cursor-pointer transition ${
-                accountMode === mode
-                  ? "border-amber-400/40 bg-amber-500/5"
-                  : "border-white/10 bg-white/5 hover:border-white/20"
-              }`}
+              className="flex items-start gap-3 p-4 rounded-xl border cursor-pointer transition"
+              style={{
+                borderColor: accountMode === mode ? "var(--nrs-accent-border)" : "var(--nrs-border-subtle)",
+                background: accountMode === mode ? "var(--nrs-accent-dim)" : "var(--nrs-card)",
+              }}
             >
               <input
                 type="radio"
@@ -151,10 +156,10 @@ export default function PrivacyForm({
       {/* Interaction Controls */}
       <section>
         <h2 className="text-base font-semibold mb-1">Interaction controls</h2>
-        <p className="text-xs text-neutral-500 mb-4">
+        <p className="text-xs mb-4" style={{ color: "var(--nrs-text-muted)" }}>
           Control who can interact with your content and profile.
         </p>
-        <div className="rounded-xl border border-white/10 bg-white/5 px-4 divide-y divide-white/5">
+        <div className="rounded-xl px-4" style={{ background: "var(--nrs-card)", border: "1px solid var(--nrs-border-subtle)" }}>
           <SettingRow label="Who can comment on my posts">
             <Select<VisibilityLevel>
               value={ps.who_can_comment}
@@ -203,11 +208,11 @@ export default function PrivacyForm({
       {/* Profile Visibility */}
       <section>
         <h2 className="text-base font-semibold mb-1">Profile visibility</h2>
-        <p className="text-xs text-neutral-500 mb-4">
+        <p className="text-xs mb-4" style={{ color: "var(--nrs-text-muted)" }}>
           Control who can see each section of your profile. Extended profile fields default to
           &ldquo;Only me&rdquo; when first added.
         </p>
-        <div className="rounded-xl border border-white/10 bg-white/5 px-4 divide-y divide-white/5">
+        <div className="rounded-xl px-4" style={{ background: "var(--nrs-card)", border: "1px solid var(--nrs-border-subtle)" }}>
           <SettingRow label="Personal details" description="Name, bio">
             <Select<ProfileVisibility>
               value={ev.personal_details}
@@ -260,11 +265,11 @@ export default function PrivacyForm({
       {isAdmin && (
         <section>
           <h2 className="text-base font-semibold mb-1">Messaging</h2>
-          <p className="text-xs text-neutral-500 mb-4">
+          <p className="text-xs mb-4" style={{ color: "var(--nrs-text-muted)" }}>
             Control whether other admins can start new direct message conversations with you.
             Super admins can always message you regardless of this setting.
           </p>
-          <div className="rounded-xl border border-white/10 bg-white/5 px-4">
+          <div className="rounded-xl px-4" style={{ background: "var(--nrs-card)", border: "1px solid var(--nrs-border-subtle)" }}>
             <SettingRow
               label="Disable direct messages"
               description="When enabled, other admins cannot start new DM conversations with you."
@@ -274,9 +279,10 @@ export default function PrivacyForm({
                 role="switch"
                 aria-checked={messagingDisabled}
                 onClick={() => setMessagingDisabled((v) => !v)}
-                className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors focus:outline-none ${
-                  messagingDisabled ? "bg-amber-500" : "bg-neutral-700"
-                }`}
+                className="relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors focus:outline-none"
+                style={{
+                  background: messagingDisabled ? "var(--nrs-accent)" : "var(--nrs-panel)",
+                }}
               >
                 <span
                   className={`pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow transform transition-transform ${

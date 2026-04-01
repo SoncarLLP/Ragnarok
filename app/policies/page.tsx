@@ -1,5 +1,6 @@
 import Link from "next/link";
 import NavWrapper from "@/components/NavWrapper";
+import BackToTop from "@/components/BackToTop";
 
 const LAST_UPDATED = "31 March 2026";
 
@@ -1624,6 +1625,7 @@ export default function PoliciesPage() {
           </Link>
         </div>
       </div>
+      <BackToTop policies />
     </main>
   );
 }

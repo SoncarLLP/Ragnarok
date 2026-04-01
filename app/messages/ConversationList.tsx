@@ -36,7 +36,8 @@ function Avatar({
   }
   return (
     <div
-      className={`${dim} rounded-full bg-neutral-700 flex items-center justify-center font-semibold text-neutral-300 shrink-0`}
+      className={`${dim} rounded-full flex items-center justify-center font-semibold shrink-0`}
+      style={{ background: "var(--nrs-panel)", color: "var(--nrs-text-body)" }}
     >
       {name.charAt(0).toUpperCase()}
     </div>
@@ -110,11 +111,12 @@ export default function ConversationList({
           <button
             key={conv.id}
             onClick={() => onSelect(conv.id)}
-            className={`w-full flex items-center gap-3 px-4 py-3 text-left transition
-              ${isSelected
-                ? "bg-white/10 border-r-2 border-amber-400"
-                : "hover:bg-white/5"
-              }`}
+            className="w-full flex items-center gap-3 px-4 py-3 text-left transition"
+            style={
+              isSelected
+                ? { background: "var(--nrs-accent-dim)", borderRight: "2px solid var(--nrs-accent)" }
+                : undefined
+            }
           >
             {/* Avatar */}
             <div className="relative shrink-0">
@@ -126,7 +128,7 @@ export default function ConversationList({
                 <Avatar name={avatar.name} src={avatar.src} />
               )}
               {conv.type === "group" && (
-                <span className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-neutral-900 flex items-center justify-center text-[9px]">
+                <span className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full flex items-center justify-center text-[9px]" style={{ background: "var(--nrs-bg)" }}>
                   👥
                 </span>
               )}
@@ -136,25 +138,23 @@ export default function ConversationList({
             <div className="flex-1 min-w-0">
               <div className="flex items-center justify-between gap-1">
                 <span
-                  className={`text-sm truncate ${
-                    hasUnread ? "font-semibold text-white" : "font-medium text-neutral-200"
-                  }`}
+                  className={`text-sm truncate ${hasUnread ? "font-semibold" : "font-medium"}`}
+                  style={{ color: hasUnread ? "var(--nrs-text)" : "var(--nrs-text-body)" }}
                 >
                   {label}
                 </span>
-                <span className="text-[11px] text-neutral-500 shrink-0">
+                <span className="text-[11px] shrink-0" style={{ color: "var(--nrs-text-muted)" }}>
                   {conv.last_message ? formatTime(conv.last_message.created_at) : ""}
                 </span>
               </div>
               <div className="flex items-center gap-1 mt-0.5">
                 <p
-                  className={`text-xs truncate flex-1 ${
-                    hasUnread ? "text-neutral-300" : "text-neutral-500"
-                  }`}
+                  className="text-xs truncate flex-1"
+                  style={{ color: hasUnread ? "var(--nrs-text-body)" : "var(--nrs-text-muted)" }}
                 >
                   {conv.last_message?.sender_name &&
                     conv.last_message.sender_name !== conv.other_participants[0]?.display_name && (
-                      <span className="text-neutral-600 mr-1">
+                      <span className="mr-1" style={{ color: "var(--nrs-text-muted)", opacity: 0.7 }}>
                         {conv.last_message.sender_name}:
                       </span>
                     )}

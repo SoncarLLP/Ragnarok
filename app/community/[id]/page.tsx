@@ -10,6 +10,7 @@ import MentionText from "../MentionText";
 import CommentSection from "./CommentSection";
 import MemberBadge from "@/components/MemberBadge";
 import NavWrapper from "@/components/NavWrapper";
+import BackToTop from "@/components/BackToTop";
 import type { CommentData } from "@/lib/community";
 import { getDisplayName } from "@/lib/display-name";
 
@@ -243,7 +244,8 @@ export default async function PostPage(props: unknown) {
               {post.categories.map((cat) => (
                 <span
                   key={cat}
-                  className="text-xs px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-300"
+                  className="text-xs px-2 py-0.5 rounded-full"
+                  style={{ background: "var(--nrs-accent-dim)", color: "var(--nrs-accent)" }}
                 >
                   {cat}
                 </span>
@@ -321,6 +323,7 @@ export default async function PostPage(props: unknown) {
           />
         </div>
       </div>
+      <BackToTop />
     </main>
   );
 }

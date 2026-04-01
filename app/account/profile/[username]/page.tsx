@@ -7,6 +7,7 @@ import PostCard from "@/app/community/PostCard";
 import FollowButton from "@/app/community/FollowButton";
 import MemberBadge from "@/components/MemberBadge";
 import MessageButton from "@/app/messages/MessageButton";
+import BackToTop from "@/components/BackToTop";
 import { mergePrivacySettings, mergeExtendedVisibility, canView } from "@/lib/privacy";
 import type { AccountMode } from "@/lib/privacy";
 import { getDisplayName } from "@/lib/display-name";
@@ -59,13 +60,13 @@ export default async function PublicProfilePage(props: unknown) {
   // Private mode: only admins and owner can view
   if (accountMode === "private" && !isOwner && !isAdmin) {
     return (
-      <main className="min-h-screen bg-neutral-950 text-neutral-100 flex items-center justify-center px-4">
+      <main className="min-h-screen flex items-center justify-center px-4" style={{ background: "var(--nrs-bg)", color: "var(--nrs-text-body)" }}>
         <div className="text-center max-w-sm">
           <p className="text-lg font-semibold mb-2">Profile not available</p>
-          <p className="text-sm text-neutral-400">
+          <p className="text-sm mb-4" style={{ color: "var(--nrs-text-muted)" }}>
             This member&apos;s profile is private.
           </p>
-          <Link href="/community" className="mt-4 inline-block text-sm text-amber-400 hover:underline">
+          <Link href="/community" className="mt-4 inline-block text-sm hover:underline" style={{ color: "var(--nrs-accent)" }}>
             ← Back to Community
           </Link>
         </div>
@@ -97,13 +98,13 @@ export default async function PublicProfilePage(props: unknown) {
 
   if ((isBlockedByThem || iBlockedThem) && !isAdmin) {
     return (
-      <main className="min-h-screen bg-neutral-950 text-neutral-100 flex items-center justify-center px-4">
+      <main className="min-h-screen flex items-center justify-center px-4" style={{ background: "var(--nrs-bg)", color: "var(--nrs-text-body)" }}>
         <div className="text-center max-w-sm">
           <p className="text-lg font-semibold mb-2">Profile not available</p>
-          <p className="text-sm text-neutral-400">
+          <p className="text-sm mb-4" style={{ color: "var(--nrs-text-muted)" }}>
             This profile is not available.
           </p>
-          <Link href="/community" className="mt-4 inline-block text-sm text-amber-400 hover:underline">
+          <Link href="/community" className="mt-4 inline-block text-sm hover:underline" style={{ color: "var(--nrs-accent)" }}>
             ← Back to Community
           </Link>
         </div>
@@ -187,11 +188,12 @@ export default async function PublicProfilePage(props: unknown) {
   const displayName = getDisplayName(profile);
 
   return (
-    <main className="min-h-screen bg-neutral-950 text-neutral-100">
+    <main className="min-h-screen" style={{ background: "var(--nrs-bg)", color: "var(--nrs-text-body)" }}>
       <div className="mx-auto max-w-4xl px-4 py-10">
         <Link
           href="/community"
-          className="inline-block text-sm text-neutral-400 hover:text-white mb-8"
+          className="inline-block text-sm mb-8 hover:underline transition-colors"
+          style={{ color: "var(--nrs-text-muted)" }}
         >
           ← Community
         </Link>
@@ -219,7 +221,8 @@ export default async function PublicProfilePage(props: unknown) {
               {isOwner ? (
                 <Link
                   href="/account/profile"
-                  className="text-sm px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20"
+                  className="text-sm px-3 py-1.5 rounded-lg transition"
+                  style={{ background: "var(--nrs-btn-bg)", color: "var(--nrs-text-body)", border: "1px solid var(--nrs-btn-border)" }}
                 >
                   Edit profile
                 </Link>
@@ -245,28 +248,31 @@ export default async function PublicProfilePage(props: unknown) {
             </div>
 
             {profile.username && (
-              <div className="text-neutral-400 text-sm mt-0.5">@{profile.username}</div>
+              <div className="text-sm mt-0.5" style={{ color: "var(--nrs-text-muted)" }}>@{profile.username}</div>
             )}
 
             {/* Account mode badge */}
             {accountMode !== "public" && (
               <div className="mt-1">
-                <span className={`text-xs px-2 py-0.5 rounded-full ${
-                  accountMode === "followers_only"
-                    ? "bg-amber-500/15 text-amber-400"
-                    : "bg-neutral-700 text-neutral-400"
-                }`}>
+                <span
+                  className="text-xs px-2 py-0.5 rounded-full"
+                  style={
+                    accountMode === "followers_only"
+                      ? { background: "var(--nrs-accent-dim)", color: "var(--nrs-accent)" }
+                      : { background: "var(--nrs-panel)", color: "var(--nrs-text-muted)" }
+                  }
+                >
                   {accountMode === "followers_only" ? "Followers only" : "Private"}
                 </span>
               </div>
             )}
 
             {canSeePersonalDetails && profile.bio && (
-              <p className="mt-2 text-neutral-300 text-sm leading-relaxed">{profile.bio}</p>
+              <p className="mt-2 text-sm leading-relaxed" style={{ color: "var(--nrs-text-body)" }}>{profile.bio}</p>
             )}
 
             {profile.member_id != null && (
-              <div className="mt-2 text-xs text-neutral-500 font-mono">
+              <div className="mt-2 text-xs font-mono" style={{ color: "var(--nrs-text-muted)" }}>
                 #{String(profile.member_id).padStart(11, "0")}
               </div>
             )}
@@ -274,18 +280,18 @@ export default async function PublicProfilePage(props: unknown) {
             <div className="mt-3 flex gap-6 text-sm">
               <div>
                 <span className="font-semibold">{canSeePosts ? posts.length : "—"}</span>{" "}
-                <span className="text-neutral-400">posts</span>
+                <span style={{ color: "var(--nrs-text-muted)" }}>posts</span>
               </div>
               {showFollowersList ? (
                 <div>
                   <span className="font-semibold">{followerCount ?? 0}</span>{" "}
-                  <span className="text-neutral-400">followers</span>
+                  <span style={{ color: "var(--nrs-text-muted)" }}>followers</span>
                 </div>
               ) : null}
               {showFollowingList ? (
                 <div>
                   <span className="font-semibold">{followingCount ?? 0}</span>{" "}
-                  <span className="text-neutral-400">following</span>
+                  <span style={{ color: "var(--nrs-text-muted)" }}>following</span>
                 </div>
               ) : null}
             </div>
@@ -294,9 +300,9 @@ export default async function PublicProfilePage(props: unknown) {
 
         {/* Followers-only gate message */}
         {accountMode === "followers_only" && !canSeeContent && !isOwner && (
-          <div className="rounded-xl border border-white/10 bg-white/5 p-10 text-center mb-8">
-            <p className="text-neutral-400 text-sm font-medium">This account is followers only</p>
-            <p className="text-xs text-neutral-500 mt-1">
+          <div className="rounded-xl p-10 text-center mb-8" style={{ border: "1px solid var(--nrs-border-subtle)", background: "var(--nrs-card)" }}>
+            <p className="text-sm font-medium" style={{ color: "var(--nrs-text-muted)" }}>This account is followers only</p>
+            <p className="text-xs mt-1" style={{ color: "var(--nrs-text-muted)" }}>
               Follow this member to see their posts and profile details.
             </p>
           </div>
@@ -305,7 +311,7 @@ export default async function PublicProfilePage(props: unknown) {
         {/* Posts */}
         {canSeePosts && (
           posts.length === 0 ? (
-            <p className="text-neutral-400 text-center py-16 text-sm">No posts yet.</p>
+            <p className="text-center py-16 text-sm" style={{ color: "var(--nrs-text-muted)" }}>No posts yet.</p>
           ) : (
             <div className="columns-1 sm:columns-2 lg:columns-3 gap-4">
               {posts.map((post) => (
@@ -322,6 +328,7 @@ export default async function PublicProfilePage(props: unknown) {
           )
         )}
       </div>
+      <BackToTop />
     </main>
   );
 }
