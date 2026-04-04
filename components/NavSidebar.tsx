@@ -175,6 +175,14 @@ export default function NavSidebar({
             emoji="🏅"
             label="Rewards"
           />
+          {isSignedIn && (
+            <SidebarLink
+              href="/fitness"
+              onClick={close}
+              emoji="⚔️"
+              label="Fitness Tracker"
+            />
+          )}
           {/* Notifications with unread badge */}
           <Link
             href="/account/notifications"

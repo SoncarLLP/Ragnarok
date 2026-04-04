@@ -10,6 +10,7 @@ import BlockAuthTab from "./BlockAuthTab";
 import PinnedPostsTab from "./PinnedPostsTab";
 import MessagesTab from "./MessagesTab";
 import PromotionHistoryTab from "./PromotionHistoryTab";
+import FitnessAdminTab from "./FitnessAdminTab";
 import type { BlockAuthRecord, MemberOption } from "./BlockAuthTab";
 import type { PinnedPostRecord } from "./PinnedPostsTab";
 
@@ -64,6 +65,7 @@ const BASE_TABS = [
 ];
 const SUPER_ADMIN_TABS = [
   ...BASE_TABS,
+  { key: "fitness",  label: "⚔️ Fitness" },
   { key: "messages", label: "Messages" },
   { key: "block_auth", label: "Block Auth" },
   { key: "promotion_history", label: "Promotion Log" },
@@ -156,6 +158,9 @@ export default function AdminTabs({
       )}
       {active === "promotion_history" && currentUserRole === "super_admin" && (
         <PromotionHistoryTab />
+      )}
+      {active === "fitness" && currentUserRole === "super_admin" && (
+        <FitnessAdminTab />
       )}
     </div>
   );

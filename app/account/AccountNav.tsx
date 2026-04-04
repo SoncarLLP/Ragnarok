@@ -8,6 +8,7 @@ const baseLinks = [
   { href: "/account/profile",              label: "Profile" },
   { href: "/account/orders",              label: "Orders" },
   { href: "/account/rewards",             label: "Rewards" },
+  { href: "/fitness",                      label: "⚔️ Fitness" },
   { href: "/account/notifications",       label: "Notifications" },
   { href: "/account/privacy",             label: "Privacy & Safety" },
   { href: "/account/settings/theme",      label: "Theme" },

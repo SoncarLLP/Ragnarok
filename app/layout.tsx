@@ -39,15 +39,18 @@ export const metadata: Metadata = {
   manifest: "/favicon/site.webmanifest",
 };
 
-/** Derive the automatic theme from a tier name. */
+/** Derive the automatic theme from a tier name (19-tier Norse system). */
 function tierToTheme(tier: string | null | undefined): string {
   if (!tier) return "bronze";
   const t = formatTierName(tier).toLowerCase();
-  if (t.startsWith("diamond")) return "diamond";
-  if (t.startsWith("platinum")) return "platinum";
-  if (t.startsWith("gold")) return "gold";
-  if (t.startsWith("silver")) return "silver";
-  return "bronze";
+  // Norse tier mapping → CSS theme names
+  if (t === "legendary")          return "diamond";
+  if (t.startsWith("valkyrie"))   return "diamond";
+  if (t.startsWith("einherjar"))  return "platinum";
+  if (t.startsWith("jarl"))       return "gold";
+  if (t.startsWith("huscarl"))    return "silver";
+  if (t.startsWith("karl"))       return "bronze";
+  return "bronze"; // Thrall I-III
 }
 
 /** Validate that a stored active_theme is a real theme name. */

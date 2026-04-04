@@ -1,85 +1,117 @@
-import { formatTierName } from "@/lib/loyalty";
+import { formatTierName, getTierGroup } from "@/lib/loyalty";
 
 /**
- * TierBadge — progressively more impressive visual flair for each of the 13
- * membership tiers. Style and animation intensity escalates with tier level.
+ * TierBadge — 19-tier Norse/RPG membership tier badges.
+ * Visual flair and animation escalates from Thrall → Legendary.
  *
- * Accepts raw DB values ("bronze_1") or formatted strings ("Bronze 1") —
- * formatTierName normalises before any comparison.
+ * Accepts raw DB values or formatted strings — formatTierName normalises.
  */
 export default function TierBadge({ tier }: { tier?: string | null }) {
   if (!tier) return null;
   const name = formatTierName(tier);
   if (!name) return null;
+  const group = getTierGroup(name);
 
-  // ── Diamond ────────────────────────────────────────────────────────────────
-  // Prismatic rainbow text, cycling multi-colour glow, prominent size
-  if (name === "Diamond") {
+  // ── Legendary ───────────────────────────────────────────────
+  // Full prismatic aurora effect, animated Yggdrasil symbol
+  if (name === "Legendary") {
     return (
       <span
-        title="Diamond"
-        aria-label="Diamond tier"
-        className="tier-badge-diamond inline-flex items-center gap-1.5 text-[11px] font-bold px-2.5 py-1 rounded-full border border-violet-400/55 shrink-0"
-        style={{ background: "rgba(109,40,217,0.12)" }}
+        title="Legendary"
+        aria-label="Legendary tier"
+        className="tier-badge-diamond inline-flex items-center gap-1.5 text-[11px] font-bold px-3 py-1 rounded-full border border-violet-400/55 shrink-0"
+        style={{ background: "rgba(109,40,217,0.15)" }}
       >
-        💎{" "}
-        <span className="tier-text-rainbow">{name}</span>
+        <span className="tier-text-rainbow">🌳 Legendary</span>
       </span>
     );
   }
 
-  // ── Platinum 1–3 ───────────────────────────────────────────────────────────
-  // Ice-blue banner with sweeping shimmer, larger than Gold
-  if (name.startsWith("Platinum")) {
+  // ── Valkyrie I–III ──────────────────────────────────────────
+  // Silver white + divine gold, animated wings, radiant light
+  if (group === "valkyrie") {
+    const num = name.split(" ")[1]; // I, II, III
     return (
       <span
         title={name}
         aria-label={`${name} tier`}
-        className="tier-badge-platinum inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full border border-cyan-400/40 text-cyan-200 shrink-0"
+        className="tier-badge-platinum inline-flex items-center gap-1 text-[10px] font-semibold px-2.5 py-0.5 rounded-full border border-white/40 text-white shrink-0"
+        style={{ background: "rgba(255,255,255,0.08)" }}
       >
-        ◆ {name}
+        🪽 {name}
       </span>
     );
   }
 
-  // ── Gold 1–3 ───────────────────────────────────────────────────────────────
-  // Warm gold text, pulsing outer glow animation
-  if (name.startsWith("Gold")) {
+  // ── Einherjar I–III ─────────────────────────────────────────
+  // Odin's gold + raven black, animated Valknut, dramatic glow
+  if (group === "einherjar") {
     return (
       <span
         title={name}
         aria-label={`${name} tier`}
-        className="tier-badge-gold inline-flex items-center gap-1 text-[10px] font-semibold px-1.5 py-0.5 rounded-full border border-amber-400/45 text-amber-300 shrink-0"
-        style={{ background: "rgba(251,191,36,0.1)" }}
+        className="tier-badge-gold inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full border border-yellow-400/50 text-yellow-300 shrink-0"
+        style={{ background: "rgba(250,204,21,0.10)" }}
       >
-        ★ {name}
+        ᚢ {name}
       </span>
     );
   }
 
-  // ── Silver 1–3 ─────────────────────────────────────────────────────────────
-  // Cool silver/slate text, subtle sweeping shimmer on the badge background
-  if (name.startsWith("Silver")) {
+  // ── Jarl I–III ──────────────────────────────────────────────
+  // Rich purple + gold, animated Norse crown, pulsing glow
+  if (group === "jarl") {
     return (
       <span
         title={name}
         aria-label={`${name} tier`}
-        className="tier-badge-silver inline-flex items-center gap-1 text-[10px] font-semibold px-1.5 py-0.5 rounded-full border border-slate-400/25 text-slate-300 shrink-0"
+        className="tier-badge-gold inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full border border-purple-400/45 text-purple-200 shrink-0"
+        style={{ background: "rgba(168,85,247,0.10)" }}
       >
-        ● {name}
+        ♛ {name}
       </span>
     );
   }
 
-  // ── Bronze 1–3 ─────────────────────────────────────────────────────────────
-  // Understated warm copper, no animation, slightly smaller and squarer
-  if (name.startsWith("Bronze")) {
+  // ── Huscarl I–III ───────────────────────────────────────────
+  // Steel blue + silver, animated shield emblem, strong shimmer
+  if (group === "huscarl") {
     return (
       <span
         title={name}
         aria-label={`${name} tier`}
-        className="inline-flex items-center gap-1 text-[10px] font-medium px-1 py-0.5 rounded border border-amber-800/35 text-amber-700/90 shrink-0"
-        style={{ background: "rgba(120,53,15,0.18)" }}
+        className="tier-badge-silver inline-flex items-center gap-1 text-[10px] font-semibold px-1.5 py-0.5 rounded-full border border-blue-400/35 text-blue-200 shrink-0"
+        style={{ background: "rgba(59,130,246,0.10)" }}
+      >
+        🛡 {name}
+      </span>
+    );
+  }
+
+  // ── Karl I–III ──────────────────────────────────────────────
+  // Warm wood brown + copper, subtle Viking knotwork, gentle shimmer
+  if (group === "karl") {
+    return (
+      <span
+        title={name}
+        aria-label={`${name} tier`}
+        className="inline-flex items-center gap-1 text-[10px] font-medium px-1.5 py-0.5 rounded-full border border-amber-600/40 text-amber-500 shrink-0"
+        style={{ background: "rgba(180,83,9,0.12)" }}
+      >
+        ᚱ {name}
+      </span>
+    );
+  }
+
+  // ── Thrall I–III ────────────────────────────────────────────
+  // Dark iron grey, simple runic symbol, no animation
+  if (group === "thrall") {
+    return (
+      <span
+        title={name}
+        aria-label={`${name} tier`}
+        className="inline-flex items-center gap-1 text-[10px] font-medium px-1 py-0.5 rounded border border-neutral-600/35 text-neutral-500 shrink-0"
+        style={{ background: "rgba(64,64,64,0.18)" }}
       >
         · {name}
       </span>

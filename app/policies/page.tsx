@@ -2,7 +2,7 @@ import Link from "next/link";
 import NavWrapper from "@/components/NavWrapper";
 import BackToTop from "@/components/BackToTop";
 
-const LAST_UPDATED = "31 March 2026";
+const LAST_UPDATED = "4 April 2026";
 
 function Section({
   id,
@@ -78,6 +78,7 @@ const sections = [
   { href: "#cookies",    label: "4. Cookie Policy" },
   { href: "#community",  label: "5. Community Guidelines" },
   { href: "#loyalty",    label: "6. Loyalty Scheme Terms" },
+  { href: "#fitness",    label: "7. Fitness Tracker Terms" },
 ];
 
 export default function PoliciesPage() {
@@ -1438,10 +1439,14 @@ export default function PoliciesPage() {
 
             <H3 id="loy-overview">6.1 Scheme Overview</H3>
             <P>
-              The Ragnarök Loyalty Scheme rewards members for purchases and community engagement.
-              Points are credited to your account automatically and count towards your
-              membership tier. Participation is free and automatic for all registered account
-              holders.
+              The Ragnarök Loyalty Scheme rewards members for purchases, community engagement,
+              and fitness activity through our integrated Fitness Tracker. Points are credited
+              to your account automatically and count towards your membership tier. Participation
+              is free and automatic for all registered account holders.
+            </P>
+            <P>
+              The scheme uses a Norse/RPG themed tier system with 19 tiers across seven bands:
+              Thrall, Karl, Huscarl, Jarl, Einherjar, Valkyrie, and Legendary.
             </P>
 
             <H3 id="loy-earning">6.2 How Points Are Earned</H3>
@@ -1455,10 +1460,24 @@ export default function PoliciesPage() {
                 </thead>
                 <tbody className="divide-y divide-white/5 text-neutral-300">
                   {[
-                    ["Account sign-up (one-time welcome bonus)", "50 points"],
-                    ["Purchase (per £1 spent, calculated on the net order value)", "5 points per £1"],
-                    ["Post receives 250 reactions (awarded per 250-reaction milestone)", "2 points"],
-                    ["Comment receives 100 reactions (awarded per 100-reaction milestone)", "1 point"],
+                    ["Account sign-up (one-time welcome bonus)", "200 points"],
+                    ["Purchase (per £1 spent, net order value)", "10 points per £1"],
+                    ["Post receives 250 reactions (per milestone)", "5 points"],
+                    ["Comment receives 100 reactions (per milestone)", "3 points"],
+                    ["Workout logged and verified", "10 points"],
+                    ["Class-matched workout", "20 points"],
+                    ["Daily streak maintained", "5 points per day"],
+                    ["Weekly streak (7 consecutive days)", "25 points"],
+                    ["Monthly streak (30 consecutive days)", "100 points"],
+                    ["Personal record beaten (within anti-abuse caps)", "30 points"],
+                    ["Level up (scales with level reached)", "25–200 points"],
+                    ["Prestige achieved", "500 points"],
+                    ["Weekly fitness challenge completed", "75 points"],
+                    ["Monthly fitness challenge completed", "250 points"],
+                    ["Fitness milestone reached", "100 points"],
+                    ["Guild challenge completed", "50 points"],
+                    ["Leaderboard top 3 finish", "100 / 75 / 50 points"],
+                    ["Viking class level-up bonus (Viking class only)", "+10 points extra per level"],
                   ].map(([activity, points]) => (
                     <tr key={activity}>
                       <td className="py-2 pr-4">{activity}</td>
@@ -1473,51 +1492,64 @@ export default function PoliciesPage() {
               reversed if an order is subsequently refunded or cancelled.
             </P>
             <P>
+              Fitness-related points are subject to daily and weekly anti-abuse caps. Members
+              earning above threshold amounts may be subject to automatic review. See Section 7
+              (Fitness Tracker Terms) for full anti-abuse provisions.
+            </P>
+            <P>
               Ragnarök reserves the right to award bonus points for specific promotions, events,
-              or activities at its sole discretion. Bonus point events will be communicated via
-              our website or email.
+              or XP boost events. These will be communicated via our website or email.
             </P>
 
             <H3 id="loy-tiers">6.3 Tier Structure</H3>
             <P>
-              Your membership tier is determined by your <strong>total cumulative lifetime
-              points</strong>. Tiers are based on points accumulated over your entire membership
-              and <strong>cannot decrease</strong> when points are redeemed — only new earning
-              activity counts towards tier progression.
+              Your membership tier is determined by <strong>two simultaneous requirements</strong>:
+              (1) your total cumulative lifetime points, and (2) your fitness level in the
+              Ragnarök Fitness Tracker. Both conditions must be met to progress. Points alone
+              are not sufficient for Karl tier and above.
             </P>
             <P>
-              There are thirteen membership tiers across five bands. Each band has three
-              sub-tiers (1, 2, 3), except Diamond which is a single tier reserved for Ragnarök
-              team members:
+              Tiers <strong>cannot decrease</strong> when points are redeemed — only new earning
+              activity counts towards tier progression. However, if a fitness level requirement
+              is not yet met, the tier gate will not open even if sufficient points have been
+              accumulated.
             </P>
             <div className="overflow-x-auto">
               <table className="w-full text-xs border-collapse">
                 <thead>
                   <tr className="border-b border-white/10 text-neutral-400">
                     <th className="text-left py-2 pr-4 font-medium">Tier</th>
-                    <th className="text-left py-2 pr-4 font-medium">Cumulative points required</th>
+                    <th className="text-left py-2 pr-4 font-medium">Points required</th>
+                    <th className="text-left py-2 pr-4 font-medium">Fitness level required</th>
                     <th className="text-left py-2 font-medium">Notes</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-white/5 text-neutral-300">
                   {[
-                    ["Bronze 1",   "0 points",       "Entry tier for all new members"],
-                    ["Bronze 2",   "250 points",     ""],
-                    ["Bronze 3",   "500 points",     ""],
-                    ["Silver 1",   "750 points",     ""],
-                    ["Silver 2",   "1,050 points",   ""],
-                    ["Silver 3",   "1,350 points",   ""],
-                    ["Gold 1",     "1,650 points",   ""],
-                    ["Gold 2",     "2,000 points",   ""],
-                    ["Gold 3",     "2,350 points",   ""],
-                    ["Platinum 1", "2,700 points",   ""],
-                    ["Platinum 2", "3,100 points",   ""],
-                    ["Platinum 3", "3,500 points",   ""],
-                    ["Diamond",    "4,000 points",   "Also granted automatically to super admin accounts"],
-                  ].map(([tier, threshold, note]) => (
+                    ["Thrall I",      "0",       "None",           "Starting tier for all new members"],
+                    ["Thrall II",     "500",     "None",           ""],
+                    ["Thrall III",    "1,000",   "None",           ""],
+                    ["Karl I",        "2,000",   "Any class Lv.5", ""],
+                    ["Karl II",       "3,500",   "Any class Lv.10",""],
+                    ["Karl III",      "5,500",   "Any class Lv.15",""],
+                    ["Huscarl I",     "8,000",   "Any class Lv.20",""],
+                    ["Huscarl II",    "11,000",  "Any class Lv.25",""],
+                    ["Huscarl III",   "15,000",  "Any class Lv.30",""],
+                    ["Jarl I",        "20,000",  "Any class Lv.35",""],
+                    ["Jarl II",       "26,000",  "Any class Lv.38",""],
+                    ["Jarl III",      "33,000",  "Any class Lv.41",""],
+                    ["Einherjar I",   "42,000",  "Any class Lv.44",""],
+                    ["Einherjar II",  "52,000",  "Any class Lv.46",""],
+                    ["Einherjar III", "64,000",  "Any class Lv.48",""],
+                    ["Valkyrie I",    "78,000",  "Lv.49 + 1 Prestige",""],
+                    ["Valkyrie II",   "95,000",  "Lv.49 + 2 Prestiges",""],
+                    ["Valkyrie III",  "115,000", "Lv.50 + 3 Prestiges",""],
+                    ["Legendary",     "150,000", "Lv.50 + 5 Prestiges","Granted automatically to super admin accounts"],
+                  ].map(([tier, threshold, fitness, note]) => (
                     <tr key={tier}>
                       <td className="py-2 pr-4 font-medium">{tier}</td>
                       <td className="py-2 pr-4">{threshold}</td>
+                      <td className="py-2 pr-4 text-blue-300">{fitness}</td>
                       <td className="py-2 text-neutral-400">{note}</td>
                     </tr>
                   ))}
@@ -1596,6 +1628,105 @@ export default function PoliciesPage() {
             </UL>
             <P>
               These loyalty scheme terms are governed by the law of England and Wales and form
+              part of our Terms &amp; Conditions.
+            </P>
+          </Section>
+
+          {/* ───────────────────────────────────────────────────────
+              7. FITNESS TRACKER TERMS
+          ─────────────────────────────────────────────────────── */}
+          <Section id="fitness" title="Fitness Tracker Terms">
+            <TableOfContents items={[
+              { href: "#fit-overview",   label: "Overview" },
+              { href: "#fit-classes",    label: "RPG classes and XP" },
+              { href: "#fit-levels",     label: "Levels and prestige" },
+              { href: "#fit-antiabuse",  label: "Anti-abuse policy" },
+              { href: "#fit-data",       label: "Fitness data and privacy" },
+              { href: "#fit-events",     label: "XP boost events" },
+            ]} />
+
+            <H3 id="fit-overview">7.1 Overview</H3>
+            <P>
+              The Ragnarök Fitness Tracker is an optional gamified feature allowing members to
+              log workouts, choose an RPG class, earn XP, level up, and unlock loyalty rewards.
+              Use of the Fitness Tracker is subject to these terms in addition to our general
+              Terms &amp; Conditions.
+            </P>
+
+            <H3 id="fit-classes">7.2 RPG Classes and XP</H3>
+            <P>
+              Members may choose one active class from ten available options: Warrior, Ranger,
+              Mage, Rogue, Paladin, Druid, Berserker, Monk, Shaman, and Viking. Each class
+              provides XP bonuses for matched exercise types and reduced XP for off-class
+              exercises. Class progress is tracked independently — changing active class does
+              not reset progress in other classes.
+            </P>
+            <P>
+              XP is calculated based on workout duration, self-reported intensity, class match
+              status, and any active XP events. Workout logs cannot be backdated more than 24
+              hours to maintain the integrity of streak and XP calculations.
+            </P>
+
+            <H3 id="fit-levels">7.3 Levels and Prestige</H3>
+            <P>
+              Each class has 50 levels. Upon reaching Level 50, members may choose to Prestige,
+              resetting the class to Level 1 in exchange for a permanent Prestige star and
+              significant rewards. Members can prestige unlimited times. Prestige count
+              contributes to unlocking higher loyalty tiers.
+            </P>
+
+            <H3 id="fit-antiabuse">7.4 Anti-Abuse Policy</H3>
+            <P>
+              To maintain fairness, the following anti-abuse measures are enforced:
+            </P>
+            <UL>
+              <li>Maximum 1 XP-counted workout per day (additional workouts are still logged but do not earn the daily XP cap).</li>
+              <li>Maximum 200 XP from workouts per day; 500 XP per week from standard workouts.</li>
+              <li>Maximum 3 personal records per day; same exercise maximum once per 7 days.</li>
+              <li>Workout sessions cannot exceed 4 hours in a single log entry.</li>
+              <li>Workouts cannot be backdated more than 24 hours.</li>
+            </UL>
+            <P>
+              Automatic suspicious activity detection monitors for: excessive daily workout logs,
+              unusually long sessions, excessive personal records in a day, XP exceeding 500 in
+              a single day, bot-like patterns (identical logs at identical times on consecutive
+              days), and daily XP exceeding 3× the member&apos;s 7-day average.
+            </P>
+            <P>
+              When suspicious activity is detected, fitness-related point earning is frozen
+              pending review. Ragnarök administrators will review flagged accounts and may:
+              clear the flag (legitimate activity), remove the suspicious points and issue a
+              warning, add moderation strikes, or ban the account for serious abuse.
+            </P>
+            <P>
+              Members earning more than 1,000 fitness XP in a single week are automatically
+              queued for high-earner review. This is a routine oversight measure and is not
+              punitive in itself.
+            </P>
+
+            <H3 id="fit-data">7.5 Fitness Data and Privacy</H3>
+            <P>
+              Body measurement data, progress photos, and wellness metrics (energy, mood, sleep,
+              water intake) are private to the member by default. Members may choose to share
+              progress photos with followers or publicly. All fitness activity data (workout logs,
+              XP, achievements, leaderboard position) may be visible to other members where
+              displayed publicly.
+            </P>
+            <P>
+              Fitness data is processed in accordance with our Privacy Policy. Members may
+              request deletion of their fitness data by contacting us at hello@soncar.co.uk.
+            </P>
+
+            <H3 id="fit-events">7.6 XP Boost Events</H3>
+            <P>
+              Ragnarök administrators may activate limited-time XP boost events providing
+              increased XP multipliers for all members, specific classes, or specific exercise
+              categories. Events are time-limited and clearly displayed within the Fitness
+              Tracker with a countdown timer. Ragnarök reserves the right to cancel or
+              modify active events at any time without notice.
+            </P>
+            <P>
+              These Fitness Tracker terms are governed by the law of England and Wales and form
               part of our Terms &amp; Conditions.
             </P>
           </Section>
