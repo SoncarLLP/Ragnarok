@@ -41,7 +41,7 @@ export interface FoodItem {
   id: string;
   name: string;
   brand?: string;
-  source: 'open_food_facts' | 'usda' | 'ragnarok' | 'custom';
+  source: 'open_food_facts' | 'usda' | 'ragnarok' | 'custom' | 'uk_verified';
   serving_size: number;
   serving_unit: string;
   nutrient_data: NutrientData;
@@ -49,6 +49,14 @@ export interface FoodItem {
   allergens?: string[];
   image_url?: string | null;
   non_null_fields?: number;
+  /** True for items sourced from the curated UK food library */
+  is_verified?: boolean;
+  /** True for items confirmed to be UK-relevant (OFN UK query or uk_food_library) */
+  is_uk?: boolean;
+  /** Display group for result ordering */
+  group?: 'uk_verified' | 'open_food_facts_uk' | 'open_food_facts_global' | 'usda';
+  /** Relevance score — higher = more relevant to the query */
+  relevance_score?: number;
 }
 
 export interface NutritionLog {

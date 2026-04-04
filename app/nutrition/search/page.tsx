@@ -13,6 +13,45 @@ interface LogForm {
   serving_unit: string;
 }
 
+// ── Group display config ───────────────────────────────────────
+const GROUP_CONFIG: Record<string, { label: string; color: string }> = {
+  uk_verified:           { label: "✅ Verified UK Foods",      color: "#16a34a" },
+  ragnarok:              { label: "✓ Ragnarök Products",       color: "var(--nrs-accent)" },
+  open_food_facts_uk:    { label: "Open Food Facts — UK",      color: "#e37b00" },
+  open_food_facts_global:{ label: "Open Food Facts — Global",  color: "#c96a00" },
+  usda:                  { label: "USDA Database",             color: "#1e4d8c" },
+  most_common:           { label: "Your Most Logged Foods",    color: "var(--nrs-text-muted)" },
+};
+
+// Preferred display order for groups
+const GROUP_ORDER = [
+  "uk_verified",
+  "ragnarok",
+  "open_food_facts_uk",
+  "open_food_facts_global",
+  "usda",
+  "most_common",
+] as const;
+
+type GroupKey = (typeof GROUP_ORDER)[number];
+
+function groupResults(results: FoodItem[]): Record<GroupKey, FoodItem[]> {
+  const grouped: Record<GroupKey, FoodItem[]> = {
+    uk_verified: [],
+    ragnarok: [],
+    open_food_facts_uk: [],
+    open_food_facts_global: [],
+    usda: [],
+    most_common: [],
+  };
+  for (const item of results) {
+    const g = (item.source === "ragnarok" ? "ragnarok" : item.group ?? "usda") as GroupKey;
+    if (g in grouped) grouped[g].push(item);
+    else grouped.usda.push(item);
+  }
+  return grouped;
+}
+
 function SearchContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -22,9 +61,11 @@ function SearchContent() {
 
   const [query, setQuery] = useState(initialQ);
   const [results, setResults] = useState<FoodItem[]>([]);
+  const [suggestions, setSuggestions] = useState<string[]>([]);
   const [ragnarokProducts, setRagnarokProducts] = useState<(FoodItem & { product_slug: string })[]>([]);
   const [memberAllergens, setMemberAllergens] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
+  const [mostCommonMode, setMostCommonMode] = useState(false);
   const [selected, setSelected] = useState<FoodItem | null>(null);
   const [logForm, setLogForm] = useState<LogForm>({ meal_category: initialCat, serving_quantity: 1, serving_unit: "serving" });
   const [logging, setLogging] = useState(false);
@@ -48,6 +89,9 @@ function SearchContent() {
         allergens: p.allergens ?? [],
         nutri_score: p.nutri_score ?? null,
         product_slug: p.product_slug,
+        group: "ragnarok" as const,
+        is_verified: false,
+        is_uk: true,
       }));
       setRagnarokProducts(rp);
       setMemberAllergens(allergenData.allergens ?? []);
@@ -59,10 +103,26 @@ function SearchContent() {
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const doSearch = async (q: string) => {
-    if (!q || q.length < 2) { setResults([]); return; }
+    if (!q || q.length < 2) { setResults([]); setSuggestions([]); return; }
     setLoading(true);
+    setMostCommonMode(false);
     try {
-      const res = await fetch(`/api/nutrition/search?q=${encodeURIComponent(q)}&limit=20`);
+      const res = await fetch(`/api/nutrition/search?q=${encodeURIComponent(q)}&limit=30`);
+      const data = await res.json();
+      setResults(data.results ?? []);
+      setSuggestions(data.suggestions ?? []);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const doMostCommon = async () => {
+    setLoading(true);
+    setMostCommonMode(true);
+    setQuery("");
+    setSuggestions([]);
+    try {
+      const res = await fetch("/api/nutrition/search?most_common=true&limit=20");
       const data = await res.json();
       setResults(data.results ?? []);
     } finally {
@@ -72,6 +132,7 @@ function SearchContent() {
 
   const handleQueryChange = (val: string) => {
     setQuery(val);
+    setMostCommonMode(false);
     if (debounceRef.current) clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => doSearch(val), 400);
   };
@@ -112,7 +173,7 @@ function SearchContent() {
 
       if (res.ok) {
         setLogSuccess(true);
-        setTimeout(() => router.push(`/nutrition/diary`), 1200);
+        setTimeout(() => router.push("/nutrition/diary"), 1200);
       }
     } finally {
       setLogging(false);
@@ -121,13 +182,19 @@ function SearchContent() {
 
   // Filter Ragnarök products by search query
   const filteredRagnarok = ragnarokProducts.filter(p =>
-    !query || p.name.toLowerCase().includes(query.toLowerCase())
+    !query || p.name.toLowerCase().includes(query.toLowerCase()),
   );
+
+  // Group all non-ragnarok results
+  const grouped = groupResults(results);
+
+  // Build the ordered list of sections to display
+  const hasAnyResults = results.length > 0 || filteredRagnarok.length > 0;
 
   return (
     <div className="space-y-5">
-      {/* Search bar */}
-      <div>
+      {/* Search bar + Most Common toggle */}
+      <div className="space-y-2">
         <input
           type="search"
           value={query}
@@ -141,68 +208,128 @@ function SearchContent() {
             border: "1px solid var(--nrs-border)",
           }}
         />
-        <p className="text-xs mt-1" style={{ color: "var(--nrs-text-muted)" }}>
-          Searches Open Food Facts and USDA databases simultaneously
-        </p>
+        <div className="flex items-center justify-between">
+          <p className="text-xs" style={{ color: "var(--nrs-text-muted)" }}>
+            Searches verified UK foods, Open Food Facts and USDA databases
+          </p>
+          <button
+            onClick={doMostCommon}
+            className="text-xs px-3 py-1 rounded-lg transition"
+            style={{
+              background: mostCommonMode ? "var(--nrs-accent)" : "var(--nrs-panel)",
+              color: mostCommonMode ? "var(--nrs-bg)" : "var(--nrs-text-muted)",
+              border: "1px solid var(--nrs-border)",
+            }}
+          >
+            Most Common
+          </button>
+        </div>
       </div>
 
       <div className="grid md:grid-cols-2 gap-5">
-        {/* Results */}
-        <div className="space-y-2">
-          {/* Ragnarök products first */}
-          {filteredRagnarok.length > 0 && (
-            <div>
-              <div className="text-xs font-semibold uppercase tracking-wide mb-2" style={{ color: "var(--nrs-accent)" }}>
-                Ragnarök Products
-              </div>
-              {filteredRagnarok.map(food => (
-                <FoodResultCard
-                  key={food.id}
-                  food={food}
-                  memberAllergens={memberAllergens}
-                  isSelected={selected?.id === food.id}
-                  onClick={() => selectFood(food)}
-                />
-              ))}
-            </div>
-          )}
-
-          {/* Database results */}
+        {/* Results panel */}
+        <div className="space-y-4">
           {loading ? (
             <div className="text-center py-6 text-sm" style={{ color: "var(--nrs-text-muted)" }}>Searching...</div>
-          ) : results.length > 0 ? (
-            <div>
-              {(query.length >= 2) && (
-                <div className="text-xs font-semibold uppercase tracking-wide mb-2" style={{ color: "var(--nrs-text-muted)" }}>
-                  Database Results
+          ) : mostCommonMode ? (
+            /* Most Common mode — flat list */
+            <>
+              {results.length > 0 ? (
+                <div>
+                  <GroupHeader label={GROUP_CONFIG.most_common.label} color={GROUP_CONFIG.most_common.color} />
+                  {results.map((food, i) => (
+                    <FoodResultCard
+                      key={food.id ?? i}
+                      food={food}
+                      memberAllergens={memberAllergens}
+                      isSelected={selected?.id === food.id}
+                      onClick={() => selectFood(food)}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-6 text-sm" style={{ color: "var(--nrs-text-muted)" }}>
+                  No logged foods yet — start tracking to see your most common foods here.
                 </div>
               )}
-              {results.map((food, i) => (
-                <FoodResultCard
-                  key={food.id ?? i}
-                  food={food}
-                  memberAllergens={memberAllergens}
-                  isSelected={selected?.id === food.id}
-                  onClick={() => selectFood(food)}
-                />
-              ))}
-            </div>
+            </>
+          ) : hasAnyResults ? (
+            /* Normal search results — grouped */
+            <>
+              {/* Ragnarök products first */}
+              {filteredRagnarok.length > 0 && (
+                <div>
+                  <GroupHeader label={GROUP_CONFIG.ragnarok.label} color={GROUP_CONFIG.ragnarok.color} />
+                  {filteredRagnarok.map(food => (
+                    <FoodResultCard
+                      key={food.id}
+                      food={food}
+                      memberAllergens={memberAllergens}
+                      isSelected={selected?.id === food.id}
+                      onClick={() => selectFood(food)}
+                    />
+                  ))}
+                </div>
+              )}
+
+              {/* Grouped database results */}
+              {GROUP_ORDER.filter(g => g !== "ragnarok" && g !== "most_common").map(group => {
+                const items = grouped[group];
+                if (!items || items.length === 0) return null;
+                const config = GROUP_CONFIG[group];
+                return (
+                  <div key={group}>
+                    <GroupHeader label={config.label} color={config.color} />
+                    {items.map((food, i) => (
+                      <FoodResultCard
+                        key={food.id ?? `${group}_${i}`}
+                        food={food}
+                        memberAllergens={memberAllergens}
+                        isSelected={selected?.id === food.id}
+                        onClick={() => selectFood(food)}
+                      />
+                    ))}
+                  </div>
+                );
+              })}
+            </>
           ) : query.length >= 2 ? (
+            /* No results state */
             <div className="text-center py-6">
-              <div className="text-sm" style={{ color: "var(--nrs-text-muted)" }}>No results for &quot;{query}&quot;</div>
+              <div className="text-sm mb-2" style={{ color: "var(--nrs-text-muted)" }}>
+                No results found for &quot;{query}&quot;
+              </div>
+              {suggestions.length > 0 && (
+                <div className="space-y-1">
+                  <div className="text-xs" style={{ color: "var(--nrs-text-muted)" }}>Did you mean:</div>
+                  <div className="flex flex-wrap gap-2 justify-center">
+                    {suggestions.map(s => (
+                      <button
+                        key={s}
+                        onClick={() => { setQuery(s); doSearch(s); }}
+                        className="text-xs px-3 py-1 rounded-full"
+                        style={{ background: "var(--nrs-panel)", color: "var(--nrs-accent)", border: "1px solid var(--nrs-accent-border)" }}
+                      >
+                        {s}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
               <a
                 href="/nutrition/search?submit_custom=true"
-                className="text-sm mt-2 inline-block"
+                className="text-sm mt-3 inline-block"
                 style={{ color: "var(--nrs-accent)" }}
               >
                 Submit a custom food →
               </a>
             </div>
-          ) : !query && filteredRagnarok.length === 0 ? (
+          ) : (
+            /* Empty state */
             <div className="text-center py-8 text-sm" style={{ color: "var(--nrs-text-muted)" }}>
               Start typing to search the food database
             </div>
-          ) : null}
+          )}
         </div>
 
         {/* Log panel */}
@@ -214,7 +341,7 @@ function SearchContent() {
                   <h3 className="font-semibold" style={{ color: "var(--nrs-text)" }}>{selected.name}</h3>
                   {selected.brand && <div className="text-xs" style={{ color: "var(--nrs-text-muted)" }}>{selected.brand}</div>}
                   <div className="flex items-center gap-2 mt-1">
-                    <FoodSourceBadge source={selected.source} />
+                    <FoodSourceBadge source={selected.source} isVerified={selected.is_verified} />
                     {selected.nutri_score && <NutriScoreBadge score={selected.nutri_score} size="sm" />}
                   </div>
                 </div>
@@ -301,12 +428,31 @@ function SearchContent() {
   );
 }
 
+// ── Sub-components ────────────────────────────────────────────
+
+function GroupHeader({ label, color }: { label: string; color: string }) {
+  return (
+    <div
+      className="text-xs font-semibold uppercase tracking-wide mb-1.5 px-1"
+      style={{ color }}
+    >
+      {label}
+    </div>
+  );
+}
+
 function FoodResultCard({
-  food, memberAllergens, isSelected, onClick
+  food, memberAllergens, isSelected, onClick,
 }: { food: FoodItem; memberAllergens: string[]; isSelected: boolean; onClick: () => void }) {
   const hasAllergenConflict = (food.allergens ?? []).some(a =>
-    memberAllergens.some(ma => a.toLowerCase().includes(ma.toLowerCase()) || ma.toLowerCase().includes(a.toLowerCase()))
+    memberAllergens.some(ma => a.toLowerCase().includes(ma.toLowerCase()) || ma.toLowerCase().includes(a.toLowerCase())),
   );
+
+  const n = food.nutrient_data;
+  const cal  = n.calories != null ? Math.round(n.calories) : null;
+  const prot = n.protein  != null ? Math.round(n.protein)  : null;
+  const carb = n.carbs    != null ? Math.round(n.carbs)    : null;
+  const fat  = n.fat      != null ? Math.round(n.fat)      : null;
 
   return (
     <button
@@ -319,22 +465,28 @@ function FoodResultCard({
     >
       <div className="flex items-start justify-between gap-2">
         <div className="flex-1 min-w-0">
-          <div className="text-sm font-medium truncate" style={{ color: "var(--nrs-text)" }}>
+          <div className="text-sm font-medium" style={{ color: "var(--nrs-text)" }}>
             {hasAllergenConflict && <span className="text-red-400 mr-1">⚠️</span>}
             {food.name}
           </div>
           {food.brand && (
-            <div className="text-xs" style={{ color: "var(--nrs-text-muted)" }}>{food.brand}</div>
+            <div className="text-xs truncate" style={{ color: "var(--nrs-text-muted)" }}>{food.brand}</div>
           )}
           <div className="flex items-center gap-2 mt-1">
-            <FoodSourceBadge source={food.source} />
+            <FoodSourceBadge source={food.source} isVerified={food.is_verified} />
             {food.nutri_score && <NutriScoreBadge score={food.nutri_score} size="sm" />}
           </div>
+          {/* Macros preview row */}
+          {(cal != null || prot != null || carb != null || fat != null) && (
+            <div className="flex items-center gap-2 mt-1.5 text-[10px]" style={{ color: "var(--nrs-text-muted)" }}>
+              {cal  != null && <span><span style={{ color: "var(--nrs-text)" }} className="font-medium">{cal}</span> kcal</span>}
+              {prot != null && <span>·  <span style={{ color: "var(--nrs-text)" }} className="font-medium">{prot}g</span> P</span>}
+              {carb != null && <span>·  <span style={{ color: "var(--nrs-text)" }} className="font-medium">{carb}g</span> C</span>}
+              {fat  != null && <span>·  <span style={{ color: "var(--nrs-text)" }} className="font-medium">{fat}g</span> F</span>}
+            </div>
+          )}
         </div>
         <div className="text-right shrink-0">
-          <div className="text-sm font-medium" style={{ color: "var(--nrs-text)" }}>
-            {Math.round(food.nutrient_data.calories ?? 0)} kcal
-          </div>
           <div className="text-xs" style={{ color: "var(--nrs-text-muted)" }}>
             per {food.serving_size}{food.serving_unit}
           </div>
