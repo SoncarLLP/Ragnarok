@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import MemberBadge from "./MemberBadge";
+import PWAInstallButton from "./PWAInstallButton";
 
 export default function NavSidebar({
   role,
@@ -211,6 +212,9 @@ export default function NavSidebar({
             emoji="📋"
             label="Policies"
           />
+          {/* PWA install button — hides itself if already installed */}
+          <div className="my-1" style={{ borderTop: "1px solid var(--nrs-border)" }} />
+          <PWAInstallButton onAction={close} />
           {isAdmin && (
             <>
               <div className="my-3" style={{ borderTop: "1px solid var(--nrs-border)" }} />

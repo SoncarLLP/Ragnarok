@@ -14,13 +14,20 @@ export default async function FAQPage() {
   return (
     <main className="min-h-screen" style={{ background: "var(--nrs-bg)", color: "var(--nrs-text-body)" }}>
       <header className="nrs-header sticky top-0 z-40">
-        <div className="mx-auto max-w-7xl px-4 py-3 flex items-center justify-between">
-          <Link href="/" className="font-semibold tracking-wide" style={{ fontFamily: "var(--font-heading)", color: "var(--nrs-accent)" }}>Ragnarök</Link>
-          <nav className="flex items-center gap-4 text-sm" style={{ color: "var(--nrs-text-muted)" }}>
+        <div className="mx-auto max-w-7xl px-4 py-3 flex items-center justify-between gap-2">
+          <Link
+            href="/"
+            className="font-semibold tracking-wide truncate max-w-[120px] sm:max-w-none shrink-0"
+            style={{ fontFamily: "var(--font-heading)", color: "var(--nrs-accent)" }}
+          >
+            Ragnarök
+          </Link>
+          <nav className="flex items-center gap-2 sm:gap-4 text-sm shrink-0" style={{ color: "var(--nrs-text-muted)" }}>
             <Link href="/#shop" className="hidden md:block hover:text-white">Shop</Link>
             <Link href="/community" className="hidden md:block hover:text-white">Community</Link>
             <Link href="/policies" className="hidden md:block hover:text-white">Policies</Link>
-            <Link href="/account" className="px-3 py-1.5 rounded bg-white/10 hover:bg-white/20 text-white text-xs">
+            {/* Hidden on mobile — accessible via hamburger menu */}
+            <Link href="/account" className="px-3 py-1.5 rounded bg-white/10 hover:bg-white/20 text-white text-xs hidden sm:inline-flex">
               My Account
             </Link>
             <NavWrapper />

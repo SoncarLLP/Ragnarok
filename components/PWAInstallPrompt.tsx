@@ -80,7 +80,19 @@ export default function PWAInstallPrompt() {
       setShowPrompt(false);
     });
 
-    return () => window.removeEventListener("beforeinstallprompt", handler);
+    // Manual trigger from sidebar "Install App" button — bypasses visit-count gate
+    const manualTrigger = () => {
+      const currentStandalone =
+        window.matchMedia("(display-mode: standalone)").matches ||
+        (navigator as { standalone?: boolean }).standalone === true;
+      if (!currentStandalone) setShowPrompt(true);
+    };
+    window.addEventListener("ragnarok:show-install", manualTrigger);
+
+    return () => {
+      window.removeEventListener("beforeinstallprompt", handler);
+      window.removeEventListener("ragnarok:show-install", manualTrigger);
+    };
   }, []);
 
   // Also trigger after fitness/nutrition tracker usage
@@ -179,14 +191,14 @@ export default function PWAInstallPrompt() {
           {/* Divider */}
           <div className="h-px" style={{ background: "var(--nrs-border)" }} />
 
-          {isIOS && !deferredPrompt ? (
-            // iOS manual instructions
+          {isIOS ? (
+            // iOS manual instructions (beforeinstallprompt not supported on iOS)
             <div className="space-y-2">
               <p className="text-xs font-medium" style={{ color: "var(--nrs-text)" }}>
-                Install on iOS:
+                Install on iOS Safari:
               </p>
-              <ol className="text-xs space-y-1" style={{ color: "var(--nrs-text-muted)" }}>
-                <li>1. Tap the <strong>Share</strong> button (⬆️) in Safari</li>
+              <ol className="text-xs space-y-1.5" style={{ color: "var(--nrs-text-muted)" }}>
+                <li>1. Tap the <strong>Share</strong> button ⬆️ at the bottom</li>
                 <li>2. Scroll down and tap <strong>Add to Home Screen</strong></li>
                 <li>3. Tap <strong>Add</strong> in the top-right corner</li>
               </ol>
@@ -198,8 +210,8 @@ export default function PWAInstallPrompt() {
                 Got it
               </button>
             </div>
-          ) : (
-            // Android / Chrome install button
+          ) : deferredPrompt ? (
+            // Android / Chrome — native install prompt available
             <div className="flex gap-2">
               <button
                 onClick={handleDismiss}
@@ -218,6 +230,24 @@ export default function PWAInstallPrompt() {
                 style={{ background: "var(--nrs-accent)", color: "var(--nrs-bg)" }}
               >
                 Install App
+              </button>
+            </div>
+          ) : (
+            // Desktop or browser where prompt isn't available yet
+            <div className="space-y-2">
+              <p className="text-xs font-medium" style={{ color: "var(--nrs-text)" }}>
+                Install on desktop:
+              </p>
+              <ol className="text-xs space-y-1.5" style={{ color: "var(--nrs-text-muted)" }}>
+                <li>1. Click the <strong>install icon</strong> in your browser&apos;s address bar</li>
+                <li>2. Or open the browser menu and select <strong>Install app</strong></li>
+              </ol>
+              <button
+                onClick={handleDismiss}
+                className="w-full py-2.5 rounded-xl text-sm font-semibold transition"
+                style={{ background: "var(--nrs-accent)", color: "var(--nrs-bg)" }}
+              >
+                Got it
               </button>
             </div>
           )}

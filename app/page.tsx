@@ -104,26 +104,30 @@ export default async function HomePage({ searchParams }: SearchProps) {
 
       {/* ── Header ───────────────────────────────────────────────────── */}
       <header className="nrs-header sticky top-0 z-40">
-        <div className="mx-auto max-w-7xl px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-3">
+        <div className="mx-auto max-w-7xl px-4 py-3 flex items-center justify-between gap-2">
+          {/* Brand — shrinks but never overflows into the nav */}
+          <div className="flex items-center gap-2 min-w-0 shrink-0">
             <Image
               src="/soncar-logo-ragnarok.png"
               alt="RAGNAROK logo"
               width={112}
               height={112}
-              className="h-8 w-auto"
+              className="h-8 w-auto shrink-0"
               priority
             />
-            <span className="font-heading font-semibold tracking-widest text-sm"
-              style={{ color: "var(--nrs-accent)", fontFamily: "var(--font-heading)" }}>
+            <span
+              className="font-heading font-semibold tracking-widest text-sm truncate max-w-[110px] sm:max-w-none"
+              style={{ color: "var(--nrs-accent)", fontFamily: "var(--font-heading)" }}
+            >
               Ragnarök
             </span>
           </div>
-          <nav className="flex items-center gap-4 text-sm">
+          {/* Nav — My Account hidden on mobile (accessible via hamburger menu) */}
+          <nav className="flex items-center gap-2 sm:gap-4 text-sm shrink-0">
             <Link href="#shop" className="nrs-nav-link hidden md:block">Shop</Link>
             <Link href="/community" className="nrs-nav-link hidden md:block">Community</Link>
             <Link href="/policies" className="nrs-nav-link hidden md:block">Policies</Link>
-            <Link href="/account" className="nrs-btn text-xs py-1.5 px-3">
+            <Link href="/account" className="nrs-btn text-xs py-1.5 px-3 hidden sm:inline-flex">
               My Account
             </Link>
             <NavWrapper />
