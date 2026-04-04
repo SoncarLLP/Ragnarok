@@ -87,6 +87,7 @@ export default function NavSidebar({
       <div
         style={{
           visibility: open ? "visible" : "hidden",
+          pointerEvents: open ? "auto" : "none",
           background: "var(--nrs-bg-2)",
           borderLeft: "1px solid var(--nrs-border)",
           color: "var(--nrs-text-body)",

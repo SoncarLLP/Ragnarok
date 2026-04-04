@@ -3,10 +3,13 @@ import NavSidebar from "./NavSidebar";
 import NotificationBell from "./NotificationBell";
 import DarkModeToggle from "./DarkModeToggle";
 import SearchBar from "./SearchBar";
+import ProfileIconButton from "./ProfileIconButton";
 
 /**
  * Async server component — fetches the current user's profile and unread
- * notification count, then renders the bell + mode toggle + hamburger sidebar.
+ * notification count, then renders:
+ *   SearchBar → ProfileIcon → NotificationBell → DarkModeToggle → Hamburger
+ *
  * Safe to use on any page; gracefully handles unauthenticated users.
  */
 export default async function NavWrapper() {
@@ -18,6 +21,7 @@ export default async function NavWrapper() {
   let role: string | null = null;
   let tier: string | null = null;
   let displayName: string | null = null;
+  let avatarUrl: string | null = null;
   let unreadCount = 0;
   let unreadMessages = 0;
 
@@ -25,7 +29,7 @@ export default async function NavWrapper() {
     const [{ data: profile }, { count }, msgCount] = await Promise.all([
       supabase
         .from("profiles")
-        .select("role, tier, full_name")
+        .select("role, tier, full_name, avatar_url")
         .eq("id", user.id)
         .single(),
       supabase
@@ -40,6 +44,7 @@ export default async function NavWrapper() {
     role = profile?.role ?? null;
     tier = profile?.tier ?? null;
     displayName = profile?.full_name || user.email?.split("@")[0] || null;
+    avatarUrl = profile?.avatar_url ?? null;
     unreadCount = count ?? 0;
 
     if (role === "admin" || role === "super_admin") {
@@ -52,10 +57,15 @@ export default async function NavWrapper() {
   return (
     <>
       <SearchBar />
-      <DarkModeToggle isSignedIn={isSignedIn} />
+      <ProfileIconButton
+        isSignedIn={isSignedIn}
+        avatarUrl={avatarUrl}
+        displayName={displayName}
+      />
       {user && (
         <NotificationBell userId={user.id} initialUnreadCount={unreadCount} />
       )}
+      <DarkModeToggle isSignedIn={isSignedIn} />
       <NavSidebar
         role={role}
         tier={tier}

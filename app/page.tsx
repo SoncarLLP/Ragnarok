@@ -122,14 +122,11 @@ export default async function HomePage({ searchParams }: SearchProps) {
               Ragnarök
             </span>
           </div>
-          {/* Nav — My Account hidden on mobile (accessible via hamburger menu) */}
-          <nav className="flex items-center gap-2 sm:gap-4 text-sm shrink-0">
+          {/* Nav — profile icon is rendered inside NavWrapper */}
+          <nav className="flex items-center gap-2 sm:gap-3 text-sm shrink-0">
             <Link href="#shop" className="nrs-nav-link hidden md:block">Shop</Link>
             <Link href="/community" className="nrs-nav-link hidden md:block">Community</Link>
             <Link href="/policies" className="nrs-nav-link hidden md:block">Policies</Link>
-            <Link href="/account" className="nrs-btn text-xs py-1.5 px-3 hidden sm:inline-flex">
-              My Account
-            </Link>
             <NavWrapper />
           </nav>
         </div>

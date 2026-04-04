@@ -22,14 +22,11 @@ export default async function FAQPage() {
           >
             Ragnarök
           </Link>
-          <nav className="flex items-center gap-2 sm:gap-4 text-sm shrink-0" style={{ color: "var(--nrs-text-muted)" }}>
+          {/* Nav — profile icon rendered inside NavWrapper */}
+          <nav className="flex items-center gap-2 sm:gap-3 text-sm shrink-0" style={{ color: "var(--nrs-text-muted)" }}>
             <Link href="/#shop" className="hidden md:block hover:text-white">Shop</Link>
             <Link href="/community" className="hidden md:block hover:text-white">Community</Link>
             <Link href="/policies" className="hidden md:block hover:text-white">Policies</Link>
-            {/* Hidden on mobile — accessible via hamburger menu */}
-            <Link href="/account" className="px-3 py-1.5 rounded bg-white/10 hover:bg-white/20 text-white text-xs hidden sm:inline-flex">
-              My Account
-            </Link>
             <NavWrapper />
           </nav>
         </div>

@@ -112,22 +112,12 @@ export default async function CommunityPage(props: unknown) {
             <span style={{ color: "var(--nrs-border)" }}>/</span>
             <span className="text-sm" style={{ color: "var(--nrs-text-muted)" }}>Community</span>
           </div>
-          <div className="flex items-center gap-3">
+          {/* Profile icon is inside NavWrapper; CreatePostButton stays */}
+          <div className="flex items-center gap-2">
             {user ? (
-              <>
-                <Link
-                  href="/account"
-                  className="nrs-nav-link hidden sm:block"
-                >
-                  My Account
-                </Link>
-                <CreatePostButton userId={user.id} userRole={userRole} />
-              </>
+              <CreatePostButton userId={user.id} userRole={userRole} />
             ) : (
-              <Link
-                href="/auth/login"
-                className="nrs-btn text-sm"
-              >
+              <Link href="/auth/login" className="nrs-btn text-sm">
                 Sign in to post
               </Link>
             )}
