@@ -165,7 +165,7 @@ export default function NotificationBell({
             ? `${displayCount} unread notification${unreadCount !== 1 ? "s" : ""}`
             : "Notifications"
         }
-        className={`relative flex items-center justify-center w-9 h-9 rounded-md hover:bg-white/10 transition-colors ${
+        className={`relative flex items-center justify-center w-8 h-8 rounded-md hover:bg-white/10 transition-colors ${
           animate ? "animate-[wiggle_0.4s_ease-in-out_2]" : ""
         }`}
       >

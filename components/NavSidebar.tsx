@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
 import MemberBadge from "./MemberBadge";
 import PWAInstallButton from "./PWAInstallButton";
 
@@ -19,8 +21,17 @@ export default function NavSidebar({
   unreadMessages?: number;
 }) {
   const [open, setOpen] = useState(false);
+  const router = useRouter();
   const isAdmin = role === "admin" || role === "super_admin";
   const isSignedIn = !!(displayName || role || tier);
+
+  async function handleSignOut() {
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    close();
+    router.push("/");
+    router.refresh();
+  }
   const notifBadge = unreadCount > 0 ? (unreadCount > 99 ? "99+" : unreadCount) : null;
   const msgBadge = unreadMessages > 0 ? (unreadMessages > 99 ? "99+" : unreadMessages) : null;
 
@@ -67,7 +78,7 @@ export default function NavSidebar({
       <button
         onClick={() => setOpen(true)}
         aria-label="Open navigation menu"
-        className="flex flex-col justify-center items-center w-9 h-9 gap-[5px] rounded-md hover:bg-white/10 transition shrink-0"
+        className="flex flex-col justify-center items-center w-8 h-8 gap-[5px] rounded-md hover:bg-white/10 transition shrink-0"
       >
         <span className="block w-5 h-0.5 bg-neutral-300 rounded-full" />
         <span className="block w-5 h-0.5 bg-neutral-300 rounded-full" />
@@ -252,8 +263,17 @@ export default function NavSidebar({
         </nav>
 
         {/* Footer */}
-        <div className="shrink-0 px-6 py-4 text-xs" style={{ borderTop: "1px solid var(--nrs-border)", color: "var(--nrs-text-muted)" }}>
-          © {new Date().getFullYear()} SONCAR Limited
+        <div className="shrink-0 px-6 py-4 text-xs flex items-center justify-between" style={{ borderTop: "1px solid var(--nrs-border)", color: "var(--nrs-text-muted)" }}>
+          <span>© {new Date().getFullYear()} SONCAR Limited</span>
+          {isSignedIn && (
+            <button
+              onClick={handleSignOut}
+              className="text-xs px-2.5 py-1 rounded-md hover:bg-white/10 transition"
+              style={{ color: "var(--nrs-text-muted)" }}
+            >
+              Sign out
+            </button>
+          )}
         </div>
       </div>
     </>

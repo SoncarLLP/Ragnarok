@@ -54,7 +54,7 @@ export default function DarkModeToggle({
         isLightModeActive ? "Switch to dark mode" : "Switch to light mode"
       }
       title={isLightModeActive ? "Dark mode" : "Light mode"}
-      className="flex items-center justify-center w-9 h-9 rounded-md hover:bg-white/10 transition-colors shrink-0"
+      className="flex items-center justify-center w-8 h-8 rounded-md hover:bg-white/10 transition-colors shrink-0"
       style={{
         color: "var(--nrs-text-muted)",
       }}

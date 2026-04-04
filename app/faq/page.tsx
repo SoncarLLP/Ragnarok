@@ -17,16 +17,16 @@ export default async function FAQPage() {
         <div className="mx-auto max-w-7xl px-4 py-3 flex items-center justify-between gap-2">
           <Link
             href="/"
-            className="font-semibold tracking-wide truncate max-w-[120px] sm:max-w-none shrink-0"
+            className="font-semibold tracking-wide shrink-0"
             style={{ fontFamily: "var(--font-heading)", color: "var(--nrs-accent)" }}
           >
             Ragnarök
           </Link>
           {/* Nav — profile icon rendered inside NavWrapper */}
-          <nav className="flex items-center gap-2 sm:gap-3 text-sm shrink-0" style={{ color: "var(--nrs-text-muted)" }}>
-            <Link href="/#shop" className="hidden md:block hover:text-white">Shop</Link>
-            <Link href="/community" className="hidden md:block hover:text-white">Community</Link>
-            <Link href="/policies" className="hidden md:block hover:text-white">Policies</Link>
+          <nav className="flex items-center gap-1 text-sm shrink-0" style={{ color: "var(--nrs-text-muted)" }}>
+            <Link href="/#shop" className="hidden md:block hover:text-white mr-1">Shop</Link>
+            <Link href="/community" className="hidden md:block hover:text-white mr-1">Community</Link>
+            <Link href="/policies" className="hidden md:block hover:text-white mr-1">Policies</Link>
             <NavWrapper />
           </nav>
         </div>

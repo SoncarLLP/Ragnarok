@@ -88,11 +88,11 @@ export default function PoliciesPage() {
       {/* Header — uses nrs-policies-page CSS variables, no tier theme */}
       <header className="nrs-header sticky top-0 z-40">
         <div className="mx-auto max-w-4xl px-4 py-3 flex items-center justify-between gap-4">
-          <Link href="/" className="font-semibold tracking-wide" style={{ color: "var(--nrs-text)" }}>
+          <Link href="/" className="font-semibold tracking-wide shrink-0" style={{ color: "var(--nrs-text)" }}>
             Ragnarök
           </Link>
-          <div className="flex items-center gap-3">
-            <span className="text-sm" style={{ color: "var(--nrs-text-muted)" }}>Policies &amp; Legal</span>
+          <div className="flex items-center gap-1 shrink-0">
+            <span className="text-sm hidden sm:block mr-1" style={{ color: "var(--nrs-text-muted)" }}>Policies &amp; Legal</span>
             <NavWrapper />
           </div>
         </div>

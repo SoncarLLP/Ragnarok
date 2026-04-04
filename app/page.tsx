@@ -105,8 +105,8 @@ export default async function HomePage({ searchParams }: SearchProps) {
       {/* ── Header ───────────────────────────────────────────────────── */}
       <header className="nrs-header sticky top-0 z-40">
         <div className="mx-auto max-w-7xl px-4 py-3 flex items-center justify-between gap-2">
-          {/* Brand — shrinks but never overflows into the nav */}
-          <div className="flex items-center gap-2 min-w-0 shrink-0">
+          {/* Brand */}
+          <div className="flex items-center gap-2 shrink-0">
             <Image
               src="/soncar-logo-ragnarok.png"
               alt="RAGNAROK logo"
@@ -116,17 +116,17 @@ export default async function HomePage({ searchParams }: SearchProps) {
               priority
             />
             <span
-              className="font-heading font-semibold tracking-widest text-sm truncate max-w-[110px] sm:max-w-none"
+              className="hidden sm:inline font-heading font-semibold tracking-widest text-sm"
               style={{ color: "var(--nrs-accent)", fontFamily: "var(--font-heading)" }}
             >
               Ragnarök
             </span>
           </div>
           {/* Nav — profile icon is rendered inside NavWrapper */}
-          <nav className="flex items-center gap-2 sm:gap-3 text-sm shrink-0">
-            <Link href="#shop" className="nrs-nav-link hidden md:block">Shop</Link>
-            <Link href="/community" className="nrs-nav-link hidden md:block">Community</Link>
-            <Link href="/policies" className="nrs-nav-link hidden md:block">Policies</Link>
+          <nav className="flex items-center gap-1 text-sm shrink-0">
+            <Link href="#shop" className="nrs-nav-link hidden md:block mr-1">Shop</Link>
+            <Link href="/community" className="nrs-nav-link hidden md:block mr-1">Community</Link>
+            <Link href="/policies" className="nrs-nav-link hidden md:block mr-1">Policies</Link>
             <NavWrapper />
           </nav>
         </div>

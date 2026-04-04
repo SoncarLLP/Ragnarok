@@ -7,9 +7,11 @@ import ProfileIconButton from "./ProfileIconButton";
 
 /**
  * Async server component — fetches the current user's profile and unread
- * notification count, then renders:
- *   SearchBar → ProfileIcon → NotificationBell → DarkModeToggle → Hamburger
+ * notification count, then renders the compact header icon row:
  *
+ *   ProfileIcon → Search → DarkMode → Bell → Hamburger
+ *
+ * All icons are w-8 h-8 with gap-1 so the row fits within a 320px screen.
  * Safe to use on any page; gracefully handles unauthenticated users.
  */
 export default async function NavWrapper() {
@@ -56,16 +58,16 @@ export default async function NavWrapper() {
 
   return (
     <>
-      <SearchBar />
       <ProfileIconButton
         isSignedIn={isSignedIn}
         avatarUrl={avatarUrl}
         displayName={displayName}
       />
+      <SearchBar />
+      <DarkModeToggle isSignedIn={isSignedIn} />
       {user && (
         <NotificationBell userId={user.id} initialUnreadCount={unreadCount} />
       )}
-      <DarkModeToggle isSignedIn={isSignedIn} />
       <NavSidebar
         role={role}
         tier={tier}

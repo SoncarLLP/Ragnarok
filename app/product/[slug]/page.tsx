@@ -110,11 +110,11 @@ export default async function ProductPage(props: Props) {
             <div className="mx-auto max-w-7xl px-4 py-3 flex items-center justify-between">
               <Link href="/" className="flex items-center gap-2 no-underline">
                 <Image src="/soncar-logo-ragnarok.png" alt="Ragnarök" width={48} height={48} className="h-7 w-auto" priority />
-                <span className="font-semibold text-sm tracking-widest" style={{ fontFamily: "var(--font-heading)", color: "var(--nrs-accent)" }}>
+                <span className="hidden sm:inline font-semibold text-sm tracking-widest" style={{ fontFamily: "var(--font-heading)", color: "var(--nrs-accent)" }}>
                   Ragnarök
                 </span>
               </Link>
-              <nav className="flex items-center gap-3 text-sm">
+              <nav className="flex items-center gap-1 text-sm">
                 <Link href="/#shop" className="nrs-nav-link hidden md:block">Shop</Link>
                 <Link href="/cart" className="nrs-btn text-xs py-1.5 px-3">Cart</Link>
                 <NavWrapper />
@@ -404,7 +404,7 @@ export default async function ProductPage(props: Props) {
                 Ragnarök
               </span>
             </Link>
-            <nav className="flex items-center gap-3 text-sm">
+            <nav className="flex items-center gap-1 text-sm">
               <Link href="/#shop" className="nrs-nav-link hidden md:block">Shop</Link>
               <Link href="/cart" className="nrs-btn text-xs py-1.5 px-3">Cart</Link>
               <NavWrapper />

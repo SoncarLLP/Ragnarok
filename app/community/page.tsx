@@ -105,19 +105,19 @@ export default async function CommunityPage(props: unknown) {
       {/* Header */}
       <header className="nrs-header sticky top-0 z-40">
         <div className="mx-auto max-w-7xl px-4 py-3 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 shrink-0">
             <Link href="/" className="font-semibold tracking-wide" style={{ fontFamily: "var(--font-heading)", color: "var(--nrs-accent)" }}>
               Ragnarök
             </Link>
-            <span style={{ color: "var(--nrs-border)" }}>/</span>
-            <span className="text-sm" style={{ color: "var(--nrs-text-muted)" }}>Community</span>
+            <span className="hidden sm:inline" style={{ color: "var(--nrs-border)" }}>/</span>
+            <span className="hidden sm:inline text-sm" style={{ color: "var(--nrs-text-muted)" }}>Community</span>
           </div>
           {/* Profile icon is inside NavWrapper; CreatePostButton stays */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 shrink-0">
             {user ? (
               <CreatePostButton userId={user.id} userRole={userRole} />
             ) : (
-              <Link href="/auth/login" className="nrs-btn text-sm">
+              <Link href="/auth/login" className="nrs-btn text-sm mr-1">
                 Sign in to post
               </Link>
             )}

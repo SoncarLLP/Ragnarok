@@ -3,11 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { createClient } from "@/lib/supabase/server";
 import AccountNav from "./AccountNav";
-import LogoutButton from "./LogoutButton";
-import NavSidebar from "@/components/NavSidebar";
-import NotificationBell from "@/components/NotificationBell";
-import DarkModeToggle from "@/components/DarkModeToggle";
-import MemberBadge from "@/components/MemberBadge";
+import NavWrapper from "@/components/NavWrapper";
 import BackToTop from "@/components/BackToTop";
 
 export default async function AccountLayout({ children }: { children: React.ReactNode }) {
@@ -43,14 +39,12 @@ export default async function AccountLayout({ children }: { children: React.Reac
   const isAdmin        = profile?.role === "admin" || profile?.role === "super_admin";
   const unreadMessages = isAdmin ? ((unreadMsgResult.data as number) ?? 0) : 0;
 
-  const displayName = profile?.full_name || user.email?.split("@")[0] || "Member";
-
   return (
     <div style={{ minHeight: "100vh", background: "var(--nrs-bg)", color: "var(--nrs-text-body)" }}>
-      {/* Header */}
+      {/* Header — uses shared NavWrapper for consistent mobile layout */}
       <header className="nrs-header sticky top-0 z-40">
         <div className="mx-auto max-w-7xl px-4 py-3 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2 no-underline">
+          <Link href="/" className="flex items-center gap-2 no-underline shrink-0">
             <Image
               src="/soncar-logo-ragnarok.png"
               alt="Ragnarök"
@@ -59,29 +53,16 @@ export default async function AccountLayout({ children }: { children: React.Reac
               priority
             />
             <span
-              className="font-semibold tracking-widest text-sm hidden sm:block"
+              className="hidden sm:block font-semibold tracking-widest text-sm"
               style={{ fontFamily: "var(--font-heading)", color: "var(--nrs-accent)" }}
             >
               Ragnarök
             </span>
           </Link>
 
-          <div className="flex items-center gap-2">
-            <span className="text-sm hidden sm:flex items-center gap-1.5 mr-1"
-              style={{ color: "var(--nrs-text-muted)" }}>
-              {displayName}
-              <MemberBadge role={profile?.role} tier={profile?.tier} />
-            </span>
-            <NotificationBell userId={user.id} initialUnreadCount={totalUnread} />
-            <DarkModeToggle isSignedIn={true} />
-            <LogoutButton />
-            <NavSidebar
-              role={profile?.role}
-              tier={profile?.tier}
-              displayName={displayName}
-              unreadCount={totalUnread}
-            />
-          </div>
+          <nav className="flex items-center gap-1 shrink-0">
+            <NavWrapper />
+          </nav>
         </div>
       </header>
 

@@ -332,13 +332,15 @@ export default async function SearchPage({ searchParams }: PageProps) {
       {/* Header */}
       <header className="nrs-header sticky top-0 z-40">
         <div className="mx-auto max-w-7xl px-4 py-3 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
+          <Link href="/" className="flex items-center gap-2 shrink-0">
             <Image src="/soncar-logo-ragnarok.png" alt="Ragnarök" width={48} height={48} className="h-7 w-auto" />
-            <span className="font-semibold text-sm tracking-widest" style={{ fontFamily: "var(--font-heading)", color: "var(--nrs-accent)" }}>
+            <span className="hidden sm:inline font-semibold text-sm tracking-widest" style={{ fontFamily: "var(--font-heading)", color: "var(--nrs-accent)" }}>
               Ragnarök
             </span>
           </Link>
-          <NavWrapper />
+          <nav className="flex items-center gap-1 shrink-0">
+            <NavWrapper />
+          </nav>
         </div>
       </header>
 
