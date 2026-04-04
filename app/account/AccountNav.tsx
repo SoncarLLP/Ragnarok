@@ -13,6 +13,7 @@ const baseLinks = [
   { href: "/account/notifications",       label: "Notifications" },
   { href: "/account/privacy",             label: "Privacy & Safety" },
   { href: "/account/settings/theme",      label: "Theme" },
+  { href: "/account/settings/push",       label: "Push Notifications" },
 ];
 
 export default function AccountNav({

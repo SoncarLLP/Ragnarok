@@ -1,10 +1,19 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import Link from "next/link";
 import { MEAL_CATEGORIES, sumNutrients, macroPercent, type NutritionLog, type MealCategory } from "@/lib/nutrition";
 import WaterTracker from "@/components/nutrition/WaterTracker";
 import NutriScoreBadge from "@/components/nutrition/NutriScoreBadge";
+import { addPendingWaterLog, getPendingWaterLogs } from "@/lib/offline/db";
+import { syncAllPending } from "@/lib/offline/sync";
+
+// Haptic feedback helper
+function vibrate(pattern: number | number[]) {
+  if (typeof navigator !== "undefined" && "vibrate" in navigator) {
+    navigator.vibrate(pattern);
+  }
+}
 
 export default function DiaryPage() {
   const [date, setDate] = useState(() => new Date().toISOString().split("T")[0]);
@@ -17,11 +26,36 @@ export default function DiaryPage() {
   const [suggestions, setSuggestions] = useState<{ name: string; calories: number; protein: number; reason: string }[]>([]);
   const [suggestRemaining, setSuggestRemaining] = useState<{ calories: number; protein: number } | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [isOffline, setIsOffline] = useState(false);
+  const [pendingWaterMl, setPendingWaterMl] = useState(0); // offline water pending
+
+  // Swipe gesture state
+  const touchStartX = useRef<number | null>(null);
+  const touchStartY = useRef<number | null>(null);
 
   const isToday = date === new Date().toISOString().split("T")[0];
   const canGoForward = date < new Date().toISOString().split("T")[0];
   const cutoff = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString().split("T")[0];
   const canGoBack = date > cutoff;
+
+  // Track online/offline state
+  useEffect(() => {
+    setIsOffline(!navigator.onLine);
+    const onOnline = async () => {
+      setIsOffline(false);
+      const userId = localStorage.getItem("ragnarok_user_id");
+      if (userId) {
+        await syncAllPending(userId).catch(() => {});
+      }
+    };
+    const onOffline = () => setIsOffline(true);
+    window.addEventListener("online", onOnline);
+    window.addEventListener("offline", onOffline);
+    return () => {
+      window.removeEventListener("online", onOnline);
+      window.removeEventListener("offline", onOffline);
+    };
+  }, []);
 
   const loadDiary = useCallback(async (d: string) => {
     setLoading(true);
@@ -36,6 +70,25 @@ export default function DiaryPage() {
       setWaterLogs(diaryData.water_logs ?? []);
       setTotalWater(diaryData.total_water_ml ?? 0);
       setGoals(goalsData);
+
+      // Add offline pending water to total for today
+      if (d === new Date().toISOString().split("T")[0]) {
+        try {
+          const userId = localStorage.getItem("ragnarok_user_id") ?? "";
+          const pending = await getPendingWaterLogs(userId);
+          const todayPending = pending
+            .filter((l) => l.loggedDate === d && l.syncStatus === "pending")
+            .reduce((sum, l) => sum + l.amountMl, 0);
+          setPendingWaterMl(todayPending);
+        } catch {
+          setPendingWaterMl(0);
+        }
+      } else {
+        setPendingWaterMl(0);
+      }
+    } catch {
+      // Network error while offline — show cached state
+      setLoading(false);
     } finally {
       setLoading(false);
     }
@@ -46,7 +99,30 @@ export default function DiaryPage() {
   const changeDate = (delta: number) => {
     const d = new Date(date);
     d.setDate(d.getDate() + delta);
-    setDate(d.toISOString().split("T")[0]);
+    const newDate = d.toISOString().split("T")[0];
+    if (delta > 0 && !canGoForward) return;
+    if (delta < 0 && !canGoBack) return;
+    vibrate(20);
+    setDate(newDate);
+  };
+
+  // Swipe gesture handlers for date navigation
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+    touchStartY.current = e.touches[0].clientY;
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX.current === null || touchStartY.current === null) return;
+    const dx = e.changedTouches[0].clientX - touchStartX.current;
+    const dy = e.changedTouches[0].clientY - touchStartY.current;
+    // Only trigger if horizontal swipe (not vertical scroll)
+    if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+      if (dx < 0 && canGoForward) changeDate(1);  // swipe left = next day
+      if (dx > 0 && canGoBack) changeDate(-1);    // swipe right = prev day
+    }
+    touchStartX.current = null;
+    touchStartY.current = null;
   };
 
   const handleDelete = async (id: string) => {
@@ -57,6 +133,20 @@ export default function DiaryPage() {
   };
 
   const addWater = async (amount: number) => {
+    if (!navigator.onLine) {
+      // Store offline
+      try {
+        const userId = localStorage.getItem("ragnarok_user_id") ?? "unknown";
+        await addPendingWaterLog({ userId, amountMl: amount, loggedDate: date });
+        setPendingWaterMl(prev => prev + amount);
+        setTotalWater(prev => prev + amount);
+        vibrate(30);
+      } catch {
+        // Silent fail
+      }
+      return;
+    }
+
     await fetch("/api/nutrition/water", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -93,7 +183,22 @@ export default function DiaryPage() {
     new Date(date).toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "short" });
 
   return (
-    <div className="space-y-5">
+    <div
+      className="space-y-5"
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+    >
+      {/* Offline badge */}
+      {isOffline && (
+        <div
+          className="rounded-lg px-3 py-2 flex items-center gap-2 text-sm"
+          style={{ background: "rgba(248,113,113,0.08)", border: "1px solid rgba(248,113,113,0.2)", color: "#f87171" }}
+        >
+          <span>⚡</span>
+          <span>Offline mode · Water and food logging still works. Changes sync when you reconnect.</span>
+        </div>
+      )}
+
       {/* Date navigation */}
       <div className="flex items-center justify-between">
         <button
@@ -105,6 +210,8 @@ export default function DiaryPage() {
             color: canGoBack ? "var(--nrs-text)" : "var(--nrs-text-muted)",
             border: "1px solid var(--nrs-border)",
             opacity: canGoBack ? 1 : 0.4,
+            minHeight: "44px",
+            minWidth: "70px",
           }}
         >
           ← Prev
@@ -112,6 +219,11 @@ export default function DiaryPage() {
         <div className="text-center">
           <div className="font-semibold" style={{ color: "var(--nrs-text)" }}>{dateLabel}</div>
           <div className="text-xs" style={{ color: "var(--nrs-text-muted)" }}>{date}</div>
+          {(canGoBack || canGoForward) && (
+            <div className="text-[10px] mt-0.5" style={{ color: "var(--nrs-text-muted)", opacity: 0.5 }}>
+              swipe to navigate
+            </div>
+          )}
         </div>
         <button
           onClick={() => changeDate(1)}
@@ -122,6 +234,8 @@ export default function DiaryPage() {
             color: canGoForward ? "var(--nrs-text)" : "var(--nrs-text-muted)",
             border: "1px solid var(--nrs-border)",
             opacity: canGoForward ? 1 : 0.4,
+            minHeight: "44px",
+            minWidth: "70px",
           }}
         >
           Next →
@@ -142,7 +256,7 @@ export default function DiaryPage() {
           <Link
             href={`/nutrition/search?date=${date}`}
             className="px-4 py-2 rounded-lg text-sm font-semibold transition"
-            style={{ background: "var(--nrs-accent)", color: "var(--nrs-bg)" }}
+            style={{ background: "var(--nrs-accent)", color: "var(--nrs-bg)", minHeight: "44px", display: "flex", alignItems: "center" }}
           >
             + Add Food
           </Link>
@@ -177,9 +291,14 @@ export default function DiaryPage() {
         date={date}
         onAdd={addWater}
       />
+      {pendingWaterMl > 0 && (
+        <div className="text-xs text-center" style={{ color: "var(--nrs-text-muted)" }}>
+          ⏳ +{pendingWaterMl}ml water pending offline sync
+        </div>
+      )}
 
-      {/* AI Suggestions (today only) */}
-      {isToday && (
+      {/* AI Suggestions (today only, online only) */}
+      {isToday && !isOffline && (
         <div className="rounded-xl p-4" style={{ border: "1px dashed var(--nrs-border)", background: "var(--nrs-bg-2)" }}>
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2">
@@ -190,7 +309,7 @@ export default function DiaryPage() {
               onClick={getSuggestions}
               disabled={suggesting}
               className="text-xs px-3 py-1.5 rounded-lg font-semibold transition"
-              style={{ background: "var(--nrs-accent)", color: "var(--nrs-bg)" }}
+              style={{ background: "var(--nrs-accent)", color: "var(--nrs-bg)", minHeight: "36px" }}
             >
               {suggesting ? "Thinking..." : "Get Suggestions"}
             </button>
@@ -220,7 +339,15 @@ export default function DiaryPage() {
 
       {/* Meal sections */}
       {loading ? (
-        <div className="text-center py-8 text-sm" style={{ color: "var(--nrs-text-muted)" }}>Loading diary...</div>
+        <div className="space-y-3">
+          {[1, 2, 3, 4].map((i) => (
+            <div
+              key={i}
+              className="rounded-xl overflow-hidden animate-pulse"
+              style={{ border: "1px solid var(--nrs-border-subtle)", background: "var(--nrs-card)", height: "80px" }}
+            />
+          ))}
+        </div>
       ) : (
         MEAL_CATEGORIES.map((cat) => {
           const catLogs = logs.filter(l => l.meal_category === cat.key);
@@ -242,7 +369,14 @@ export default function DiaryPage() {
                 <Link
                   href={`/nutrition/search?date=${date}&category=${cat.key}`}
                   className="text-xs px-3 py-1 rounded-lg transition"
-                  style={{ background: "var(--nrs-panel)", color: "var(--nrs-accent)", border: "1px solid var(--nrs-accent-border)" }}
+                  style={{
+                    background: "var(--nrs-panel)",
+                    color: "var(--nrs-accent)",
+                    border: "1px solid var(--nrs-accent-border)",
+                    minHeight: "32px",
+                    display: "flex",
+                    alignItems: "center",
+                  }}
                 >
                   + Add
                 </Link>
@@ -282,7 +416,7 @@ export default function DiaryPage() {
                           onClick={() => handleDelete(log.id)}
                           disabled={deletingId === log.id}
                           className="text-xs px-2 py-1 rounded transition"
-                          style={{ color: "#f87171", background: "transparent" }}
+                          style={{ color: "#f87171", background: "transparent", minHeight: "44px", minWidth: "36px" }}
                           aria-label="Remove"
                         >
                           ✕

@@ -1,18 +1,33 @@
 // app/layout.tsx
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { createClient } from "@/lib/supabase/server";
 import ThemeProvider from "@/components/ThemeProvider";
 import CinematicIntro from "@/components/CinematicIntro";
 import TierReveal from "@/components/TierReveal";
 import ScrollReveal from "@/components/ScrollReveal";
+import PWAInstallPrompt from "@/components/PWAInstallPrompt";
+import PWABottomNav from "@/components/PWABottomNav";
+import PushNotificationManager from "@/components/PushNotificationManager";
+import UserIdSync from "@/components/UserIdSync";
+import ServiceWorkerRegistrar from "@/components/ServiceWorkerRegistrar";
 import { formatTierName, tierFromPoints } from "@/lib/loyalty";
+
+export const viewport: Viewport = {
+  themeColor: "#0a0a0f",
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  userScalable: true,
+  viewportFit: "cover",
+};
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://soncar.co.uk"),
   title: "Ragnarök – Functional Protein Blends | soncar.co.uk",
   description:
     "Premium collagen and plant-based protein blends by Ragnarök. UK-made supplements for hydration, recovery, and glow.",
+  applicationName: "Ragnarök",
   alternates: { canonical: "/" },
   openGraph: {
     title: "Ragnarök – Functional Protein Blends",
@@ -31,12 +46,31 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: "/favicon/favicon-32x32.png", sizes: "32x32", type: "image/png" },
-      { url: "/favicon/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/icons/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+      { url: "/icons/favicon-16x16.png", sizes: "16x16", type: "image/png" },
     ],
-    apple: "/favicon/apple-touch-icon.png",
+    apple: [
+      { url: "/icons/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+    ],
+    other: [
+      { rel: "mask-icon", url: "/icons/icon-512x512.png" },
+    ],
   },
-  manifest: "/favicon/site.webmanifest",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "Ragnarök",
+    startupImage: [
+      { url: "/icons/icon-512x512.png" },
+    ],
+  },
+  other: {
+    "msapplication-TileColor": "#0a0a0f",
+    "msapplication-TileImage": "/icons/icon-144x144.png",
+    "msapplication-config": "none",
+    "mobile-web-app-capable": "yes",
+  },
 };
 
 /** Derive the automatic theme from a tier name (19-tier Norse system). */
@@ -105,7 +139,11 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       {...(dataMode ? { "data-mode": dataMode } : {})}
       className="bg-[var(--nrs-bg)] text-[var(--nrs-text-body)]"
     >
-      <body>
+      <head>
+        {/* Safe area support for notched devices */}
+        <meta name="format-detection" content="telephone=no" />
+      </head>
+      <body style={{ paddingBottom: "env(safe-area-inset-bottom)" }}>
         <ThemeProvider
           initialTheme={theme}
           initialLightMode={lightMode}
@@ -121,6 +159,12 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               tierRevealsSeen={tierRevealsSeen}
             />
           )}
+          {/* PWA components */}
+          <ServiceWorkerRegistrar />
+          <UserIdSync />
+          <PWAInstallPrompt />
+          <PWABottomNav isSignedIn={isSignedIn} />
+          {isSignedIn && <PushNotificationManager />}
         </ThemeProvider>
       </body>
     </html>
