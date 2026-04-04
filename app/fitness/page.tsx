@@ -16,6 +16,8 @@ export default async function FitnessDashboard() {
 
   const now = new Date().toISOString();
 
+  const today = new Date().toISOString().split("T")[0];
+
   const [
     { data: fitnessProfile },
     { data: classProgress },
@@ -24,6 +26,9 @@ export default async function FitnessDashboard() {
     { data: activeEvents },
     { data: challenges },
     { data: profile },
+    { data: todayNutritionLogs },
+    { data: nutritionGoals },
+    { data: nutritionStreak },
   ] = await Promise.all([
     supabase
       .from("member_fitness_profiles")
@@ -70,6 +75,24 @@ export default async function FitnessDashboard() {
       .select("total_fitness_xp, tier, full_name")
       .eq("id", user.id)
       .single(),
+
+    supabase
+      .from("nutrition_logs")
+      .select("nutrient_data")
+      .eq("user_id", user.id)
+      .eq("logged_date", today),
+
+    supabase
+      .from("nutrition_goals")
+      .select("calories,protein_g,carbs_g,fat_g")
+      .eq("user_id", user.id)
+      .maybeSingle(),
+
+    supabase
+      .from("nutrition_streaks")
+      .select("current_streak,longest_streak")
+      .eq("user_id", user.id)
+      .maybeSingle(),
   ]);
 
   const activeClass = fitnessProfile?.fitness_classes as {
@@ -83,6 +106,15 @@ export default async function FitnessDashboard() {
   const tierName = formatTierName(profile?.tier ?? "Thrall I");
   const displayName = profile?.full_name ?? "Warrior";
   const hasClass = !!activeClass;
+
+  // Nutrition summary for combined view
+  const nutLogs = todayNutritionLogs ?? [];
+  const nutCalories = Math.round(nutLogs.reduce((s: number, l: { nutrient_data: { calories?: number } }) => s + (l.nutrient_data.calories ?? 0), 0));
+  const nutProtein  = Math.round(nutLogs.reduce((s: number, l: { nutrient_data: { protein?: number } }) => s + (l.nutrient_data.protein ?? 0), 0));
+  const calTarget   = nutritionGoals?.calories ?? 2000;
+  const protTarget  = nutritionGoals?.protein_g ?? 150;
+  const calPct      = calTarget > 0 ? Math.min(100, Math.round((nutCalories / calTarget) * 100)) : 0;
+  const protPct     = protTarget > 0 ? Math.min(100, Math.round((nutProtein / protTarget) * 100)) : 0;
 
   return (
     <div className="space-y-6">
@@ -367,6 +399,69 @@ export default async function FitnessDashboard() {
           </Link>
         </div>
       )}
+
+      {/* Combined Nutrition Summary Widget */}
+      <div
+        className="rounded-xl p-5"
+        style={{ border: "1px solid var(--nrs-border-subtle)", background: "var(--nrs-card)" }}
+      >
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="font-semibold flex items-center gap-2" style={{ color: "var(--nrs-text)" }}>
+            🥗 Today&apos;s Nutrition
+          </h2>
+          <Link
+            href="/nutrition"
+            className="text-sm font-medium"
+            style={{ color: "var(--nrs-accent)" }}
+          >
+            Open Tracker →
+          </Link>
+        </div>
+
+        {nutLogs.length === 0 ? (
+          <div className="flex items-center justify-between">
+            <p className="text-sm" style={{ color: "var(--nrs-text-muted)" }}>
+              No meals logged today. Fuel your training!
+            </p>
+            <Link
+              href="/nutrition/diary"
+              className="text-sm px-4 py-2 rounded-lg font-semibold transition"
+              style={{ background: "var(--nrs-accent)", color: "var(--nrs-bg)" }}
+            >
+              + Log Meal
+            </Link>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            <div className="flex justify-between text-sm mb-1">
+              <span style={{ color: "var(--nrs-text-muted)" }}>Calories</span>
+              <span style={{ color: "var(--nrs-text)" }}>{nutCalories} / {calTarget} kcal</span>
+            </div>
+            <div className="w-full h-2 rounded-full" style={{ background: "var(--nrs-panel)" }}>
+              <div className="h-2 rounded-full" style={{ width: `${calPct}%`, background: "#60a5fa" }} />
+            </div>
+            <div className="flex justify-between text-sm">
+              <span style={{ color: "var(--nrs-text-muted)" }}>Protein</span>
+              <span style={{ color: "var(--nrs-text)" }}>{nutProtein}g / {protTarget}g</span>
+            </div>
+            <div className="w-full h-2 rounded-full" style={{ background: "var(--nrs-panel)" }}>
+              <div className="h-2 rounded-full" style={{ width: `${protPct}%`, background: "#34d399" }} />
+            </div>
+            {nutritionStreak && nutritionStreak.current_streak > 0 && (
+              <div className="text-xs" style={{ color: "var(--nrs-text-muted)" }}>
+                🔥 {nutritionStreak.current_streak}-day nutrition streak
+              </div>
+            )}
+            <Link
+              href="/nutrition/diary"
+              className="block text-center py-2 rounded-lg text-sm font-medium transition"
+              style={{ background: "var(--nrs-panel)", color: "var(--nrs-accent)", border: "1px solid var(--nrs-accent-border)" }}
+            >
+              + Add More Food
+            </Link>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

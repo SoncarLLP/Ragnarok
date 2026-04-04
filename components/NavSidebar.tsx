@@ -183,6 +183,14 @@ export default function NavSidebar({
               label="Fitness Tracker"
             />
           )}
+          {isSignedIn && (
+            <SidebarLink
+              href="/nutrition"
+              onClick={close}
+              emoji="🥗"
+              label="Nutrition Tracker"
+            />
+          )}
           {/* Notifications with unread badge */}
           <Link
             href="/account/notifications"

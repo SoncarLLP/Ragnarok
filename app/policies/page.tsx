@@ -2,7 +2,7 @@ import Link from "next/link";
 import NavWrapper from "@/components/NavWrapper";
 import BackToTop from "@/components/BackToTop";
 
-const LAST_UPDATED = "4 April 2026";
+const LAST_UPDATED = "5 April 2026";
 
 function Section({
   id,
@@ -79,6 +79,7 @@ const sections = [
   { href: "#community",  label: "5. Community Guidelines" },
   { href: "#loyalty",    label: "6. Loyalty Scheme Terms" },
   { href: "#fitness",    label: "7. Fitness Tracker Terms" },
+  { href: "#nutrition",  label: "8. Nutrition Tracker Terms" },
 ];
 
 export default function PoliciesPage() {
@@ -1728,6 +1729,126 @@ export default function PoliciesPage() {
             <P>
               These Fitness Tracker terms are governed by the law of England and Wales and form
               part of our Terms &amp; Conditions.
+            </P>
+          </Section>
+
+          {/* ─── Section 8: Nutrition Tracker Terms
+          ─────────────────────────────────────────────────────── */}
+          <Section id="nutrition" title="Nutrition Tracker Terms">
+            <TableOfContents items={[
+              { href: "#nut-overview",    label: "Overview" },
+              { href: "#nut-food-data",   label: "Food data and sources" },
+              { href: "#nut-ai",          label: "AI-powered suggestions" },
+              { href: "#nut-custom",      label: "Custom food submissions" },
+              { href: "#nut-privacy",     label: "Privacy and data" },
+              { href: "#nut-points",      label: "Loyalty points" },
+              { href: "#nut-antiabuse",   label: "Anti-abuse policy" },
+            ]} />
+
+            <H3 id="nut-overview">8.1 Overview</H3>
+            <P>
+              The Ragnarök Nutrition Tracker is an optional feature that allows members to log
+              food and drink, track macronutrients and micronutrients, set daily targets, and
+              earn loyalty points for consistent healthy habits. Use of the Nutrition Tracker is
+              subject to these terms in addition to our general Terms &amp; Conditions.
+            </P>
+            <P>
+              Nutrition tracking is for general wellness purposes only. It is not medical advice
+              and should not be used as a substitute for professional dietetic or medical
+              guidance. Members with medical conditions, eating disorders, or specific dietary
+              requirements should consult a qualified healthcare professional before using any
+              calorie or nutrient tracking tools.
+            </P>
+
+            <H3 id="nut-food-data">8.2 Food Data and Sources</H3>
+            <P>
+              Nutritional information in the Nutrition Tracker is sourced from Open Food Facts
+              (an open community database), the USDA FoodData Central database, and nutritional
+              profiles entered by Ragnarök administrators for our own products. We make
+              reasonable efforts to ensure accuracy but cannot guarantee that all nutritional
+              data is complete or current. Members should verify nutritional information against
+              product labels for critical dietary decisions.
+            </P>
+            <P>
+              Open Food Facts data is contributed by the public and may contain errors.
+              Nutritional data is cached for up to 30 days to improve performance.
+              Members may submit custom food items for inclusion in the database, subject to
+              admin review.
+            </P>
+
+            <H3 id="nut-ai">8.3 AI-Powered Meal Suggestions</H3>
+            <P>
+              The Nutrition Tracker includes an optional AI-powered meal suggestion feature
+              using Anthropic&apos;s Claude AI. Suggestions are generated on request only and
+              are not automatic. AI-generated suggestions are for general guidance purposes and
+              do not constitute nutritional or medical advice. Suggestions are based on the
+              member&apos;s logged food and stated targets; actual nutritional needs vary
+              individually. Ragnarök accepts no liability for outcomes resulting from following
+              AI-generated meal suggestions.
+            </P>
+
+            <H3 id="nut-custom">8.4 Custom Food Submissions</H3>
+            <P>
+              Members may submit custom food items that are not found in our database. Submitted
+              items are reviewed by Ragnarök administrators before appearing in the public food
+              database. By submitting a custom food entry, you confirm that the nutritional
+              information provided is accurate to the best of your knowledge. Deliberately
+              submitting false or misleading nutritional data is a violation of these terms.
+            </P>
+            <P>
+              Approved submissions earn 50 loyalty points. Submissions may be rejected without
+              reason. We reserve the right to edit, remove, or decline any submitted food item.
+            </P>
+
+            <H3 id="nut-privacy">8.5 Privacy and Data</H3>
+            <P>
+              All nutrition diary data (food logs, goals, water logs, and recipes) is private by
+              default. Members may choose to make the following data visible to followers or
+              publicly: daily calorie summary, macro breakdown, meal plans, and public recipes.
+              Food diary entries marked as public can be viewed by all authenticated members.
+            </P>
+            <P>
+              Allergen and dietary preference settings are private and used only to personalise
+              search results and display allergen warnings. This data is processed in accordance
+              with our Privacy Policy. Members may request deletion of all nutrition data by
+              contacting us at hello@soncar.co.uk.
+            </P>
+
+            <H3 id="nut-points">8.6 Loyalty Points from Nutrition</H3>
+            <P>
+              Members can earn loyalty points for consistent nutrition tracking behaviours.
+              Points are subject to the following daily caps to prevent abuse:
+            </P>
+            <UL>
+              <li>Maximum 100 nutrition points per day from diary logging activities.</li>
+              <li>Hitting calorie target (within 10%): 10 points, once per day.</li>
+              <li>Hitting protein target (within 10%): 15 points, once per day.</li>
+              <li>Hitting all macro targets in one day: 25 points, once per day.</li>
+              <li>Logging all meals for a full day (3+ categories): 10 points, once per day.</li>
+              <li>Hitting daily water target: 5 points, once per day.</li>
+              <li>Logging a Ragnarök product: 25 points, once per product per day.</li>
+              <li>Public recipe receiving 10 likes (per 10-like milestone): 10 points, max 50 per recipe per week.</li>
+              <li>Custom food submission approved: 50 points, once per approved item.</li>
+            </UL>
+            <P>
+              Points are awarded at the end of each day and cannot be retroactively removed if
+              diary entries are subsequently deleted. Weekly and monthly streak bonuses apply as
+              described in the Loyalty Scheme Terms.
+            </P>
+
+            <H3 id="nut-antiabuse">8.7 Anti-Abuse Policy</H3>
+            <P>
+              To protect the integrity of the points system, the following measures are in place:
+            </P>
+            <UL>
+              <li>Food diary entries cannot be created for dates more than 7 days in the past.</li>
+              <li>Suspicious patterns (e.g. repeated logging and deletion of entries) may trigger an automatic abuse flag and temporary suspension of nutrition points.</li>
+              <li>Members found to be artificially inflating streaks or points through automation or coordinated behaviour will have their fitness and nutrition points frozen pending review.</li>
+              <li>All nutrition points are subject to the same anti-abuse framework as fitness points described in Section 7.</li>
+            </UL>
+            <P>
+              These Nutrition Tracker terms are governed by the law of England and Wales and
+              form part of our Terms &amp; Conditions.
             </P>
           </Section>
 

@@ -28,6 +28,10 @@ REVOLUT_API_SECRET_KEY=...          # server-side secret from Revolut Business d
 REVOLUT_ENV=sandbox                 # set to "prod" for production
 NEXT_PUBLIC_REVOLUT_ENV=sandbox     # must match REVOLUT_ENV (used to load correct embed script)
 
+# Nutrition Tracker — Food database APIs
+USDA_API_KEY=...                    # Free key from https://fdc.nal.usda.gov/api-guide.html
+ANTHROPIC_API_KEY=...               # Required for AI meal suggestions (/api/nutrition/suggest)
+
 # Image moderation (optional — site works without it, check is skipped if not set)
 # NsfwJS runs locally, no API key needed. The env var below is reserved for future use.
 # No configuration needed for NsfwJS.

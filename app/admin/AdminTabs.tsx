@@ -11,6 +11,7 @@ import PinnedPostsTab from "./PinnedPostsTab";
 import MessagesTab from "./MessagesTab";
 import PromotionHistoryTab from "./PromotionHistoryTab";
 import FitnessAdminTab from "./FitnessAdminTab";
+import NutritionAdminTab from "./NutritionAdminTab";
 import type { BlockAuthRecord, MemberOption } from "./BlockAuthTab";
 import type { PinnedPostRecord } from "./PinnedPostsTab";
 
@@ -65,8 +66,9 @@ const BASE_TABS = [
 ];
 const SUPER_ADMIN_TABS = [
   ...BASE_TABS,
-  { key: "fitness",  label: "⚔️ Fitness" },
-  { key: "messages", label: "Messages" },
+  { key: "fitness",    label: "⚔️ Fitness" },
+  { key: "nutrition",  label: "🥗 Nutrition" },
+  { key: "messages",   label: "Messages" },
   { key: "block_auth", label: "Block Auth" },
   { key: "promotion_history", label: "Promotion Log" },
 ];
@@ -161,6 +163,9 @@ export default function AdminTabs({
       )}
       {active === "fitness" && currentUserRole === "super_admin" && (
         <FitnessAdminTab />
+      )}
+      {active === "nutrition" && currentUserRole === "super_admin" && (
+        <NutritionAdminTab />
       )}
     </div>
   );

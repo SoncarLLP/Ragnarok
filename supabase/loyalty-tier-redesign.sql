@@ -255,7 +255,7 @@ returns void language plpgsql security definer set search_path = public as $$
 begin
   -- 10 extra loyalty points per level up for Viking class members
   insert into public.loyalty_events (user_id, delta, reason)
-  values (p_user_id, 10, 'fitness_viking_level_bonus')
+  select p_user_id, 10, 'fitness_viking_level_bonus'
   where not exists (
     select 1 from public.profiles where id = p_user_id and fitness_points_frozen = true
   );

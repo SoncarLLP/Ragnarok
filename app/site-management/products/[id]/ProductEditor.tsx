@@ -132,7 +132,7 @@ export default function ProductEditor({
   const [publishing, setPublishing] = useState(false);
   const [showPublishModal, setShowPublishModal] = useState(false);
   const [showDiscardModal, setShowDiscardModal] = useState(false);
-  const [activeTab, setActiveTab] = useState<"core" | "segments" | "theme" | "seo" | "history">("core");
+  const [activeTab, setActiveTab] = useState<"core" | "segments" | "nutrition" | "theme" | "seo" | "history">("core");
   const [toast, setToast] = useState<string | null>(null);
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isDirty = useRef(false);
@@ -248,11 +248,12 @@ export default function ProductEditor({
   useEffect(() => () => { if (saveTimer.current) clearTimeout(saveTimer.current); }, []);
 
   const tabs = [
-    { key: "core",     label: "Core details" },
-    { key: "segments", label: `Segments (${form.custom_segments.length})` },
-    { key: "theme",    label: "Theme" },
-    { key: "seo",      label: "SEO & settings" },
-    { key: "history",  label: "Version history" },
+    { key: "core",      label: "Core details" },
+    { key: "segments",  label: `Segments (${form.custom_segments.length})` },
+    { key: "nutrition", label: "🥗 Nutrition" },
+    { key: "theme",     label: "Theme" },
+    { key: "seo",       label: "SEO & settings" },
+    { key: "history",   label: "Version history" },
   ] as const;
 
   const designStudioHref = `/site-management/products/${product.id}/design`;
@@ -616,6 +617,11 @@ export default function ProductEditor({
         </div>
       )}
 
+      {/* ── Tab: Nutrition Profile ── */}
+      {activeTab === "nutrition" && (
+        <NutritionProfileTab productSlug={form.slug} productName={form.name} />
+      )}
+
       {/* ── Tab: Version history ── */}
       {activeTab === "history" && (
         <div className="space-y-4">
@@ -655,6 +661,137 @@ export default function ProductEditor({
           {toast}
         </div>
       )}
+    </div>
+  );
+}
+
+// ── NutritionProfileTab ───────────────────────────────────────────────────────
+
+const NUTRITION_FIELDS = [
+  { key: "calories",        label: "Calories",           unit: "kcal" },
+  { key: "protein",         label: "Protein",            unit: "g" },
+  { key: "carbs",           label: "Carbohydrates",      unit: "g" },
+  { key: "fat",             label: "Fat",                unit: "g" },
+  { key: "fibre",           label: "Fibre",              unit: "g" },
+  { key: "sugar",           label: "Sugar",              unit: "g" },
+  { key: "saturated_fat",   label: "Saturated Fat",      unit: "g" },
+  { key: "sodium",          label: "Sodium",             unit: "mg" },
+  { key: "potassium",       label: "Potassium",          unit: "mg" },
+  { key: "vitamin_c",       label: "Vitamin C",          unit: "mg" },
+  { key: "vitamin_d",       label: "Vitamin D",          unit: "μg" },
+  { key: "vitamin_b6",      label: "Vitamin B6",         unit: "mg" },
+  { key: "vitamin_b12",     label: "Vitamin B12",        unit: "μg" },
+  { key: "vitamin_b3",      label: "Vitamin B3 (Niacin)","unit": "mg" },
+  { key: "calcium",         label: "Calcium",            unit: "mg" },
+  { key: "iron",            label: "Iron",               unit: "mg" },
+];
+
+function NutritionProfileTab({ productSlug, productName }: { productSlug: string; productName: string }) {
+  const [profile, setProfile] = useState<Record<string, number>>({});
+  const [servingSize, setServingSize] = useState(330);
+  const [servingUnit, setServingUnit] = useState("ml");
+  const [nutriScore, setNutriScore] = useState("");
+  const [loaded, setLoaded] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+
+  useEffect(() => {
+    fetch("/api/nutrition/ragnarok-products").then(r => r.json()).then(d => {
+      const existing = (d.products ?? []).find((p: { product_slug: string }) => p.product_slug === productSlug);
+      if (existing) {
+        setProfile(existing.nutrient_data ?? {});
+        setServingSize(existing.serving_size ?? 330);
+        setServingUnit(existing.serving_unit ?? "ml");
+        setNutriScore(existing.nutri_score ?? "");
+      }
+      setLoaded(true);
+    });
+  }, [productSlug]);
+
+  const handleSave = async () => {
+    setSaving(true);
+    await fetch("/api/nutrition/ragnarok-products", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        product_slug: productSlug,
+        product_name: productName,
+        nutrient_data: profile,
+        serving_size: servingSize,
+        serving_unit: servingUnit,
+        nutri_score: nutriScore || null,
+      }),
+    });
+    setSaving(false);
+    setSaved(true);
+    setTimeout(() => setSaved(false), 2500);
+  };
+
+  if (!loaded) return <div className="text-sm text-neutral-400 py-4">Loading nutrition profile...</div>;
+
+  return (
+    <div className="space-y-5">
+      <div>
+        <p className="text-sm text-neutral-400 mb-4">
+          Enter the nutritional profile for <strong className="text-white">{productName}</strong>.
+          This data appears in the Nutrition Tracker as a verified supplement.
+        </p>
+
+        <div className="flex gap-3 mb-5">
+          <div>
+            <label className="text-xs text-neutral-500 block mb-1">Serving size</label>
+            <input
+              type="number"
+              value={servingSize}
+              onChange={e => setServingSize(parseFloat(e.target.value) || 100)}
+              className="w-24 px-3 py-2 rounded-lg text-sm bg-neutral-800 border border-white/15 text-white"
+            />
+          </div>
+          <div>
+            <label className="text-xs text-neutral-500 block mb-1">Unit</label>
+            <select value={servingUnit} onChange={e => setServingUnit(e.target.value)}
+              className="w-20 px-3 py-2 rounded-lg text-sm bg-neutral-800 border border-white/15 text-white">
+              {["ml","g","oz","fl oz","serving"].map(u => <option key={u} value={u}>{u}</option>)}
+            </select>
+          </div>
+          <div>
+            <label className="text-xs text-neutral-500 block mb-1">Nutri-Score</label>
+            <select value={nutriScore} onChange={e => setNutriScore(e.target.value)}
+              className="w-20 px-3 py-2 rounded-lg text-sm bg-neutral-800 border border-white/15 text-white">
+              <option value="">—</option>
+              {["A","B","C","D","E"].map(g => <option key={g} value={g}>{g}</option>)}
+            </select>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-3">
+          {NUTRITION_FIELDS.map(({ key, label, unit }) => (
+            <div key={key}>
+              <label className="text-xs text-neutral-500 block mb-1">
+                {label} <span className="text-neutral-600">({unit})</span>
+              </label>
+              <input
+                type="number"
+                min={0}
+                step="0.1"
+                value={profile[key] ?? ""}
+                onChange={e => setProfile(p => ({ ...p, [key]: parseFloat(e.target.value) || 0 }))}
+                placeholder="0"
+                className="w-full px-3 py-2 rounded-lg text-sm bg-neutral-800 border border-white/15 text-white"
+              />
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <button
+        onClick={handleSave}
+        disabled={saving}
+        className="px-6 py-2.5 rounded-lg text-sm font-semibold transition"
+        style={{ background: "var(--nrs-accent, #a855f7)", color: "#000" }}
+      >
+        {saved ? "✓ Saved!" : saving ? "Saving..." : "Save Nutrition Profile"}
+      </button>
     </div>
   );
 }
