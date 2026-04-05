@@ -166,8 +166,8 @@ export default function NavSidebar({
           </div>
         )}
 
-        {/* Nav links */}
-        <nav className="flex-1 overflow-y-auto px-4 py-4 space-y-1">
+        {/* Nav links — pb accounts for PWA bottom nav in standalone mode */}
+        <nav className="flex-1 overflow-y-auto px-4 py-4 space-y-1" style={{ paddingBottom: "max(1rem, calc(var(--pwa-nav-height, 0px) + env(safe-area-inset-bottom, 0px) + 1rem))" }}>
           <SidebarLink href="/search" onClick={close} emoji="🔍" label="Search" />
           <SidebarLink href="/#shop" onClick={close} emoji="🛒" label="Shop" />
           <SidebarLink
@@ -263,17 +263,25 @@ export default function NavSidebar({
         </nav>
 
         {/* Footer */}
-        <div className="shrink-0 px-6 py-4 text-xs flex items-center justify-between" style={{ borderTop: "1px solid var(--nrs-border)", color: "var(--nrs-text-muted)" }}>
-          <span>© {new Date().getFullYear()} SONCAR Limited</span>
+        <div className="shrink-0 px-4 py-3 flex flex-col gap-2" style={{ borderTop: "1px solid var(--nrs-border)" }}>
           {isSignedIn && (
             <button
               onClick={handleSignOut}
-              className="text-xs px-2.5 py-1 rounded-md hover:bg-white/10 transition"
-              style={{ color: "var(--nrs-text-muted)" }}
+              className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition hover:bg-red-500/10 active:bg-red-500/15"
+              style={{ color: "#f87171" }}
             >
-              Sign out
+              {/* Log-out icon */}
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="shrink-0">
+                <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" />
+                <polyline points="16 17 21 12 16 7" />
+                <line x1="21" y1="12" x2="9" y2="12" />
+              </svg>
+              Sign Out
             </button>
           )}
+          <div className="text-xs px-4 pb-1" style={{ color: "var(--nrs-text-muted)" }}>
+            © {new Date().getFullYear()} SONCAR Limited
+          </div>
         </div>
       </div>
     </>

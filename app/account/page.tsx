@@ -5,6 +5,7 @@ import { formatTierName, getTierColor, getNextTier, getTierProgress, tierFromPoi
 import MemberBadge from "@/components/MemberBadge";
 import TierBadge from "@/components/TierBadge";
 import PointsDisplay from "@/components/PointsDisplay";
+import SignOutButton from "./SignOutButton";
 
 function fmtMemberId(id: number | null | undefined) {
   return id != null ? String(id).padStart(11, "0") : null;
@@ -181,6 +182,11 @@ export default async function AccountPage() {
             View your points history and tier benefits
           </div>
         </Link>
+      </div>
+
+      {/* Sign out — always visible at bottom, not hidden behind bottom nav */}
+      <div className="mt-10 pb-4">
+        <SignOutButton />
       </div>
     </div>
   );

@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
 
 const baseLinks = [
   { href: "/account",                      label: "Dashboard" },
@@ -30,7 +31,15 @@ export default function AccountNav({
   unreadWarnings?: number;
 }) {
   const path = usePathname();
+  const router = useRouter();
   const isAdmin = role === "admin" || role === "super_admin";
+
+  async function handleSignOut() {
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    router.push("/");
+    router.refresh();
+  }
   const notifBadge = unreadCount > 99 ? "99+" : unreadCount;
   const msgBadge = unreadMessages > 99 ? "99+" : unreadMessages;
 
@@ -87,6 +96,21 @@ export default function AccountNav({
             )}
           </Link>
         ))}
+        {/* Sign out — pinned to bottom of desktop sidebar */}
+        <div className="mt-3 pt-3" style={{ borderTop: "1px solid var(--nrs-border)" }}>
+          <button
+            onClick={handleSignOut}
+            className="w-full flex items-center gap-2 px-3 py-2 rounded-md text-sm transition hover:bg-red-500/10"
+            style={{ color: "#f87171" }}
+          >
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" />
+              <polyline points="16 17 21 12 16 7" />
+              <line x1="21" y1="12" x2="9" y2="12" />
+            </svg>
+            Sign Out
+          </button>
+        </div>
       </nav>
 
       {/* Mobile top tabs */}
@@ -114,6 +138,19 @@ export default function AccountNav({
             )}
           </Link>
         ))}
+        {/* Sign out tab — at the end of the horizontal scroll row */}
+        <button
+          onClick={handleSignOut}
+          className="shrink-0 px-4 py-2 rounded-full text-sm transition flex items-center gap-1.5"
+          style={{ color: "#f87171", background: "rgba(248,113,113,0.08)", border: "1px solid rgba(248,113,113,0.2)" }}
+        >
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" />
+            <polyline points="16 17 21 12 16 7" />
+            <line x1="21" y1="12" x2="9" y2="12" />
+          </svg>
+          Sign Out
+        </button>
       </nav>
     </>
   );
