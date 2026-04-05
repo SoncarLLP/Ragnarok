@@ -102,7 +102,7 @@ export default function NutritionAdminTab() {
   return (
     <div className="space-y-5">
       {/* Section tabs */}
-      <div className="flex gap-2 flex-wrap">
+      <div className="admin-tab-bar flex gap-2">
         {SECTIONS.map(s => (
           <button
             key={s.key}

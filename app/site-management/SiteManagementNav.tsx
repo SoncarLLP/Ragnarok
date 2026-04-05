@@ -42,7 +42,7 @@ export default function SiteManagementNav({ mobile }: { mobile?: boolean }) {
 
   if (mobile) {
     return (
-      <nav className="flex gap-1 overflow-x-auto pb-2">
+      <nav className="admin-tab-bar flex gap-1 pb-2">
         {navItems.flatMap((s) => s.links).map((link) => (
           <Link
             key={link.href}

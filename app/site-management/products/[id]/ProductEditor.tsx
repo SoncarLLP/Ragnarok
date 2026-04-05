@@ -285,7 +285,7 @@ export default function ProductEditor({
       />
 
       {/* Tabs */}
-      <div className="flex gap-1 border-b border-white/10 pb-0 flex-wrap">
+      <div className="admin-tab-bar flex gap-1 border-b border-white/10 pb-0">
         {tabs.map((tab) => (
           <button
             key={tab.key}

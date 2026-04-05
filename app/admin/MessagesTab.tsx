@@ -97,7 +97,7 @@ export default function MessagesTab() {
   return (
     <div className="space-y-6">
       {/* Section nav */}
-      <div className="flex gap-1 border-b border-white/10 pb-1">
+      <div className="admin-tab-bar flex gap-1 border-b border-white/10 pb-1">
         <button
           onClick={() => setActiveSection("reports")}
           className={`flex items-center gap-2 px-4 py-2 text-sm rounded-t transition ${activeSection === "reports" ? "bg-white/10 text-white" : "text-neutral-400 hover:text-white hover:bg-white/5"}`}

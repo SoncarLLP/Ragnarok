@@ -98,13 +98,13 @@ export default function MembersTab({
 
   return (
     <section className="space-y-4">
-      <div className="flex items-center gap-3">
+      <div className="flex flex-wrap items-center gap-3">
         <h2 className="text-lg font-semibold">Members ({list.length})</h2>
         <input
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
           placeholder="Search name, email, or ID…"
-          className="ml-auto rounded-md px-3 py-1.5 text-sm outline-none w-56 transition"
+          className="flex-1 min-w-[200px] rounded-md px-3 py-2 text-sm outline-none transition"
           style={{ background: "var(--nrs-card)", border: "1px solid var(--nrs-border)", color: "var(--nrs-text-body)" }}
         />
       </div>

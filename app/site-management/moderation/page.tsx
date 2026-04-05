@@ -128,7 +128,7 @@ export default function ModerationPage() {
       </div>
 
       {/* Tab bar */}
-      <div className="flex gap-1 border-b border-white/10 pb-0">
+      <div className="admin-tab-bar flex gap-1 border-b border-white/10 pb-0">
         {TABS.map((t) => (
           <button
             key={t.key}

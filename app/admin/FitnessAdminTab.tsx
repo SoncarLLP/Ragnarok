@@ -161,7 +161,7 @@ export default function FitnessAdminTab() {
   return (
     <div>
       {/* Section tabs */}
-      <div className="flex gap-1 overflow-x-auto pb-2 mb-5">
+      <div className="admin-tab-bar flex gap-1 pb-2 mb-5">
         {SECTIONS.map((s) => (
           <button
             key={s.key}

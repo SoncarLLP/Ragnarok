@@ -182,7 +182,7 @@ export default function HomepageEditor({
       />
 
       {/* Tabs */}
-      <div className="flex gap-1 border-b border-white/10 overflow-x-auto">
+      <div className="admin-tab-bar flex gap-1 border-b border-white/10">
         {tabs.map((tab) => (
           <button
             key={tab.key}

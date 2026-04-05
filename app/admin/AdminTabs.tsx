@@ -86,7 +86,7 @@ export default function AdminTabs({
   return (
     <div>
       {/* Tab bar */}
-      <div className="flex gap-1 overflow-x-auto pb-1 mb-6" style={{ borderBottom: "1px solid var(--nrs-border-subtle)" }}>
+      <div className="admin-tab-bar flex gap-1 pb-1 mb-6" style={{ borderBottom: "1px solid var(--nrs-border-subtle)" }}>
         {TABS.map((t) => (
           <button
             key={t.key}

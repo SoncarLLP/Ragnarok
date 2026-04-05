@@ -149,7 +149,7 @@ export default function GlobalEditor({ liveContent, initialDraft, hasDraft: init
         publishing={publishing}
       />
 
-      <div className="flex gap-1 border-b border-white/10">
+      <div className="admin-tab-bar flex gap-1 border-b border-white/10">
         {tabs.map((tab) => (
           <button
             key={tab.key}

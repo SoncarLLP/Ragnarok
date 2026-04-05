@@ -3,7 +3,6 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { products } from "@/lib/products";
 import AdminTabs from "./AdminTabs";
-import DarkModeToggle from "@/components/DarkModeToggle";
 import BackToTop from "@/components/BackToTop";
 import type { FlagRecord, MemberRecord, WarningRecord } from "./AdminTabs";
 import type { BlockAuthRecord, MemberOption } from "./BlockAuthTab";
@@ -13,7 +12,7 @@ import { getDisplayName } from "@/lib/display-name";
 export default async function AdminPage() {
   if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
     return (
-      <main className="min-h-screen flex items-center justify-center" style={{ background: "var(--nrs-bg)", color: "var(--nrs-text-body)" }}>
+      <main className="min-h-[60vh] flex items-center justify-center">
         <p style={{ color: "var(--nrs-text-muted)" }}>SUPABASE_SERVICE_ROLE_KEY not configured.</p>
       </main>
     );
@@ -40,7 +39,7 @@ export default async function AdminPage() {
 
   if (!currentUserRole) {
     return (
-      <main className="min-h-screen flex items-center justify-center px-4" style={{ background: "var(--nrs-bg)", color: "var(--nrs-text-body)" }}>
+      <main className="min-h-[60vh] flex items-center justify-center px-4">
         <div className="text-center max-w-sm">
           {!user ? (
             <>
@@ -310,12 +309,12 @@ export default async function AdminPage() {
   }
 
   return (
-    <main className="min-h-screen" style={{ background: "var(--nrs-bg)", color: "var(--nrs-text-body)" }}>
-      <div className="mx-auto max-w-5xl px-4 py-10 space-y-12">
-        {/* Header */}
-        <div className="flex items-center justify-between gap-3">
+    <main>
+      <div className="mx-auto max-w-5xl px-4 py-6 space-y-10">
+        {/* Page title — in content area, not in the nav header */}
+        <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-semibold">Ragnarök Admin</h1>
+            <h1 className="text-2xl font-semibold">Admin Panel</h1>
             <span
               className={`text-xs px-2 py-0.5 rounded-full ${
                 currentUserRole === "super_admin"
@@ -323,20 +322,17 @@ export default async function AdminPage() {
                   : "bg-emerald-500/15 text-emerald-400"
               }`}
             >
-              {currentUserRole}
+              {currentUserRole === "super_admin" ? "👑 super_admin" : "🛡️ admin"}
             </span>
           </div>
-          <div className="flex items-center gap-2">
-            {currentUserRole === "super_admin" && (
-              <Link href="/site-management" className="text-sm px-3 py-1.5 rounded bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 hover:text-amber-200">
-                Site Management ⚙️
-              </Link>
-            )}
-            <Link href="/" className="nrs-btn text-sm">
-              View site
+          {currentUserRole === "super_admin" && (
+            <Link
+              href="/site-management"
+              className="text-sm px-3 py-2 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 hover:text-amber-200 transition min-h-[44px] flex items-center"
+            >
+              Site Management ⚙️
             </Link>
-            <DarkModeToggle isSignedIn={true} />
-          </div>
+          )}
         </div>
 
         {/* Products */}

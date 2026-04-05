@@ -528,7 +528,7 @@ export default function DesignStudio({
   // ── Render ────────────────────────────────────────────────────────
 
   return (
-    <div className="flex flex-col h-full" style={{ minHeight: "calc(100vh - 80px)" }}>
+    <div className="flex flex-col h-full" style={{ minHeight: "calc(100dvh - 80px)" }}>
       {/* ── Top bar ─────────────────────────────────────────────── */}
       <div className="flex items-center gap-3 px-4 py-3 border-b border-white/10 flex-wrap">
         <Link
@@ -616,13 +616,12 @@ export default function DesignStudio({
         </div>
       </div>
 
-      {/* ── Split layout ─────────────────────────────────────────── */}
-      <div className="flex flex-1 overflow-hidden">
+      {/* ── Split layout — stacks vertically on mobile, side-by-side on md+ ── */}
+      <div className="flex flex-col md:flex-row flex-1 md:overflow-hidden">
 
-        {/* LEFT: Controls */}
+        {/* LEFT: Controls — full width on mobile, fixed width scrollable column on desktop */}
         <div
-          className="w-96 shrink-0 overflow-y-auto border-r border-white/10 p-4 space-y-3"
-          style={{ maxHeight: "calc(100vh - 130px)" }}
+          className="design-controls w-full md:w-96 md:shrink-0 overflow-y-auto border-b md:border-b-0 md:border-r border-white/10 p-4 space-y-3"
         >
 
           {/* ── Templates ──────────────────────────────────────── */}
@@ -1304,8 +1303,8 @@ export default function DesignStudio({
 
         </div>
 
-        {/* RIGHT: Live Preview */}
-        <div className="flex-1 overflow-hidden">
+        {/* RIGHT: Live Preview — full width on mobile, flex-1 on desktop */}
+        <div className="flex-1 overflow-hidden min-h-[400px] md:min-h-0">
           <DesignPreview
             theme={theme}
             liveTheme={liveTheme}

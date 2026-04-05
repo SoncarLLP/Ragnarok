@@ -95,6 +95,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   let theme = "bronze";
   let userId: string | null = null;
   let userTier: string | null = null;
+  let userRole: string | null = null;
   let tierRevealsSeen: Record<string, boolean> = {};
   let lightMode: boolean | null = null;
   let isSignedIn = false;
@@ -107,7 +108,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       isSignedIn = true;
       const { data: profile } = await supabase
         .from("profiles")
-        .select("active_theme, tier, cumulative_points, tier_reveals_seen, light_mode_preference")
+        .select("active_theme, tier, cumulative_points, tier_reveals_seen, light_mode_preference, role")
         .eq("id", user.id)
         .single();
 
@@ -121,6 +122,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           : tierToTheme(tierName);
         // null = follow system, true = light, false = dark
         lightMode = (profile.light_mode_preference as boolean | null) ?? null;
+        userRole = (profile.role as string | null) ?? null;
       }
     }
   } catch {
@@ -163,7 +165,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           <ServiceWorkerRegistrar />
           <UserIdSync />
           <PWAInstallPrompt />
-          <PWABottomNav isSignedIn={isSignedIn} />
+          <PWABottomNav isSignedIn={isSignedIn} role={userRole} />
           {isSignedIn && <PushNotificationManager />}
         </ThemeProvider>
       </body>

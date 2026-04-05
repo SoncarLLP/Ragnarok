@@ -146,6 +146,75 @@ body.pwa-mode .back-to-top {
   }
 }
 
+/* ── Admin / Site Management PWA fixes ───────────────────────────────────── */
+/*
+ * The Design Studio uses a full-screen flex layout (.design-studio-main).
+ * The global body.pwa-mode main rule would add bottom padding that interferes
+ * with the flex-based height calculation — override it here.
+ */
+body.pwa-mode .design-studio-main {
+  padding-bottom: 0;
+}
+
+/*
+ * Design Studio controls panel:
+ * - Mobile: auto height (expand to content), no max-height restriction
+ * - Desktop (md+): scrollable within the visible viewport below the header
+ */
+@media (min-width: 768px) {
+  .design-controls {
+    max-height: calc(100dvh - 130px);
+  }
+}
+
+/*
+ * Admin modals are fixed overlays (z-50) that must render above the PWA bottom
+ * nav (z-40). z-50 > z-40 is already correct everywhere. Dropdowns inside admin
+ * panels that are position:absolute need their containing block to not be clipped
+ * by overflow:hidden. The class below marks scrollable admin areas.
+ */
+.admin-scroll-area {
+  overflow-y: auto;
+  overflow-x: hidden;
+  /* Ensure absolute-positioned dropdowns inside can escape the scroll area */
+  position: relative;
+}
+
+/*
+ * Admin modal overlays (fixed inset-0 z-50) must cover the full viewport
+ * including the area behind the PWA bottom nav. Without this, the body
+ * padding-bottom from pwa-mode bleeds inside the overlay's flex layout.
+ */
+body.pwa-mode [role="dialog"],
+body.pwa-mode .modal-overlay {
+  padding-bottom: 0 !important;
+}
+
+/*
+ * Admin tab bar — ensure horizontal scroll works cleanly on mobile
+ */
+.admin-tab-bar {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.admin-tab-bar::-webkit-scrollbar {
+  display: none;
+}
+
+/*
+ * Admin action buttons — enforce 44×44 minimum touch target in PWA mode
+ */
+@media (display-mode: standalone) {
+  .admin-action-btn {
+    min-height: 44px;
+    min-width: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
 /* ── Typography ──────────────────────────────────────────────────────────── */
 h1, h2, h3, h4, h5, h6,
 .font-heading {

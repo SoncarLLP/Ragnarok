@@ -14,9 +14,10 @@ const NAV_ITEMS = [
 
 interface Props {
   isSignedIn: boolean;
+  role?: string | null;
 }
 
-export default function PWABottomNav({ isSignedIn }: Props) {
+export default function PWABottomNav({ isSignedIn, role }: Props) {
   const pathname = usePathname();
   const [isStandalone, setIsStandalone] = useState(false);
 
@@ -46,14 +47,17 @@ export default function PWABottomNav({ isSignedIn }: Props) {
 
   if (!isStandalone) return null;
 
+  // Hide on auth pages, messages (full-screen app), and Design Studio (full-screen tool)
   if (
-    pathname.startsWith("/admin") ||
     pathname.startsWith("/auth") ||
-    pathname.startsWith("/site-management") ||
-    pathname.startsWith("/messages")
+    pathname.startsWith("/messages") ||
+    (pathname.startsWith("/site-management/products/") && pathname.endsWith("/design"))
   ) {
     return null;
   }
+
+  const isAdmin = role === "admin" || role === "super_admin";
+  const isSuperAdmin = role === "super_admin";
 
   const items = isSignedIn
     ? NAV_ITEMS
@@ -87,6 +91,9 @@ export default function PWABottomNav({ isSignedIn }: Props) {
               ? pathname === "/"
               : pathname.startsWith(item.href);
 
+          // Show admin/super_admin badge on the Account icon
+          const showAdminBadge = isAdmin && item.href === "/account";
+
           return (
             <Link
               key={item.href}
@@ -102,7 +109,6 @@ export default function PWABottomNav({ isSignedIn }: Props) {
                 gap: "3px",
                 position: "relative",
                 minHeight: "56px",
-                /* No minWidth — let flex handle distribution evenly */
                 paddingTop: "8px",
                 paddingBottom: "6px",
                 textDecoration: "none",
@@ -115,10 +121,26 @@ export default function PWABottomNav({ isSignedIn }: Props) {
                   fontSize: "20px",
                   lineHeight: 1,
                   display: "block",
+                  position: "relative",
                   filter: isActive ? "drop-shadow(0 0 4px var(--nrs-accent))" : "none",
                 }}
               >
                 {item.icon}
+                {/* Admin/super_admin role indicator badge */}
+                {showAdminBadge && (
+                  <span
+                    aria-label={isSuperAdmin ? "Super admin" : "Admin"}
+                    style={{
+                      position: "absolute",
+                      top: "-4px",
+                      right: "-6px",
+                      fontSize: "10px",
+                      lineHeight: 1,
+                    }}
+                  >
+                    {isSuperAdmin ? "👑" : "🛡️"}
+                  </span>
+                )}
               </span>
               <span
                 style={{
