@@ -29,7 +29,6 @@ export default function PWABottomNav({ isSignedIn }: Props) {
 
       setIsStandalone(standalone);
 
-      // Inject/remove the global pwa-mode class so CSS rules cascade everywhere
       if (standalone) {
         document.body.classList.add("pwa-mode");
       } else {
@@ -41,15 +40,12 @@ export default function PWABottomNav({ isSignedIn }: Props) {
     mq.addEventListener("change", check);
     return () => {
       mq.removeEventListener("change", check);
-      // Clean up when component unmounts
       document.body.classList.remove("pwa-mode");
     };
   }, []);
 
-  // Only render in standalone PWA mode
   if (!isStandalone) return null;
 
-  // Hide on admin, auth, site-management, and messages pages
   if (
     pathname.startsWith("/admin") ||
     pathname.startsWith("/auth") ||
@@ -59,7 +55,6 @@ export default function PWABottomNav({ isSignedIn }: Props) {
     return null;
   }
 
-  // Hide nav for non-authenticated users on protected routes
   const items = isSignedIn
     ? NAV_ITEMS
     : NAV_ITEMS.filter((item) => item.href === "/" || item.href === "/community");
@@ -69,15 +64,23 @@ export default function PWABottomNav({ isSignedIn }: Props) {
       className="pwa-bottom-nav fixed bottom-0 left-0 right-0 z-40"
       aria-label="Bottom navigation"
       style={{
+        width: "100%",
         background: "var(--nrs-bg-2, #0d0d14)",
         borderTop: "1px solid var(--nrs-border, rgba(255,255,255,0.07))",
         backdropFilter: "blur(20px)",
         WebkitBackdropFilter: "blur(20px)",
-        /* Extend background into the safe area so there's no gap on notched phones */
         paddingBottom: "env(safe-area-inset-bottom)",
       }}
     >
-      <div className="flex items-stretch">
+      {/* w-full + justify-evenly ensures all items are evenly spread edge-to-edge */}
+      <div
+        style={{
+          display: "flex",
+          width: "100%",
+          alignItems: "stretch",
+          justifyContent: "space-evenly",
+        }}
+      >
         {items.map((item) => {
           const isActive =
             item.href === "/"
@@ -88,28 +91,41 @@ export default function PWABottomNav({ isSignedIn }: Props) {
             <Link
               key={item.href}
               href={item.href}
-              className="flex-1 flex flex-col items-center justify-center py-2 gap-0.5 transition-opacity active:opacity-60 relative"
-              style={{
-                color: isActive ? "var(--nrs-accent, #c9a84c)" : "var(--nrs-text-muted, #6b7280)",
-                /* Min 44×44 tap target (accessibility) — 56px gives extra room */
-                minHeight: "56px",
-                minWidth: "44px",
-                textDecoration: "none",
-              }}
               aria-label={item.label}
               aria-current={isActive ? "page" : undefined}
+              style={{
+                flex: "1 1 0%",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: "3px",
+                position: "relative",
+                minHeight: "56px",
+                /* No minWidth — let flex handle distribution evenly */
+                paddingTop: "8px",
+                paddingBottom: "6px",
+                textDecoration: "none",
+                color: isActive ? "var(--nrs-accent, #c9a84c)" : "var(--nrs-text-muted, #6b7280)",
+                transition: "opacity 0.15s",
+              }}
             >
               <span
-                className="text-xl leading-none"
                 style={{
+                  fontSize: "20px",
+                  lineHeight: 1,
+                  display: "block",
                   filter: isActive ? "drop-shadow(0 0 4px var(--nrs-accent))" : "none",
                 }}
               >
                 {item.icon}
               </span>
               <span
-                className="text-[10px] font-medium leading-none"
                 style={{
+                  fontSize: "10px",
+                  fontWeight: 500,
+                  lineHeight: 1,
+                  whiteSpace: "nowrap",
                   color: isActive
                     ? "var(--nrs-accent, #c9a84c)"
                     : "var(--nrs-text-muted, #6b7280)",
@@ -117,11 +133,18 @@ export default function PWABottomNav({ isSignedIn }: Props) {
               >
                 {item.label}
               </span>
-              {/* Active indicator bar — anchored inside the item, not the nav */}
               {isActive && (
                 <span
-                  className="absolute bottom-0 left-1/2 -translate-x-1/2 w-8 h-0.5 rounded-full"
-                  style={{ background: "var(--nrs-accent, #c9a84c)" }}
+                  style={{
+                    position: "absolute",
+                    bottom: 0,
+                    left: "50%",
+                    transform: "translateX(-50%)",
+                    width: "28px",
+                    height: "2px",
+                    borderRadius: "9999px",
+                    background: "var(--nrs-accent, #c9a84c)",
+                  }}
                 />
               )}
             </Link>
