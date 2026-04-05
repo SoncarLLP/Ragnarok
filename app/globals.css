@@ -43,11 +43,14 @@
     opacity 0.3s ease !important;
 }
 
-/* ── CSS font variables ──────────────────────────────────────────────────── */
+/* ── CSS font variables + PWA layout variables ───────────────────────────── */
 :root {
-  --font-heading: 'Cinzel', 'Trajan Pro', serif;
-  --font-body:    'Crimson Text', 'Georgia', serif;
-  --font-ui:      system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-heading:   'Cinzel', 'Trajan Pro', serif;
+  --font-body:      'Crimson Text', 'Georgia', serif;
+  --font-ui:        system-ui, -apple-system, 'Segoe UI', sans-serif;
+  /* Height of the PWA bottom nav bar (56px content + 8px buffer).
+     Safe-area-inset-bottom is added on top of this in all calc() expressions. */
+  --pwa-nav-height: 64px;
 }
 
 /* ── Base document styles ────────────────────────────────────────────────── */
@@ -76,12 +79,71 @@ body {
   color:      var(--nrs-text-body, #e8e4d9);
   font-family: var(--font-ui);
   min-height: 100vh;
+  /* Safe area padding for notched devices in browser mode */
+  padding-bottom: env(safe-area-inset-bottom);
   /* Prevent horizontal overscroll / swipe gestures revealing off-screen panels */
   overflow-x: hidden;
   overscroll-behavior-x: none;
   /* Allow vertical scroll only — stops horizontal swipe from triggering sidebar */
   touch-action: pan-y;
   transition: background-color 0.6s ease, color 0.6s ease;
+}
+
+/* ── PWA standalone mode layout ──────────────────────────────────────────── */
+/*
+ * body.pwa-mode is added by PWABottomNav when (display-mode: standalone).
+ * This single block resolves all bottom-nav overlap issues globally:
+ *   • body padding pushes scrollable page content above the nav
+ *   • .pwa-mode main   — explicit padding for <main> elements
+ *   • .pwa-mode .fixed-bottom — repositions any fixed-bottom overlays
+ *   • .back-to-top     — floats the button above the nav bar
+ */
+body.pwa-mode {
+  padding-bottom: calc(var(--pwa-nav-height) + env(safe-area-inset-bottom));
+}
+
+body.pwa-mode main {
+  padding-bottom: calc(var(--pwa-nav-height) + env(safe-area-inset-bottom));
+}
+
+/* Any element with this utility class is lifted above the PWA nav */
+body.pwa-mode .fixed-bottom {
+  bottom: calc(var(--pwa-nav-height) + env(safe-area-inset-bottom));
+}
+
+/* Back-to-top button — floated above nav in PWA, normal position in browser */
+body.pwa-mode .back-to-top {
+  bottom: calc(var(--pwa-nav-height) + env(safe-area-inset-bottom) + 16px) !important;
+}
+
+/*
+ * Landscape: hide the PWA bottom nav to maximise screen height.
+ * Body padding is reset so content fills the full landscape viewport.
+ * The PWA nav itself is hidden via its own landscape CSS rule below.
+ */
+@media (max-height: 430px) and (orientation: landscape) {
+  body.pwa-mode {
+    padding-bottom: env(safe-area-inset-left, 0px);
+  }
+  body.pwa-mode main {
+    padding-bottom: 0;
+  }
+  body.pwa-mode .fixed-bottom {
+    bottom: env(safe-area-inset-bottom, 0px);
+  }
+  body.pwa-mode .back-to-top {
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 16px) !important;
+  }
+}
+
+/* PWA bottom nav — hidden in landscape to reclaim screen height */
+.pwa-bottom-nav {
+  display: flex;
+}
+@media (max-height: 430px) and (orientation: landscape) {
+  .pwa-bottom-nav {
+    display: none !important;
+  }
 }
 
 /* ── Typography ──────────────────────────────────────────────────────────── */

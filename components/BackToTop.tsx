@@ -8,6 +8,10 @@ import { useState, useEffect } from "react";
  * props:
  *   policies  — when true, renders a minimal clean arrow button (no Norse styling)
  *               used on the Policies page which opts out of tier theme effects.
+ *
+ * In PWA standalone mode, the button floats above the bottom nav bar via the
+ * CSS class `back-to-top` which is targeted by the `.pwa-mode .back-to-top`
+ * rule in globals.css.
  */
 export default function BackToTop({ policies = false }: { policies?: boolean }) {
   const [visible, setVisible] = useState(false);
@@ -15,7 +19,6 @@ export default function BackToTop({ policies = false }: { policies?: boolean }) 
   useEffect(() => {
     const onScroll = () => setVisible(window.scrollY > 400);
     window.addEventListener("scroll", onScroll, { passive: true });
-    // Set initial state in case page loads already scrolled
     onScroll();
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
@@ -37,7 +40,7 @@ export default function BackToTop({ policies = false }: { policies?: boolean }) 
       <button
         onClick={handleClick}
         aria-label="Back to top"
-        className={`fixed bottom-6 right-6 z-50 w-10 h-10 rounded-full flex items-center justify-center text-lg ${baseTransition}`}
+        className={`back-to-top fixed bottom-6 right-6 z-50 w-10 h-10 rounded-full flex items-center justify-center text-lg ${baseTransition}`}
         style={{
           background: "var(--nrs-card)",
           border: "1px solid var(--nrs-border)",
@@ -54,7 +57,7 @@ export default function BackToTop({ policies = false }: { policies?: boolean }) 
     <button
       onClick={handleClick}
       aria-label="Back to top"
-      className={`fixed bottom-6 right-6 z-50 w-11 h-11 rounded-full flex items-center justify-center font-medium text-base select-none ${baseTransition}`}
+      className={`back-to-top fixed bottom-6 right-6 z-50 w-11 h-11 rounded-full flex items-center justify-center font-medium text-base select-none ${baseTransition}`}
       style={{
         background: "var(--nrs-btn-primary)",
         color: "var(--nrs-btn-primary-fg)",

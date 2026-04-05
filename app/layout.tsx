@@ -143,7 +143,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         {/* Safe area support for notched devices */}
         <meta name="format-detection" content="telephone=no" />
       </head>
-      <body style={{ paddingBottom: "env(safe-area-inset-bottom)" }}>
+      <body>
         <ThemeProvider
           initialTheme={theme}
           initialLightMode={lightMode}
